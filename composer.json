@@ -1,0 +1,35 @@
+{
+    "name": "bengr/admin",
+    "description": "Bengr admin package that can generate administration structure both for SPA application in seperate repository and also for API 🙀",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "matejkrenek",
+            "email": "mate23.krenek@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Bengr\\Admin\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Bengr\\Admin\\AdminServiceProvider"
+            ],
+            "aliases": {
+                "Admin": "Bengr\\Admin\\Facades\\Admin"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "orchestra/testbench": "^7.13"
+    },
+    "require": {
+        "spatie/laravel-package-tools": "^1.13"
+    }
+}
