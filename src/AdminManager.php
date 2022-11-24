@@ -2,6 +2,9 @@
 
 namespace Bengr\Admin;
 
+use Bengr\Admin\Navigation;
+use Illuminate\Support\Collection;
+
 class AdminManager
 {
     protected bool $isNavigationMounted = false;
@@ -16,10 +19,14 @@ class AdminManager
             app($page)->registerNavigationItems();
         }
 
-        foreach ($this->getNavigationItems() as $item) {
-            // if $item->parent -> get navigationitem where 
-            $item->registerChildren();
-        }
+        // collect($this->getNavigationItems())->each(function (NavigationItem $item) {
+        //     if ($item->getParent()) {
+        //         $parentItem = collect($this->getNavigationItems())->reject(function ($value) use ($item) {
+        //             return $value->getPage() !== $item->getParent();
+        //         })->first();
+        //         $parentItem->registerChildren($item);
+        //     }
+        // });
     }
 
     public function registerNavigationItems(array $items): void
@@ -32,13 +39,21 @@ class AdminManager
         $this->pages = array_merge($this->pages, $pages);
     }
 
-    public function getNavigation(): array
+    public function getNavigation()
     {
         if (!$this->isNavigationMounted) {
             $this->mountNavigation();
         }
 
-        return collect($this->getNavigationItems())->all();
+        return collect($this->getNavigationItems())
+            ->sortBy(fn (Navigation\NavigationItem $item): int => $item->getSort())
+            ->groupBy(fn (Navigation\NavigationItem $item): ?string => $item->getGroup())
+            ->map(function (Collection $items, ?string $groupIndex): Navigation\NavigationGroup {
+                if (blank($groupIndex)) {
+                    return Navigation\NavigationGroup::make()->items($items);
+                }
+            })
+            ->all();
     }
 
     public function getNavigationItems(): array

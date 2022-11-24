@@ -2,6 +2,7 @@
 
 namespace Bengr\Admin\Navigation;
 
+use Bengr\Admin\Pages\PageRoute;
 
 class NavigationItem
 {
@@ -23,6 +24,8 @@ class NavigationItem
 
     protected ?int $sort = null;
 
+    protected PageRoute $route;
+
     final public function __construct(?string $label = null)
     {
         if (filled($label)) {
@@ -35,6 +38,14 @@ class NavigationItem
         return app(static::class, ['label' => $label]);
     }
 
+    public function page(string $page): self
+    {
+        $this->page = $page;
+
+        return $this;
+    }
+
+
     public function badge(?string $badge, ?string $color = null): self
     {
         $this->badge = $badge;
@@ -46,6 +57,13 @@ class NavigationItem
     public function group(?string $group): self
     {
         $this->group = $group;
+
+        return $this;
+    }
+
+    public function route(PageRoute $route): self
+    {
+        $this->route = $route;
 
         return $this;
     }
@@ -85,8 +103,23 @@ class NavigationItem
         return $this;
     }
 
-    public function registerChildren(): void
+    public function getParent(): ?string
     {
-        $this->children = ['fsdfs'];
+        return $this->parent;
+    }
+
+    public function getSort(): ?int
+    {
+        return $this->sort ?? -1;
+    }
+
+    public function getGroup(): ?string
+    {
+        return $this->group ?? '';
+    }
+
+    public function registerChildren(NavigationItem $item): void
+    {
+        $this->children = array_merge($this->children, [$item]);
     }
 }

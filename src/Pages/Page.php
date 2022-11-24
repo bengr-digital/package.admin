@@ -32,6 +32,8 @@ class Page
 
     protected string | array $middlewares = [];
 
+    protected array $navigationItem = [];
+
     public function registerNavigationItems(): void
     {
         Admin::registerNavigationItems($this->getNavigationItems());
@@ -39,15 +41,20 @@ class Page
 
     public function getNavigationItems(): array
     {
-        return [
-            NavigationItem::make($this->getNavigationLabel())
-                ->group($this->getNavigationGroup())
-                ->parent($this->getNavigationParent())
-                ->icon($this->getNavigationIcon())
-                ->activeIcon($this->getActiveNavigationIcon())
-                ->badge($this->getNavigationBadge(), $this->getNavigationBadgeColor())
-                ->sort($this->getNavigationSort())
-        ];
+        if (!$this->navigationItem) {
+            $this->navigationItem = [
+                NavigationItem::make($this->getNavigationLabel())
+                    ->group($this->getNavigationGroup())
+                    ->route($this->getRoute())
+                    ->parent($this->getNavigationParent())
+                    ->icon($this->getNavigationIcon())
+                    ->activeIcon($this->getActiveNavigationIcon())
+                    ->badge($this->getNavigationBadge(), $this->getNavigationBadgeColor())
+                    ->sort($this->getNavigationSort())
+            ];
+        }
+
+        return $this->navigationItem;
     }
 
     public function getMiddlewares(): string | array
@@ -62,11 +69,23 @@ class Page
             ->slug();
     }
 
-    public function getRouteName(): string
+    public function getRoute(): PageRoute
+    {
+        return PageRoute::make($this->getRouteName(), $this->getRouteUri());
+    }
+
+    protected function getRouteName(): string
     {
         $slug = $this->getSlug();
 
         return "admin.pages.{$slug}";
+    }
+
+    protected function getRouteUri(): string
+    {
+        $slug = $this->getSlug();
+
+        return "/{$slug}";
     }
 
     public function getTitle(): string
