@@ -10,82 +10,51 @@ class Page
 {
     protected ?string $layout = 'app';
 
-    protected ?string $navigationIcon = null;
-
-    protected ?string $activeNavigationIcon = null;
-
-    protected ?string $navigationGroup = null;
-
-    protected ?string $navigationParent = null;
-
-    protected ?string $navigationLabel = null;
-
-    protected ?int $navigationSort = null;
-
     protected ?string $title = null;
 
     protected ?string $description = null;
 
-    protected ?string $heading = null;
-
-    protected ?string $subheading = null;
+    protected ?string $slug = null;
 
     protected string | array $middlewares = [];
 
-    protected array $navigationItem = [];
+    protected ?string $navigationLabel = null;
+
+    protected ?string $navigationIcon = null;
+
+    protected ?string $navigationActiveIcon = null;
+
+    protected ?string $navigationGroup = null;
+
+    protected ?int $navigationSort = null;
+
+    protected bool $inNavigation = true;
 
     public function registerNavigationItems(): void
     {
+        if (!$this->inNavigation()) {
+            return;
+        }
+
         Admin::registerNavigationItems($this->getNavigationItems());
     }
 
     public function getNavigationItems(): array
     {
-        if (!$this->navigationItem) {
-            $this->navigationItem = [
-                NavigationItem::make($this->getNavigationLabel())
-                    ->group($this->getNavigationGroup())
-                    ->route($this->getRoute())
-                    ->parent($this->getNavigationParent())
-                    ->icon($this->getNavigationIcon())
-                    ->activeIcon($this->getActiveNavigationIcon())
-                    ->badge($this->getNavigationBadge(), $this->getNavigationBadgeColor())
-                    ->sort($this->getNavigationSort())
-            ];
-        }
-
-        return $this->navigationItem;
+        return [
+            NavigationItem::make($this->getNavigationLabel())
+                ->group($this->getNavigationGroup())
+                ->icon($this->getNavigationIcon())
+                ->activeIcon($this->getNavigationActiveIcon())
+                ->sort($this->getNavigationSort())
+                ->badge($this->getNavigationBadge(), $this->getNavigationBadgeColor())
+                ->route($this->getRouteName(), $this->getRouteUrl())
+        ];
     }
 
-    public function getMiddlewares(): string | array
+    public function getLayout(): string
     {
-        return $this->middlewares;
-    }
-
-    public function getSlug(): string
-    {
-        return Str::of($this->title ?? class_basename(static::class))
-            ->kebab()
-            ->slug();
-    }
-
-    public function getRoute(): PageRoute
-    {
-        return PageRoute::make($this->getRouteName(), $this->getRouteUri());
-    }
-
-    protected function getRouteName(): string
-    {
-        $slug = $this->getSlug();
-
-        return "admin.pages.{$slug}";
-    }
-
-    protected function getRouteUri(): string
-    {
-        $slug = $this->getSlug();
-
-        return "/{$slug}";
+        return $this->layout;
     }
 
     public function getTitle(): string
@@ -96,14 +65,51 @@ class Page
             ->title();
     }
 
-    protected function getBreadcrumbs(): array
+    public function getDescription(): ?string
     {
-        return [];
+        return $this->description;
     }
+
+    public function getSlug(): string
+    {
+        return $this->slug ?? Str::of($this->title ?? class_basename(static::class))
+            ->kebab()
+            ->slug();
+    }
+
+    public function getMiddlewares(): string | array
+    {
+        return $this->middlewares;
+    }
+
+    public function getRouteName(): string
+    {
+        $slug = $this->getSlug();
+
+        return "admin.pages.{$slug}";
+    }
+
+    public function getRouteUrl(): string
+    {
+        $slug = $this->getSlug();
+
+        return "/{$slug}";
+    }
+
 
     protected function getNavigationLabel(): ?string
     {
-        return $this->navigationLabel;
+        return $this->navigationLabel ?? $this->getTitle();
+    }
+
+    protected function getNavigationIcon(): ?string
+    {
+        return $this->navigationIcon ?? 'description';
+    }
+
+    protected function getNavigationActiveIcon(): ?string
+    {
+        return $this->navigationActiveIcon ?? $this->getNavigationIcon();
     }
 
     protected function getNavigationGroup(): ?string
@@ -111,19 +117,9 @@ class Page
         return $this->navigationGroup;
     }
 
-    protected function getNavigationParent(): ?string
+    protected function getNavigationSort(): ?int
     {
-        return $this->navigationParent;
-    }
-
-    protected function getNavigationIcon(): ?string
-    {
-        return $this->navigationIcon ?? 'document';
-    }
-
-    protected function getActiveNavigationIcon(): ?string
-    {
-        return $this->activeNavigationIcon ?? $this->getNavigationIcon();
+        return $this->navigationSort;
     }
 
     protected function getNavigationBadge(): ?string
@@ -136,8 +132,8 @@ class Page
         return null;
     }
 
-    protected function getNavigationSort(): ?string
+    protected function inNavigation(): bool
     {
-        return $this->navigationSort;
+        return $this->inNavigation;
     }
 }

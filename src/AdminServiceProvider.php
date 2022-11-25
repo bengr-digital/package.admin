@@ -18,7 +18,8 @@ class AdminServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('admin')
-            ->hasConfigFile();
+            ->hasConfigFile()
+            ->hasRoutes(['web']);
     }
 
     public function packageRegistered()

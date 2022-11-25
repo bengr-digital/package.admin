@@ -2,29 +2,25 @@
 
 namespace Bengr\Admin\Navigation;
 
-use Bengr\Admin\Pages\PageRoute;
-
 class NavigationItem
 {
-    protected ?string $group = null;
-
-    protected ?string $parent = null;
-
-    protected array $children = [];
+    protected string $label;
 
     protected string $icon;
 
     protected ?string $activeIcon = null;
 
-    protected string $label;
+    protected ?string $group = null;
+
+    protected ?int $sort = null;
 
     protected ?string $badge = null;
 
     protected ?string $badgeColor = null;
 
-    protected ?int $sort = null;
+    protected string $routeName;
 
-    protected PageRoute $route;
+    protected string $routeUrl;
 
     final public function __construct(?string $label = null)
     {
@@ -45,32 +41,9 @@ class NavigationItem
         return $this;
     }
 
-
-    public function badge(?string $badge, ?string $color = null): self
+    public function label(string $label): self
     {
-        $this->badge = $badge;
-        $this->badgeColor = $color;
-
-        return $this;
-    }
-
-    public function group(?string $group): self
-    {
-        $this->group = $group;
-
-        return $this;
-    }
-
-    public function route(PageRoute $route): self
-    {
-        $this->route = $route;
-
-        return $this;
-    }
-
-    public function parent(?string $parent): self
-    {
-        $this->parent = $parent;
+        $this->label = $label;
 
         return $this;
     }
@@ -89,9 +62,9 @@ class NavigationItem
         return $this;
     }
 
-    public function label(string $label): self
+    public function group(?string $group): self
     {
-        $this->label = $label;
+        $this->group = $group;
 
         return $this;
     }
@@ -103,14 +76,35 @@ class NavigationItem
         return $this;
     }
 
-    public function getParent(): ?string
+    public function badge(?string $badge, ?string $color = null): self
     {
-        return $this->parent;
+        $this->badge = $badge;
+        $this->badgeColor = $color;
+
+        return $this;
     }
 
-    public function getSort(): ?int
+    public function route(string $name, string $url): self
     {
-        return $this->sort ?? -1;
+        $this->routeName = $name;
+        $this->routeUrl = $url;
+
+        return $this;
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label;
+    }
+
+    public function getIcon(): string
+    {
+        return $this->icon;
+    }
+
+    public function getActiveIcon(): ?string
+    {
+        return $this->activeIcon;
     }
 
     public function getGroup(): ?string
@@ -118,8 +112,28 @@ class NavigationItem
         return $this->group ?? '';
     }
 
-    public function registerChildren(NavigationItem $item): void
+    public function getSort(): ?int
     {
-        $this->children = array_merge($this->children, [$item]);
+        return $this->sort ?? -1;
+    }
+
+    public function getBadge(): ?string
+    {
+        return $this->badge;
+    }
+
+    public function getBadgeColor(): ?string
+    {
+        return $this->badgeColor;
+    }
+
+    public function getRouteName(): string
+    {
+        return $this->routeName;
+    }
+
+    public function getRouteUrl(): string
+    {
+        return $this->routeUrl;
     }
 }

@@ -3,11 +3,14 @@
 namespace Bengr\Admin;
 
 use Bengr\Admin\Navigation;
+use Bengr\Admin\Pages\Page;
 use Illuminate\Support\Collection;
 
 class AdminManager
 {
     protected bool $isNavigationMounted = false;
+
+    protected array $navigationGroups = [];
 
     protected array $navigationItems = [];
 
@@ -18,15 +21,6 @@ class AdminManager
         foreach ($this->getPages() as $page) {
             app($page)->registerNavigationItems();
         }
-
-        // collect($this->getNavigationItems())->each(function (NavigationItem $item) {
-        //     if ($item->getParent()) {
-        //         $parentItem = collect($this->getNavigationItems())->reject(function ($value) use ($item) {
-        //             return $value->getPage() !== $item->getParent();
-        //         })->first();
-        //         $parentItem->registerChildren($item);
-        //     }
-        // });
     }
 
     public function registerNavigationItems(array $items): void
@@ -39,7 +33,7 @@ class AdminManager
         $this->pages = array_merge($this->pages, $pages);
     }
 
-    public function getNavigation()
+    public function getNavigation(): Collection
     {
         if (!$this->isNavigationMounted) {
             $this->mountNavigation();
@@ -52,8 +46,12 @@ class AdminManager
                 if (blank($groupIndex)) {
                     return Navigation\NavigationGroup::make()->items($items);
                 }
-            })
-            ->all();
+            });
+    }
+
+    public function getNavigationGroups(): array
+    {
+        return $this->navigationGroups;
     }
 
     public function getNavigationItems(): array
@@ -64,5 +62,16 @@ class AdminManager
     public function getPages(): array
     {
         return array_unique($this->pages);
+    }
+
+    public function getPage($name)
+    {
+        $page = collect($this->getPages())->first(function ($page) use ($name) {
+            return app($page)->getRouteName() === $name;
+        });
+
+        if (!$page) return null;
+
+        return app($page);
     }
 }
