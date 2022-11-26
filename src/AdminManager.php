@@ -2,9 +2,11 @@
 
 namespace Bengr\Admin;
 
+use Bengr\Admin\Events\ServingAdmin;
 use Bengr\Admin\Navigation;
-use Bengr\Admin\Pages\Page;
+use Bengr\Admin\Navigation\UserMenuItem;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Event;
 
 class AdminManager
 {
@@ -13,6 +15,8 @@ class AdminManager
     protected array $navigationGroups = [];
 
     protected array $navigationItems = [];
+
+    protected array $userMenuItems = [];
 
     protected array $pages = [];
 
@@ -31,6 +35,16 @@ class AdminManager
     public function registerPages(array $pages): void
     {
         $this->pages = array_merge($this->pages, $pages);
+    }
+
+    public function registerUserMenuItems(array $items): void
+    {
+        $this->userMenuItems = array_merge($this->userMenuItems, $items);
+    }
+
+    public function serving(\Closure $callback): void
+    {
+        Event::listen(ServingAdmin::class, $callback);
     }
 
     public function getNavigation(): Collection
@@ -64,14 +78,20 @@ class AdminManager
         return array_unique($this->pages);
     }
 
-    public function getPage($name)
+    public function getPage($url)
     {
-        $page = collect($this->getPages())->first(function ($page) use ($name) {
-            return app($page)->getRouteName() === $name;
+        $page = collect($this->getPages())->first(function ($page) use ($url) {
+            return app($page)->getRouteUrl() === $url;
         });
 
         if (!$page) return null;
 
         return app($page);
+    }
+
+    public function getUserMenuItems(): Collection
+    {
+        return collect($this->userMenuItems)
+            ->sort(fn (UserMenuItem $item): int => $item->getSort());
     }
 }

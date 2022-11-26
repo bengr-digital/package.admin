@@ -52,6 +52,16 @@ class Page
         ];
     }
 
+    public function getWidgets(): array
+    {
+        return [];
+    }
+
+    public function getActions(): array
+    {
+        return [];
+    }
+
     public function getLayout(): string
     {
         return $this->layout;
@@ -95,7 +105,6 @@ class Page
 
         return "/{$slug}";
     }
-
 
     protected function getNavigationLabel(): ?string
     {

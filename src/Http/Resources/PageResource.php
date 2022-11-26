@@ -23,7 +23,23 @@ class PageResource extends JsonResource
                 'name' => $this->getRouteName(),
                 'url' => $this->getRouteUrl(),
             ],
-            'navigation' => NavigationResource::make(Admin::getNavigation())
+            'navigation' => NavigationResource::make(Admin::getNavigation()),
+            'topbar' => [
+                'visible' => true,
+                'userMenu' => UserMenuResource::make(Admin::getUserMenuItems()),
+                'notifications' => [
+                    'visible' => false
+                ],
+                'globalSearch' => [
+                    'visible' => false
+                ]
+            ],
+            'header' => [
+                'heading' => $this->getTitle(),
+                'subheading' => $this->getDescription(),
+                'actions' => []
+            ],
+            'widgets' => WidgetResource::collection($this->getWidgets())
         ];
     }
 }

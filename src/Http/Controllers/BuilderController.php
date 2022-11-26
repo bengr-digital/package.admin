@@ -2,6 +2,7 @@
 
 namespace Bengr\Admin\Http\Controllers;
 
+use Bengr\Admin\Events\ServingAdmin;
 use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\Http\Resources\PageResource;
 use Illuminate\Http\Request;
@@ -11,9 +12,13 @@ class BuilderController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $page = Admin::getPage($request->get('name'));
+        $page = Admin::getPage($request->get('url'));
 
         if (!$page) throw new NotFoundHttpException;
+
+        ServingAdmin::dispatch();
+
+        dd($page->getActions());
 
         return PageResource::make($page);
     }

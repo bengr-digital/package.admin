@@ -34,13 +34,6 @@ class NavigationItem
         return app(static::class, ['label' => $label]);
     }
 
-    public function page(string $page): self
-    {
-        $this->page = $page;
-
-        return $this;
-    }
-
     public function label(string $label): self
     {
         $this->label = $label;
