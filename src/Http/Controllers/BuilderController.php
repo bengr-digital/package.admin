@@ -18,7 +18,6 @@ class BuilderController extends Controller
 
         ServingAdmin::dispatch();
 
-        dd($page->getActions());
 
         return PageResource::make($page);
     }

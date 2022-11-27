@@ -2,8 +2,11 @@
 
 namespace Bengr\Admin\Actions;
 
+use Bengr\Admin\Concerns\EvaluatesClosures;
+
 class ActionGroup
 {
+    use EvaluatesClosures;
     use Concerns\HasIcon;
     use Concerns\HasColor;
     use Concerns\HasSize;

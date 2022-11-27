@@ -37,7 +37,7 @@ class PageResource extends JsonResource
             'header' => [
                 'heading' => $this->getTitle(),
                 'subheading' => $this->getDescription(),
-                'actions' => []
+                'actions' => ActionGroupResource::collection($this->getActions())
             ],
             'widgets' => WidgetResource::collection($this->getWidgets())
         ];

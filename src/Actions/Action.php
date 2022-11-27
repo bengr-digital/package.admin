@@ -2,23 +2,21 @@
 
 namespace Bengr\Admin\Actions;
 
+use Bengr\Admin\Concerns\EvaluatesClosures;
 use Illuminate\Support\Str;
 
 class Action
 {
+    use EvaluatesClosures;
     use Concerns\HasName;
     use Concerns\HasLabel;
     use Concerns\HasIcon;
     use Concerns\HasColor;
     use Concerns\HasSize;
+    use Concerns\HasRoute;
     use Concerns\HasTooltip;
     use Concerns\CanBeDisabled;
     use Concerns\CanBeHidden;
-    use Concerns\CanBeOutlined;
-    use Concerns\CanOpenModal;
-    use Concerns\CanOpenUrl;
-    use Concerns\CanRedirect;
-    use Concerns\CanCallApi;
 
     final public function __construct(string $name)
     {

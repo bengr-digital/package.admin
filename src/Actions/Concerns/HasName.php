@@ -8,7 +8,7 @@ trait HasName
 
     public function name(string $name): static
     {
-        $this->label = $name;
+        $this->name = $name;
 
         return $this;
     }

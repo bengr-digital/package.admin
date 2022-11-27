@@ -33,5 +33,7 @@ trait CanBeHidden
         if (!$this->evaluate($this->isVisible)) {
             return true;
         }
+
+        return false;
     }
 }
