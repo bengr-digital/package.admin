@@ -3,6 +3,8 @@
 namespace Bengr\Admin\Tables;
 
 use Bengr\Admin\Tables\Contracts\HasTable;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class Table
@@ -37,5 +39,10 @@ class Table
     public function getModel(): ?Model
     {
         return $this->tableResource->getCachedTableModel();
+    }
+
+    public function getRecords(): Collection | Paginator
+    {
+        return $this->tableResource->getTableRecords();
     }
 }

@@ -18,8 +18,6 @@ class BuilderController extends Controller
 
         ServingAdmin::dispatch();
 
-        dd($page->getTable()->getColumns());
-
         return PageResource::make($page);
     }
 }

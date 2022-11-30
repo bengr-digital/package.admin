@@ -4,10 +4,12 @@ namespace Bengr\Admin\Tables\Concerns;
 
 use Bengr\Admin\Tables\Table;
 use Bengr\Admin\Tables\Concerns;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 
 trait InteractsWithTable
 {
-    use Concerns\HasModel;
+    use Concerns\HasPagination;
+    use Concerns\HasRecords;
     use Concerns\HasColumns;
     use Concerns\HasActions;
     use Concerns\HasBulkActions;
@@ -21,5 +23,10 @@ trait InteractsWithTable
         }
 
         return $this->table;
+    }
+
+    protected function getTableQuery(): Builder
+    {
+        return app($this->getTableModel())->query();
     }
 }

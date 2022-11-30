@@ -2,6 +2,9 @@
 
 namespace Bengr\Admin\Tables\Contracts;
 
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 interface HasTable
@@ -12,5 +15,5 @@ interface HasTable
 
     public function getCachedTableBulkActions(): array;
 
-    public function getCachedTableModel(): ?Model;
+    public function getTableRecords(): Collection | Paginator;
 }
