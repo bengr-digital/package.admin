@@ -141,6 +141,11 @@ class Page
         return null;
     }
 
+    public function hasTable(): bool
+    {
+        return method_exists(static::class, 'getTable');
+    }
+
     protected function inNavigation(): bool
     {
         return $this->inNavigation;

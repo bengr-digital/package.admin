@@ -18,6 +18,14 @@ trait HasRecords
     {
         $query = $this->getTableQuery();
 
-        return $this->getTableQuery()->select('username')->paginate();
+        foreach ($this->getCachedTableColumns() as $column) {
+            $column->applyEagerLoading($query);
+        }
+
+        if ($this->isTablePaginationEnabled()) {
+            return $this->paginateTableQuery($query);
+        }
+
+        return $query->get();
     }
 }
