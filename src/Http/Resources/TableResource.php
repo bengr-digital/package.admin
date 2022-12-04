@@ -15,10 +15,10 @@ class TableResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'actions' => ActionGroupResource::collection($this->getActions()),
             'bulkActions' => ActionGroupResource::collection($this->getBulkActions()),
             'columns' => ColumnResource::collection($this->getColumns()),
-            'records' => TableRecordResource::collection($this->getRecords())
+            'records' => $this->getRecordsInColumns(),
+            'pagination' => $this->getPagination()
         ];
     }
 }

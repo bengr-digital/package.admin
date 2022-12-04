@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 
 trait HasRecords
 {
+    protected Collection | Paginator | null $records = null;
+
     protected function getTableModel(): ?string
     {
         return null;
@@ -16,6 +18,8 @@ trait HasRecords
 
     public function getTableRecords(): Collection | Paginator
     {
+        if ($this->records) return $this->records;
+
         $query = $this->getTableQuery();
 
         foreach ($this->getCachedTableColumns() as $column) {
@@ -23,9 +27,11 @@ trait HasRecords
         }
 
         if ($this->isTablePaginationEnabled()) {
-            return $this->paginateTableQuery($query);
+            $this->records = $this->paginateTableQuery($query);
+        } else {
+            $this->records = $query->get();
         }
 
-        return $query->get();
+        return $this->records;
     }
 }

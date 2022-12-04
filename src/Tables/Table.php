@@ -2,10 +2,12 @@
 
 namespace Bengr\Admin\Tables;
 
+use Bengr\Admin\Http\Resources\ActionGroupResource;
 use Bengr\Admin\Tables\Contracts\HasTable;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection as SupportCollection;
 
 class Table
 {
@@ -36,13 +38,44 @@ class Table
         return $this->tableResource->getCachedTableBulkActions();
     }
 
-    public function getModel(): ?Model
-    {
-        return $this->tableResource->getCachedTableModel();
-    }
-
     public function getRecords(): Collection | Paginator
     {
         return $this->tableResource->getTableRecords();
+    }
+
+    public function getRecordsInColumns(): SupportCollection
+    {
+        $records_in_columns = collect();
+
+        foreach ($this->getRecords() as $record) {
+            $record_in_column = collect([
+                'id' => $record->id
+            ]);
+
+            foreach ($this->getColumns() as $column) {
+                $record_in_column->put($column->getName(), [
+                    'value' => Arr::get($record, $column->getName()),
+                    'params' => []
+                ]);
+            }
+
+            $record_in_column->put('actions', ActionGroupResource::collection($this->getActions()));
+
+
+            $records_in_columns->push($record_in_column);
+        }
+
+        return $records_in_columns;
+    }
+
+    public function getPagination(): SupportCollection
+    {
+        return collect([
+            'total' => $this->getRecords()->total(),
+            'perPage' => $this->getRecords()->perPage(),
+            'currentPage' => $this->getRecords()->currentPage(),
+            'lastPage' => $this->getRecords()->lastPage(),
+            'pageName' => $this->getRecords()->getPageName(),
+        ]);
     }
 }
