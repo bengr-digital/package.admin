@@ -4,14 +4,17 @@ namespace Bengr\Admin\Tables\Concerns;
 
 use Bengr\Admin\Tables\Table;
 use Bengr\Admin\Tables\Concerns;
-use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder;
 
 trait InteractsWithTable
 {
+    use Concerns\CanSortRecords;
+    use Concerns\CanSearchRecords;
     use Concerns\HasPagination;
     use Concerns\HasRecords;
     use Concerns\HasColumns;
     use Concerns\HasActions;
+    use Concerns\HasFilters;
     use Concerns\HasBulkActions;
 
     protected Table $table;

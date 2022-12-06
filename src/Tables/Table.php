@@ -38,16 +38,16 @@ class Table
         return $this->tableResource->getCachedTableBulkActions();
     }
 
-    public function getRecords(): Collection | Paginator
+    public function getRecords(?int $page = 1): Collection | Paginator
     {
-        return $this->tableResource->getTableRecords();
+        return $this->tableResource->getTableRecords($page);
     }
 
-    public function getRecordsInColumns(): SupportCollection
+    public function getRecordsInColumns(?int $page = 1): SupportCollection
     {
         $records_in_columns = collect();
 
-        foreach ($this->getRecords() as $record) {
+        foreach ($this->getRecords($page) as $record) {
             $record_in_column = collect([
                 'id' => $record->id
             ]);

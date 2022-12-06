@@ -78,10 +78,21 @@ class AdminManager
         return array_unique($this->pages);
     }
 
-    public function getPage($url)
+    public function getPageByUrl($url)
     {
         $page = collect($this->getPages())->first(function ($page) use ($url) {
             return app($page)->getRouteUrl() === $url;
+        });
+
+        if (!$page) return null;
+
+        return app($page);
+    }
+
+    public function getPageByName($name)
+    {
+        $page = collect($this->getPages())->first(function ($page) use ($name) {
+            return app($page)->getRouteName() === $name;
         });
 
         if (!$page) return null;

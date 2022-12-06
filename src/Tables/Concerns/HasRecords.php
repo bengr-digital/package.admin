@@ -2,10 +2,8 @@
 
 namespace Bengr\Admin\Tables\Concerns;
 
-use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 
 trait HasRecords
 {
@@ -16,7 +14,7 @@ trait HasRecords
         return null;
     }
 
-    public function getTableRecords(): Collection | Paginator
+    public function getTableRecords(?int $page = 1): Collection | Paginator
     {
         if ($this->records) return $this->records;
 
@@ -27,7 +25,7 @@ trait HasRecords
         }
 
         if ($this->isTablePaginationEnabled()) {
-            $this->records = $this->paginateTableQuery($query);
+            $this->records = $this->paginateTableQuery($query, $page);
         } else {
             $this->records = $query->get();
         }
