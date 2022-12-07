@@ -6,6 +6,7 @@ use Bengr\Admin\Http\Resources\ActionGroupResource;
 use Bengr\Admin\Tables\Contracts\HasTable;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection as SupportCollection;
 
@@ -13,14 +14,17 @@ class Table
 {
     protected HasTable $tableResource;
 
-    final public function __construct($tableResource)
+    protected Request $request;
+
+    final public function __construct(HasTable $tableResource, Request $request)
     {
         $this->tableResource = $tableResource;
+        $this->request = $request;
     }
 
-    public static function make(HasTable $tableResource): static
+    public static function make(HasTable $tableResource, Request $request): static
     {
-        return app(static::class, ['tableResource' => $tableResource]);
+        return app(static::class, ['tableResource' => $tableResource, 'request' => $request]);
     }
 
     public function getColumns(): array
@@ -38,16 +42,16 @@ class Table
         return $this->tableResource->getCachedTableBulkActions();
     }
 
-    public function getRecords(?int $page = 1): Collection | Paginator
+    public function getRecords(): Collection | Paginator
     {
-        return $this->tableResource->getTableRecords($page);
+        return $this->tableResource->getTableRecords($this->request);
     }
 
-    public function getRecordsInColumns(?int $page = 1): SupportCollection
+    public function getRecordsInColumns(): SupportCollection
     {
         $records_in_columns = collect();
 
-        foreach ($this->getRecords($page) as $record) {
+        foreach ($this->getRecords() as $record) {
             $record_in_column = collect([
                 'id' => $record->id
             ]);

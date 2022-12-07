@@ -31,6 +31,12 @@ return [
         'pagination' => [
             'per_page' => 5,
             'page_name' => 'page'
+        ],
+        'sorting' => [
+            'params' => [
+                'sort_column' => 'sort_column',
+                'sort_order' => 'sort_order'
+            ]
         ]
     ]
 ];

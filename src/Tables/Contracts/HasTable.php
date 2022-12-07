@@ -4,6 +4,7 @@ namespace Bengr\Admin\Tables\Contracts;
 
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 
 interface HasTable
 {
@@ -13,5 +14,5 @@ interface HasTable
 
     public function getCachedTableBulkActions(): array;
 
-    public function getTableRecords(): Collection | Paginator;
+    public function getTableRecords(Request $request): Collection | Paginator;
 }

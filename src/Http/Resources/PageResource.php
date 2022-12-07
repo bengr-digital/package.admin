@@ -40,7 +40,7 @@ class PageResource extends JsonResource
                 'actions' => ActionGroupResource::collection($this->getActions())
             ],
             'widgets' => WidgetResource::collection($this->getWidgets()),
-            'table' => $this->hasTable() ? TableResource::make($this->getTable()) : []
+            'table' => $this->hasTable() ? TableResource::make($this->getTable($request)) : []
         ];
     }
 }

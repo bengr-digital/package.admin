@@ -22,6 +22,38 @@ trait InteractsWithTableQuery
         return $query;
     }
 
+    public function applySort(Builder $query, string $direction = 'asc'): Builder
+    {
+        if ($this->isHidden()) {
+            return $query;
+        }
+
+        if (!$this->isSortable()) {
+            return $query;
+        }
+
+
+        $relationship = $this->getRelationship($query->getModel());
+
+        $query->when(
+            $relationship,
+            fn ($query) => $query->orderBy(
+                $relationship
+                    ->getRelationExistenceQuery(
+                        $relationship->getRelated()::query(),
+                        $query,
+                        $this->getName(),
+                    )
+                    ->applyScopes()
+                    ->getQuery(),
+                $direction,
+            ),
+            fn ($query) => $query->orderBy($this->getName(), $direction),
+        );
+
+        return $query;
+    }
+
     public function hasRelationship(Model $model): bool
     {
         return $this->getRelationship($model) !== null;

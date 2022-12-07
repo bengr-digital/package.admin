@@ -15,8 +15,8 @@ class RecordsResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'records' => $this->getTable()->getRecordsInColumns($request->get('page')),
-            'pagination' => $this->getTable()->getPagination()
+            'records' => $this->getTable($request)->getRecordsInColumns(),
+            'pagination' => $this->getTable($request)->getPagination()
         ];
     }
 }
