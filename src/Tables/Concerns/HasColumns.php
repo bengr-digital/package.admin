@@ -22,6 +22,13 @@ trait HasColumns
         return $this->getCachedTableColumns()[$name] ?? null;
     }
 
+    public function getTableSearchableColumns(): array
+    {
+        return collect($this->getCachedTableColumns())->filter(function ($column) {
+            return $column->isSearchable();
+        })->toArray();
+    }
+
     protected function getTableColumns(): array
     {
         return [];

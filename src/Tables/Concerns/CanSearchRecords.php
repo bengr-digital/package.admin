@@ -10,10 +10,16 @@ trait CanSearchRecords
     protected function applySearchToTableQuery(Builder $query, Request $request): Builder
     {
         $searchQuery = $this->getTableSearchQuery($request);
+        $index = 0;
 
         if (!$searchQuery) return $query;
 
-        dd($searchQuery);
+        foreach ($this->getTableSearchableColumns() as $column) {
+
+            $column->applySearch($query, $searchQuery, $index === 0 ? true : false);
+
+            $index++;
+        };
 
         return $query;
     }

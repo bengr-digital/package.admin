@@ -19,9 +19,4 @@ class ResourceController extends Controller
 
         return RecordsResource::make($page);
     }
-
-    public function post(Request $request)
-    {
-        return null;
-    }
 }

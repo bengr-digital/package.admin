@@ -32,7 +32,6 @@ trait InteractsWithTableQuery
             return $query;
         }
 
-
         $relationship = $this->getRelationship($query->getModel());
 
         $query->when(
@@ -42,13 +41,39 @@ trait InteractsWithTableQuery
                     ->getRelationExistenceQuery(
                         $relationship->getRelated()::query(),
                         $query,
-                        $this->getName(),
+                        $this->getRelationshipColumnName(),
                     )
                     ->applyScopes()
                     ->getQuery(),
                 $direction,
             ),
             fn ($query) => $query->orderBy($this->getName(), $direction),
+        );
+
+        return $query;
+    }
+
+    public function applySearch(Builder $query, string $searchQuery = '', bool $isFirst): Builder
+    {
+        if (!$searchQuery) {
+            return $query;
+        }
+
+        if ($this->isHidden()) {
+            return $query;
+        }
+
+        if (!$this->isSearchable()) {
+            return $query;
+        }
+
+        $relationship = $this->getRelationship($query->getModel());
+        $whereClause = $isFirst ? 'where' : 'orWhere';
+
+        $query->when(
+            $relationship,
+            fn ($query) => $query->{"{$whereClause}Relation"}($this->getRelationshipName(), $this->getRelationshipColumnName(), 'like', "%{$searchQuery}%"),
+            fn ($query) => $query->{$whereClause}($this->getName(), 'like', "%{$searchQuery}%"),
         );
 
         return $query;
