@@ -2,6 +2,7 @@
 
 namespace Bengr\Admin;
 
+use Bengr\Admin\Commands\MakeAdminUserCommand;
 use Bengr\Admin\Facades;
 use Bengr\Admin\Pages\Page;
 use Illuminate\Filesystem\Filesystem;
@@ -19,6 +20,10 @@ class AdminServiceProvider extends PackageServiceProvider
         $package
             ->name('admin')
             ->hasConfigFile()
+            ->hasCommands([
+                MakeAdminUserCommand::class
+            ])
+            ->hasMigration('create_admin_users_table')
             ->hasRoutes(['web']);
     }
 

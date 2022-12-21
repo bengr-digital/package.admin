@@ -2,7 +2,7 @@
 
 namespace Bengr\Admin\Http\Resources;
 
-use Bengr\Admin\Facades\Admin;
+use Bengr\Admin\Facades\Admin as BengrAdmin;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PageResource extends JsonResource
@@ -23,24 +23,29 @@ class PageResource extends JsonResource
                 'name' => $this->getRouteName(),
                 'url' => $this->getRouteUrl(),
             ],
-            'navigation' => NavigationResource::make(Admin::getNavigation()),
-            'topbar' => [
-                'visible' => true,
-                'userMenu' => UserMenuResource::make(Admin::getUserMenuItems()),
-                'notifications' => [
-                    'visible' => false
+            'auth' => $request->user('admin') ?? [],
+            'breadcrumbs' => $this->getBreadcrumbs(),
+            'components' => [
+                'navigation' => $this->hasNavigation() ? NavigationResource::make(BengrAdmin::getNavigation()) : [],
+                'topbar' => $this->hasTopbar() ? [
+                    'visible' => true,
+                    'userMenu' => UserMenuResource::make(BengrAdmin::getUserMenuItems()),
+                    'notifications' => [
+                        'visible' => false
+                    ],
+                    'globalSearch' => [
+                        'visible' => false
+                    ]
+                ] : [],
+                'header' => [
+                    'heading' => $this->getTitle(),
+                    'subheading' => $this->getDescription(),
+                    'actions' => ActionGroupResource::collection($this->getActions())
                 ],
-                'globalSearch' => [
-                    'visible' => false
-                ]
-            ],
-            'header' => [
-                'heading' => $this->getTitle(),
-                'subheading' => $this->getDescription(),
-                'actions' => ActionGroupResource::collection($this->getActions())
-            ],
-            'widgets' => WidgetResource::collection($this->getWidgets()),
-            'table' => $this->hasTable() ? TableResource::make($this->getTable($request)) : []
+                'widgets' => WidgetResource::collection($this->getWidgets()),
+                'table' => $this->hasTable() ? TableResource::make($this->getTable($request)) : [],
+                'form' => []
+            ]
         ];
     }
 }

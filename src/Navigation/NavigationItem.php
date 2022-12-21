@@ -22,6 +22,8 @@ class NavigationItem
 
     protected string $routeUrl;
 
+    protected array $children = [];
+
     final public function __construct(?string $label = null)
     {
         if (filled($label)) {
@@ -85,6 +87,17 @@ class NavigationItem
         return $this;
     }
 
+    public function children(array $children): self
+    {
+        collect($children)->each(function ($item) {
+            if (app($item)->getNavigationItems()) {
+                $this->children[] = app($item)->getNavigationItems()[0];
+            }
+        });
+
+        return $this;
+    }
+
     public function getLabel(): string
     {
         return $this->label;
@@ -128,5 +141,10 @@ class NavigationItem
     public function getRouteUrl(): string
     {
         return $this->routeUrl;
+    }
+
+    public function getChildren(): array
+    {
+        return $this->children;
     }
 }

@@ -2,11 +2,12 @@
 
 namespace Bengr\Admin\Http\Controllers;
 
-use Bengr\Admin\Events\ServingAdmin;
+use Bengr\Admin\Exceptions\PageNotFoundException;
 use Bengr\Admin\Facades\Admin as BengrAdmin;
 use Bengr\Admin\Http\Resources\PageResource;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+use function Bengr\Support\response;
 
 class BuilderController extends Controller
 {
@@ -14,10 +15,10 @@ class BuilderController extends Controller
     {
         $page = BengrAdmin::getPageByUrl($request->get('url'));
 
-        if (!$page) throw new NotFoundHttpException;
+        if (!$page) {
+            return response()->throw(PageNotFoundException::class);
+        }
 
-        ServingAdmin::dispatch();
-
-        return PageResource::make($page);
+        return $page->processToResponse($request, fn () => response()->resource(PageResource::class, $page));
     }
 }

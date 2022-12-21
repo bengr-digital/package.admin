@@ -23,7 +23,8 @@ class NavigationItemResource extends JsonResource
             "route" => [
                 "name" => $this->getRouteName(),
                 "url" => $this->getRouteUrl()
-            ]
+            ],
+            "children" => NavigationItemResource::collection($this->getChildren())
         ];
     }
 }
