@@ -23,7 +23,13 @@ class AdminServiceProvider extends PackageServiceProvider
             ->hasCommands([
                 MakeAdminUserCommand::class
             ])
-            ->hasMigration('create_admin_users_table')
+            ->hasMigrations([
+                'create_admin_users_table',
+                'create_admin_settings_table',
+                'create_admin_settings_languages_table',
+                'create_admin_settings_socials_table',
+                'create_admin_settings_billings_table',
+            ])
             ->hasRoutes(['web']);
     }
 
@@ -44,6 +50,9 @@ class AdminServiceProvider extends PackageServiceProvider
 
     public function packageBooted()
     {
+        $this->publishes([
+            __DIR__ . '/../storage/responses/bengr_admin' => storage_path('responses/bengr_admin'),
+        ], 'admin-response-files');
     }
 
     public function registerComponents()

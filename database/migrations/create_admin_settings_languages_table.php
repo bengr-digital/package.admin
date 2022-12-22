@@ -13,14 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('admin_users', function (Blueprint $table) {
+        Schema::create('admin_settings_languages', function (Blueprint $table) {
             $table->id();
-            $table->string('username', 100)->unique();
-            $table->string('email', 100)->unique();
-            $table->string('first_name', 100);
-            $table->string('last_name', 100);
-            $table->string('password');
-            $table->softDeletes();
+            $table->foreignId('settings_id')->constrained('admin_settings')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->char('code', 6);
+            $table->boolean('is_default')->default(false)->nullable();
             $table->timestamps();
         });
     }
@@ -32,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('admin_users');
+        Schema::dropIfExists('admin_settings_languages');
     }
 };

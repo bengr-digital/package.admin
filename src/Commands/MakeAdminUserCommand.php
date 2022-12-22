@@ -22,6 +22,8 @@ class MakeAdminUserCommand extends Command
     protected function getUserData(): array
     {
         return [
+            'first_name' => $this->validate(fn () => $this->ask('First Name'), 'first_name', ['required']),
+            'last_name' => $this->validate(fn () => $this->ask('Last Name'), 'last_name', ['required']),
             'username' => $this->validate(fn () => $this->ask('Username'), 'username', ['required']),
             'email' => $this->validate(fn () => $this->ask('Email'), 'email', ['required', 'email', 'unique:' . $this->getUserModel()]),
             'password' => Hash::make($this->validate(fn () => $this->secret('Password'), 'password', ['required', 'min:8'])),

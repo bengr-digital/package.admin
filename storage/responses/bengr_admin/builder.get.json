@@ -1,0 +1,200 @@
+{
+    "title": "Administrátoři",
+    "description": "Admins",
+    "layout": "app",
+    "route": {
+        "name": "admin.pages.admins",
+        "url": "/admins"
+    },
+    "auth": {
+        "id": 6,
+        "username": "admin",
+        "email": "admin@gmail.com",
+        "deleted_at": null,
+        "created_at": "2022-12-16T23:45:10.000000Z",
+        "updated_at": "2022-12-16T23:45:10.000000Z"
+    },
+    "breadcrumbs": [],
+    "components": {
+        "navigation": {
+            "visible": true,
+            "groups": {
+                "": {
+                    "label": null,
+                    "items": [
+                        {
+                            "label": "Administrátoři",
+                            "icon": "description",
+                            "activeIcon": "description",
+                            "badge": null,
+                            "badgeColor": null,
+                            "route": {
+                                "name": "admin.pages.admins",
+                                "url": "/admins"
+                            },
+                            "children": []
+                        }
+                    ]
+                }
+            }
+        },
+        "topbar": {
+            "visible": true,
+            "userMenu": {
+                "visible": true,
+                "items": [
+                    {
+                        "label": "User settings",
+                        "icon": "settings",
+                        "route": {
+                            "name": "admin.pages.user-settings",
+                            "url": "/myaccount/settings"
+                        }
+                    },
+                    {
+                        "label": "Notifications",
+                        "icon": "notify",
+                        "route": {
+                            "name": "admin.pages.user-notifications",
+                            "url": "/myaccount/notifications"
+                        }
+                    }
+                ]
+            },
+            "notifications": {
+                "visible": false
+            },
+            "globalSearch": {
+                "visible": false
+            }
+        },
+        "header": {
+            "heading": "Administrátoři",
+            "subheading": "Admins",
+            "actions": []
+        },
+        "widgets": [],
+        "table": {
+            "bulkActions": [
+                {
+                    "label": "label",
+                    "icon": null,
+                    "color": null,
+                    "size": null,
+                    "tooltip": null,
+                    "isDisabled": false,
+                    "isHidden": false,
+                    "route": {
+                        "name": null,
+                        "url": null
+                    }
+                }
+            ],
+            "columns": {
+                "email": {
+                    "name": "email",
+                    "label": "E-mail",
+                    "type": "text",
+                    "isSortable": true
+                },
+                "first_name": {
+                    "name": "first_name",
+                    "label": "Jméno",
+                    "type": "text",
+                    "isSortable": true
+                },
+                "last_name": {
+                    "name": "last_name",
+                    "label": "Přijmení",
+                    "type": "text",
+                    "isSortable": true
+                },
+                "contact.phone": {
+                    "name": "contact.phone",
+                    "label": "Telefon",
+                    "type": "text",
+                    "isSortable": true
+                }
+            },
+            "records": [
+                {
+                    "id": 33,
+                    "email": {
+                        "value": "jedediah.dooley@rutherford.com",
+                        "params": []
+                    },
+                    "first_name": {
+                        "value": "Paxton",
+                        "params": []
+                    },
+                    "last_name": {
+                        "value": "VonRueden",
+                        "params": []
+                    },
+                    "contact.phone": {
+                        "value": null,
+                        "params": []
+                    },
+                    "actions": [
+                        {
+                            "label": "label",
+                            "icon": null,
+                            "color": null,
+                            "size": null,
+                            "tooltip": null,
+                            "isDisabled": false,
+                            "isHidden": false,
+                            "route": {
+                                "name": null,
+                                "url": null
+                            }
+                        },
+                        {
+                            "icon": null,
+                            "color": null,
+                            "size": null,
+                            "tooltip": null,
+                            "isHidden": false,
+                            "actions": [
+                                {
+                                    "label": "Delete",
+                                    "icon": "trash",
+                                    "color": null,
+                                    "size": null,
+                                    "tooltip": null,
+                                    "isDisabled": false,
+                                    "isHidden": false,
+                                    "route": {
+                                        "name": null,
+                                        "url": null
+                                    }
+                                },
+                                {
+                                    "label": "View",
+                                    "icon": "eye",
+                                    "color": null,
+                                    "size": null,
+                                    "tooltip": null,
+                                    "isDisabled": false,
+                                    "isHidden": false,
+                                    "route": {
+                                        "name": "admin.pages.admins",
+                                        "url": "/admins"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "pagination": {
+                "total": 10,
+                "perPage": 5,
+                "currentPage": 1,
+                "lastPage": 2,
+                "pageName": "page"
+            }
+        },
+        "form": []
+    }
+}

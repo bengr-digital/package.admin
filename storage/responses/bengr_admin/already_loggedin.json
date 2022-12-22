@@ -1,0 +1,7 @@
+{
+    "message": "already logged in",
+    "redirect": {
+        "url": "/",
+        "name": "admin.pages."
+    }
+}

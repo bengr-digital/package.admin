@@ -11,8 +11,16 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 use function Bengr\Support\response;
 
+/**
+ * @group Bengr Administration
+ * @subgroup Auth
+ */
 class AuthController extends Controller
 {
+    /**
+     * Login Admin User
+     * 
+     */
     public function login(LoginRequest $request)
     {
         $admin = $request->authenticate();
@@ -27,6 +35,10 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Logout Admin User
+     * 
+     */
     public function logout(Request $request)
     {
         $token = app(BengrAdmin::authTokenModel())->where('access_token', hash('sha256', $request->bearerToken()))->whereHasMorph('tokenable', BengrAdmin::authUserModel())->first();
@@ -44,11 +56,10 @@ class AuthController extends Controller
         ]);
     }
 
-    public function me(Request $request)
-    {
-        return response($request->user('admin'));
-    }
-
+    /**
+     * Get access_token from refresh_token of admin user
+     * 
+     */
     public function token(Request $request)
     {
         if (!$request->has('refresh_token')) throw new NotFoundHttpException();

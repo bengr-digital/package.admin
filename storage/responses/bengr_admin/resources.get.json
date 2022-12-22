@@ -1,0 +1,80 @@
+{
+    "records": [
+        {
+            "id": 33,
+            "email": {
+                "value": "jedediah.dooley@rutherford.com",
+                "params": []
+            },
+            "first_name": {
+                "value": "Paxton",
+                "params": []
+            },
+            "last_name": {
+                "value": "VonRueden",
+                "params": []
+            },
+            "contact.phone": {
+                "value": null,
+                "params": []
+            },
+            "actions": [
+                {
+                    "label": "label",
+                    "icon": null,
+                    "color": null,
+                    "size": null,
+                    "tooltip": null,
+                    "isDisabled": false,
+                    "isHidden": false,
+                    "route": {
+                        "name": null,
+                        "url": null
+                    }
+                },
+                {
+                    "icon": null,
+                    "color": null,
+                    "size": null,
+                    "tooltip": null,
+                    "isHidden": false,
+                    "actions": [
+                        {
+                            "label": "Delete",
+                            "icon": "trash",
+                            "color": null,
+                            "size": null,
+                            "tooltip": null,
+                            "isDisabled": false,
+                            "isHidden": false,
+                            "route": {
+                                "name": null,
+                                "url": null
+                            }
+                        },
+                        {
+                            "label": "View",
+                            "icon": "eye",
+                            "color": null,
+                            "size": null,
+                            "tooltip": null,
+                            "isDisabled": false,
+                            "isHidden": false,
+                            "route": {
+                                "name": "admin.pages.admins",
+                                "url": "/admins"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "pagination": {
+        "total": 10,
+        "perPage": 5,
+        "currentPage": 1,
+        "lastPage": 2,
+        "pageName": "page"
+    }
+}

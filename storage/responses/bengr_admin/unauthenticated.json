@@ -1,0 +1,7 @@
+{
+    "message": "Not logged in",
+    "redirect": {
+        "url": "/login",
+        "name": "admin.pages.login"
+    }
+}

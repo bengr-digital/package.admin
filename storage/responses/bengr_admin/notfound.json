@@ -1,0 +1,7 @@
+{
+    "message": "Page not found",
+    "redirect": {
+        "url": "/",
+        "name": "admin.pages."
+    }
+}
