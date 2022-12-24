@@ -11,7 +11,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "Bengr\\Admin\\": "src/"
+            "Bengr\\Admin\\": "src/",
+            "Bengr\\Admin\\Tests\\": "tests/"
         }
     },
     "extra": {
@@ -27,7 +28,8 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require-dev": {
-        "orchestra/testbench": "^7.13"
+        "orchestra/testbench": "^7.13",
+        "phpunit/phpunit": "^9.5"
     },
     "require": {
         "spatie/laravel-package-tools": "^1.13"
