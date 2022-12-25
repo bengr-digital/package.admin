@@ -233,7 +233,7 @@ class Page
 
     public function processToResponse(Request $request, \Closure $response)
     {
-        if (!count($this->middlewares)) return;
+        if (!count($this->middlewares)) return $response();
 
         return $this->processMiddleware(0, $request, $response);
     }
