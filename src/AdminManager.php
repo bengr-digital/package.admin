@@ -25,7 +25,12 @@ class AdminManager
 
     public function auth(): Guard
     {
-        return auth()->guard(config('admin.auth.guard'));
+        return auth()->guard($this->getGuardName());
+    }
+
+    public function getGuardName(): string
+    {
+        return config('admin.auth.guard');
     }
 
     public function authUserModel(): string
@@ -86,14 +91,16 @@ class AdminManager
             $this->mountNavigation();
         }
 
-
         return collect($this->getNavigationItems())
             ->sortBy(fn (Navigation\NavigationItem $item): int => $item->getSort())
             ->groupBy(fn (Navigation\NavigationItem $item): ?string => $item->getGroup())
             ->map(function (Collection $items, ?string $groupIndex): Navigation\NavigationGroup {
+
                 if (blank($groupIndex)) {
                     return Navigation\NavigationGroup::make()->items($items);
                 }
+
+                return Navigation\NavigationGroup::make($groupIndex)->items($items);
             });
     }
 

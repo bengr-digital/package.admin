@@ -5,6 +5,7 @@ namespace Bengr\Admin\Http\Controllers;
 use Bengr\Admin\Http\Requests\AdminSettingsUpdateRequest;
 use Bengr\Admin\Models\AdminSettings;
 use Bengr\Admin\Models\AdminSettingsBilling;
+use Bengr\Admin\Models\AdminSettingsLanguage;
 use Bengr\Admin\Models\AdminSettingsSocial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -62,6 +63,22 @@ class SettingsController extends Controller
                 }
             }
 
+            if ($request->has('languages')) {
+                foreach ($request->get('languages') as $language) {
+                    if ($settings->languages()->where('code', $language['code'])->count()) {
+                        $settings->languages()->where('code', $language['code'])->update([
+                            'is_default' => $language['is_default'] ?? false
+                        ]);
+                    } else {
+                        AdminSettingsLanguage::create([
+                            'settings_id' => $settings->id,
+                            'code' => $language['code'],
+                            'is_default' => $language['is_default']
+                        ]);
+                    }
+                }
+            }
+
             if ($request->has('billing')) {
                 if ($settings->billing()->count()) {
                     $settings->billing()->update([
@@ -89,5 +106,23 @@ class SettingsController extends Controller
         });
 
         return response(AdminSettings::first());
+    }
+
+    public function deleteSocial(Request $request, AdminSettingsSocial $social)
+    {
+        $social->delete();
+
+        return response()->json([
+            'message' => 'social was deleted'
+        ]);
+    }
+
+    public function deleteLanguage(Request $request, AdminSettingsLanguage $language)
+    {
+        $language->delete();
+
+        return response()->json([
+            'message' => 'language was deleted'
+        ]);
     }
 }

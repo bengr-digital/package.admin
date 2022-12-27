@@ -28,6 +28,8 @@ class AdminSettingsUpdateRequest extends FormRequest
             'phone' => ['string', 'max:100'],
             'email' => ['email', 'max:100'],
             'socials.*' => ['url'],
+            'languages.*.code' => [Rule::validLanguageCode()],
+            'languages.*.is_default' => ['bool'],
             'billing.name' => ['string', 'max:100'],
             'billing.cin' => ['string', 'max:100'],
             'billing.tin' => ['string', 'max:100'],

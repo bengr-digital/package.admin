@@ -32,6 +32,7 @@
         "phpunit/phpunit": "^9.5"
     },
     "require": {
-        "spatie/laravel-package-tools": "^1.13"
+        "spatie/laravel-package-tools": "^1.13",
+        "spatie/laravel-medialibrary": "^10.7"
     }
 }

@@ -35,6 +35,14 @@ Route::prefix(config('admin.prefix'))
             ->name(config('admin.auth.routes.me.name'))
             ->middleware(config('admin.auth.routes.me.middleware'));
 
+        Route::post(config('admin.auth.routes.me.url') . '/avatar', [AdminUserController::class, 'uploadAvatar'])
+            ->name(config('admin.auth.routes.me.name') . '.avatar')
+            ->middleware(config('admin.auth.routes.me.middleware'));
+
+        Route::delete(config('admin.auth.routes.me.url') . '/avatar', [AdminUserController::class, 'deleteAvatar'])
+            ->name(config('admin.auth.routes.me.name') . '.avatar')
+            ->middleware(config('admin.auth.routes.me.middleware'));
+
         Route::get(config('admin.auth.routes.token.url'), [AuthController::class, 'token'])
             ->name(config('admin.auth.routes.token.name'))
             ->middleware(config('admin.auth.routes.token.middleware'));
@@ -45,5 +53,13 @@ Route::prefix(config('admin.prefix'))
 
         Route::post('/settings', [SettingsController::class, 'update'])
             ->name('admin.settings')
+            ->middleware(['auth:admin']);
+
+        Route::delete('/settings/socials/{social}', [SettingsController::class, 'deleteSocial'])
+            ->name('admin.settings.socials.detail')
+            ->middleware(['auth:admin']);
+
+        Route::delete('/settings/languages/{language}', [SettingsController::class, 'deleteLanguage'])
+            ->name('admin.settings.languages.detail')
             ->middleware(['auth:admin']);
     });
