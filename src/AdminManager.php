@@ -101,7 +101,7 @@ class AdminManager
                 }
 
                 return Navigation\NavigationGroup::make($groupIndex)->items($items);
-            });
+            })->values();
     }
 
     public function getNavigationGroups(): array

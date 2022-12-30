@@ -2,6 +2,8 @@
 
 namespace Bengr\Admin\Widgets;
 
+use Illuminate\Http\Request;
+
 class StatsCardWidget extends Widget
 {
     protected ?string $name = 'stats-card';
@@ -158,7 +160,7 @@ class StatsCardWidget extends Widget
         return $this->extraAttributes;
     }
 
-    public function getData(): array
+    public function getData(Request $request): array
     {
         return [
             'label' => $this->getLabel(),

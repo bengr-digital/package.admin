@@ -17,6 +17,8 @@ class Action
     use Concerns\HasTooltip;
     use Concerns\CanBeDisabled;
     use Concerns\CanBeHidden;
+    use Concerns\CanHandleModal;
+    use Concerns\CanHandleAction;
 
     final public function __construct(string $name)
     {

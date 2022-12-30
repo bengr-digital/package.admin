@@ -15,9 +15,10 @@ class WidgetResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'name' => $this->getName(),
+            'id' => $this->getId(),
+            'type' => $this->getName(),
             'columnSpan' => $this->getColumnSpan(),
-            'data' => $this->getData()
+            'props' => $this->getData($request)
         ];
     }
 }

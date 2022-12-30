@@ -3,8 +3,10 @@
 namespace Bengr\Admin\Pages;
 
 use App\Http\Kernel;
+use Bengr\Admin\Actions\ActionGroup;
 use Bengr\Admin\Facades\Admin as BengrAdmin;
 use Bengr\Admin\Navigation\NavigationItem;
+use Bengr\Admin\Widgets\Widget;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -84,6 +86,11 @@ class Page
     }
 
     public function getActions(): array
+    {
+        return [];
+    }
+
+    public function getModals(): array
     {
         return [];
     }
@@ -243,6 +250,35 @@ class Page
         return $this->inNavigation;
     }
 
+    protected function loopWidgets(array $widgets)
+    {
+        collect($widgets)->map(function ($widget) {
+            $this->transformed_widgets->push($widget);
+
+            if ($widget->hasWidgets()) {
+                $this->loopWidgets($widget->getWidgets());
+            }
+        });
+    }
+
+    public function hasWidget(int $id): bool
+    {
+        return $this->getWidget($id) ? true : false;
+    }
+
+    public function getWidget(int $id): ?Widget
+    {
+        $this->transformed_widgets = collect([]);
+
+        $this->loopWidgets($this->getWidgets());
+
+        $widget = $this->transformed_widgets->where(function (Widget $widget) use ($id) {
+            return $widget->getId() === $id;
+        })->toArray();
+
+        return array_shift($widget);
+    }
+
     public function hasNavigation(): bool
     {
         return $this->hasNavigation;
@@ -251,5 +287,14 @@ class Page
     public function hasTopbar(): bool
     {
         return $this->hasTopbar;
+    }
+
+    public function callAction(Request $request, string $name)
+    {
+        return collect($this->getActions())->where(function ($action) use ($name) {
+            if (!$action instanceof ActionGroup) {
+                return $action->getName() === $name;
+            }
+        })->first()->getHandleMethod()($request);
     }
 }

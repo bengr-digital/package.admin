@@ -16,8 +16,8 @@ class NavigationResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "visible" => true,
-            "groups" => NavigationGroupResource::collection($this)
+            "label" => $this->getLabel(),
+            "items" => NavigationItemResource::collection($this->getItems()->all())
         ];
     }
 }

@@ -15,7 +15,6 @@ class UserMenuResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'visible' => true,
             'items' => UserMenuItemResource::collection($this)
         ];
     }

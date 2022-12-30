@@ -18,33 +18,29 @@ class PageResource extends JsonResource
         return [
             'title' => $this->getTitle(),
             'description' => $this->getDescription(),
-            'layout' => $this->getLayout(),
             'route' => [
                 'name' => $this->getRouteName(),
                 'url' => $this->getRouteUrl(),
             ],
-            'auth' => $request->user('admin') ?? [],
+            'auth' => $request->user('admin') ?? null,
             'breadcrumbs' => $this->getBreadcrumbs(),
-            'components' => [
-                'navigation' => $this->hasNavigation() ? NavigationResource::make(BengrAdmin::getNavigation()) : [],
+            'layout' => [
+                'name' => $this->getLayout(),
+                'navigation' => $this->hasNavigation() ? NavigationResource::collection(BengrAdmin::getNavigation()) : null,
                 'topbar' => $this->hasTopbar() ? [
-                    'visible' => true,
                     'userMenu' => UserMenuResource::make(BengrAdmin::getUserMenuItems()),
-                    'notifications' => [
-                        'visible' => false
-                    ],
-                    'globalSearch' => [
-                        'visible' => false
-                    ]
+                    'notifications' => null,
+                    'globalSearch' => null
                 ] : [],
                 'header' => [
                     'heading' => $this->getTitle(),
                     'subheading' => $this->getDescription(),
                     'actions' => ActionGroupResource::collection($this->getActions())
                 ],
+            ],
+            'content' => [
+                'modals' => ModalResource::collection($this->getModals()),
                 'widgets' => WidgetResource::collection($this->getWidgets()),
-                'table' => $this->hasTable() ? TableResource::make($this->getTable($request)) : [],
-                'form' => []
             ]
         ];
     }

@@ -3,6 +3,7 @@
 use Bengr\Admin\Http\Controllers\AdminUserController;
 use Bengr\Admin\Http\Controllers\AuthController;
 use Bengr\Admin\Http\Controllers\BuilderController;
+use Bengr\Admin\Http\Controllers\PageController;
 use Bengr\Admin\Http\Controllers\ResourceController;
 use Bengr\Admin\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
@@ -54,6 +55,14 @@ Route::prefix(config('admin.prefix'))
         Route::post('/settings', [SettingsController::class, 'update'])
             ->name('admin.settings')
             ->middleware(['auth:admin']);
+
+        Route::get('/pages', [PageController::class, 'build'])
+            ->name('admin.pages.build')
+            ->middleware();
+
+        Route::get('/pages', [PageController::class, 'performAction'])
+            ->name('admin.pages.action')
+            ->middleware();
 
         Route::delete('/settings/socials/{social}', [SettingsController::class, 'deleteSocial'])
             ->name('admin.settings.socials.detail')

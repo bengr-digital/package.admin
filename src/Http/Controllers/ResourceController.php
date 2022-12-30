@@ -4,6 +4,7 @@ namespace Bengr\Admin\Http\Controllers;
 
 use Bengr\Admin\Facades\Admin as BengrAdmin;
 use Bengr\Admin\Http\Resources\RecordsResource;
+use Bengr\Admin\Http\Resources\WidgetResource;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -25,12 +26,13 @@ class ResourceController extends Controller
      */
     public function get(Request $request)
     {
+        if (!$request->has('url') || !$request->has('widget_id')) return response()->throw(NotFoundHttpException::class);
 
-        $page = BengrAdmin::getPageByName($request->get('name'));
+        $page = BengrAdmin::getPageByUrl($request->get('url'));
 
-        if (!$page || !$page->hasTable()) return response()->throw(NotFoundHttpException::class);
+        if (!$page || !$page->hasWidget($request->get('widget_id'))) return response()->throw(NotFoundHttpException::class);
 
 
-        return $page->processToResponse($request, fn () => response()->resource(RecordsResource::class, $page));
+        return $page->processToResponse($request, fn () => response()->resource(WidgetResource::class, $page->getWidget($request->get('widget_id'))));
     }
 }

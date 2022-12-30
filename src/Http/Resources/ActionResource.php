@@ -22,10 +22,15 @@ class ActionResource extends JsonResource
             'tooltip' => $this->getTooltip(),
             'isDisabled' => $this->isDisabled(),
             'isHidden' => $this->isHidden(),
-            'route' => [
+            'redirect' => $this->getRouteName() && $this->getRouteUrl() ? [
                 'name' => $this->getRouteName(),
                 'url' => $this->getRouteUrl(),
-            ]
+            ] : null,
+            'modal' => $this->getModalId() && $this->getModalEvent() ? [
+                'id' => $this->getModalId(),
+                'event' => $this->getModalEvent()
+            ] : null,
+            'call' => null
 
         ];
     }
