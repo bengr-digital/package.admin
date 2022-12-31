@@ -1,6 +1,6 @@
 <?php
 
-namespace Bengr\Admin\Http\Requests;
+namespace Bengr\Admin\Http\Requests\Settings;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

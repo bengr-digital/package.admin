@@ -1,6 +1,6 @@
 <?php
 
-namespace Bengr\Admin\Http\Requests;
+namespace Bengr\Admin\Http\Requests\Auth;
 
 use Bengr\Admin\Facades\Admin as BengrAdmin;
 use Illuminate\Auth\Events\Lockout;

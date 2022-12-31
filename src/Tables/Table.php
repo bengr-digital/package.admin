@@ -53,15 +53,20 @@ class Table
 
         foreach ($this->getRecords() as $record) {
             $record_in_column = collect([
-                'id' => $record->id
+                'id' => $record->id,
             ]);
 
+            $columns = [];
+
             foreach ($this->getColumns() as $column) {
-                $record_in_column->put($column->getName(), [
+                $columns[] = [
+                    'name' => $column->getName(),
                     'value' => Arr::get($record, $column->getName()),
                     'params' => []
-                ]);
+                ];
             }
+
+            $record_in_column->put('columns', $columns);
 
             $record_in_column->put('actions', ActionGroupResource::collection($this->getActions()));
 

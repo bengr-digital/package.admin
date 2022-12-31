@@ -1,12 +1,12 @@
 <?php
 
-namespace Bengr\Admin\Http\Requests;
+namespace Bengr\Admin\Http\Requests\Auth;
 
 use Bengr\Admin\Facades\Admin;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class AdminUserUpdateRequest extends FormRequest
+class MeUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

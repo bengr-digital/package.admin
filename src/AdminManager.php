@@ -40,7 +40,7 @@ class AdminManager
 
     public function prefix(): string
     {
-        return config('admin.prefix');
+        return Str::of(config('admin.routes.url'))->ltrim('/')->value();
     }
 
     public function loginPage(): ?Page

@@ -1,9 +1,10 @@
 <?php
 
-namespace Bengr\Admin\Http\Controllers;
+namespace Bengr\Admin\Http\Controllers\Auth;
 
 use Bengr\Admin\Facades\Admin as BengrAdmin;
-use Bengr\Admin\Http\Requests\LoginRequest;
+use Bengr\Admin\Http\Controllers\Controller;
+use Bengr\Admin\Http\Requests\Auth\LoginRequest;
 use Bengr\Auth\NewToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -23,6 +24,7 @@ class AuthController extends Controller
      */
     public function login(LoginRequest $request)
     {
+        /** @var AdminUser $admin */
         $admin = $request->authenticate();
         $token = $admin->createToken('bengr-admin-token');
 

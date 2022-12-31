@@ -1,8 +1,9 @@
 <?php
 
-namespace Bengr\Admin\Http\Controllers;
+namespace Bengr\Admin\Http\Controllers\Settings;
 
-use Bengr\Admin\Http\Requests\AdminSettingsUpdateRequest;
+use Bengr\Admin\Http\Controllers\Controller;
+use Bengr\Admin\Http\Requests\Settings\AdminSettingsUpdateRequest;
 use Bengr\Admin\Models\AdminSettings;
 use Bengr\Admin\Models\AdminSettingsBilling;
 use Bengr\Admin\Models\AdminSettingsLanguage;

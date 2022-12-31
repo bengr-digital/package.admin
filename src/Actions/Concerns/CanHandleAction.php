@@ -4,7 +4,6 @@ namespace Bengr\Admin\Actions\Concerns;
 
 trait CanHandleAction
 {
-
     protected ?\Closure $handleMethod = null;
 
     public function handle(\Closure $method): static
@@ -12,6 +11,11 @@ trait CanHandleAction
         $this->handleMethod = $method;
 
         return $this;
+    }
+
+    public function hasHandle()
+    {
+        return $this->handleMethod ? true : false;
     }
 
     public function getHandleMethod(): ?\Closure

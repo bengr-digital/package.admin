@@ -9,50 +9,8 @@ return [
 
     'favicon' => null,
 
-    'prefix' => 'admin',
-
-    'prefix_name' => 'admin',
-
-    'middleware' => ['api'],
-
     'auth' => [
         'guard' => 'admin',
-        'routes' => [
-            'login' => [
-                'url' => '/auth/login',
-                'name' => 'auth.login',
-                'middleware' => ['guest:admin']
-            ],
-            'logout' => [
-                'url' => '/auth/logout',
-                'name' => 'auth.logout',
-                'middleware' => ['auth:admin']
-            ],
-            'me' => [
-                'url' => '/auth/me',
-                'name' => 'auth.me',
-                'middleware' => ['auth:admin']
-            ],
-            'token' => [
-                'url' => '/auth/token',
-                'name' => 'auth.token',
-                'middleware' => []
-            ]
-        ]
-    ],
-
-    'builder' => [
-        'url' => '/builder',
-        'name' => 'builder',
-        'middleware' => [
-            Bengr\Admin\Http\Middleware\DispatchServingAdminEvent::class,
-        ]
-    ],
-
-    'resources' => [
-        'url' => '/resources',
-        'name' => 'resources',
-        'middleware' => []
     ],
 
     'pages' => [
@@ -74,5 +32,91 @@ return [
                 'sort_order' => 'sort_order'
             ]
         ]
-    ]
+    ],
+
+    'routes' => [
+        'url' => '/admin',
+        'name' => 'admin',
+        'middleware' => ['api'],
+        'routes' => [
+            'auth' => [
+                'url' => '/auth',
+                'name' => 'auth',
+                'middleware' => [],
+                'routes' => [
+                    'login' => [
+                        'url' => '/login',
+                        'name' => 'login',
+                        'middleware' => ['guest:admin']
+                    ],
+                    'logout' => [
+                        'url' => '/logout',
+                        'name' => 'logout',
+                        'middleware' => ['auth:admin']
+                    ],
+                    'me' => [
+                        'url' => '/me',
+                        'name' => 'me',
+                        'middleware' => ['auth:admin']
+                    ],
+                    'me-avatar' => [
+                        'url' => '/me/avatar',
+                        'name' => 'me.avatar',
+                        'middleware' => ['auth:admin']
+                    ],
+                    'token' => [
+                        'url' => '/token',
+                        'name' => 'token',
+                        'middleware' => []
+                    ]
+                ]
+            ],
+            'settings' => [
+                'url' => '/settings',
+                'name' => 'settings',
+                'middleware' => ['auth:admin'],
+                'routes' => [
+                    'settings' => [
+                        'url' => '/',
+                        'name' => 'index',
+                        'middleware' => []
+                    ],
+                    'socials-delete' => [
+                        'url' => '/socials/{id}',
+                        'name' => 'socials.delete',
+                        'middleware' => []
+                    ],
+                    'languages-delete' => [
+                        'url' => '/languages/{id}',
+                        'name' => 'languages.delete',
+                        'middleware' => []
+                    ]
+                ]
+            ],
+            'builder' => [
+                'url' => '/builder',
+                'name' => 'builder',
+                'middleware' => [
+                    Bengr\Admin\Http\Middleware\DispatchServingAdminEvent::class,
+                ],
+                'routes' => [
+                    'pages' => [
+                        'url' => '/pages',
+                        'name' => 'pages',
+                        'middleware' => []
+                    ],
+                    'widgets' => [
+                        'url' => '/widgets',
+                        'name' => 'widgets',
+                        'middleware' => []
+                    ],
+                    'actions' => [
+                        'url' => '/actions',
+                        'name' => 'actions',
+                        'middleware' => []
+                    ]
+                ]
+            ],
+        ]
+    ],
 ];

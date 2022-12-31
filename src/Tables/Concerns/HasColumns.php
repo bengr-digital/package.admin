@@ -10,8 +10,10 @@ trait HasColumns
 
     public function getCachedTableColumns(): array
     {
+        $this->cachedTableColumns = [];
+
         foreach ($this->getTableColumns() as $column) {
-            $this->cachedTableColumns[$column->getName()] = $column;
+            $this->cachedTableColumns[] = $column;
         }
 
         return $this->cachedTableColumns;

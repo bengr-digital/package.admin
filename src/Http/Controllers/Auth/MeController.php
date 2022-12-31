@@ -1,9 +1,11 @@
 <?php
 
-namespace Bengr\Admin\Http\Controllers;
+namespace Bengr\Admin\Http\Controllers\Auth;
 
 use Bengr\Admin\Facades\Admin;
-use Bengr\Admin\Http\Requests\AdminUserUpdateRequest;
+use Bengr\Admin\Http\Controllers\Controller;
+use Bengr\Admin\Http\Requests\Auth\MeUpdateRequest;
+use Bengr\Admin\Http\Requests\Auth\MeUploadAvatarRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -13,7 +15,7 @@ use function Bengr\Support\response;
  * @group Bengr Administration
  * @subgroup Auth
  */
-class AdminUserController extends Controller
+class MeController extends Controller
 {
     /**
      * Get logged in admin user
@@ -34,7 +36,7 @@ class AdminUserController extends Controller
     /**
      * Get logged in admin user
      */
-    public function update(AdminUserUpdateRequest $request)
+    public function update(MeUpdateRequest $request)
     {
         $user = $request->user(Admin::getGuardName());
 
@@ -56,7 +58,7 @@ class AdminUserController extends Controller
         ]);
     }
 
-    public function uploadAvatar(Request $request)
+    public function uploadAvatar(MeUploadAvatarRequest $request)
     {
         if ($request->has('image')) {
             $request->user(Admin::getGuardName())->addMediaFromRequest('image')->usingFileName('avatar.jpg')->toMediaCollection('avatar');
