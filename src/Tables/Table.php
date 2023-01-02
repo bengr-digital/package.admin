@@ -14,17 +14,17 @@ class Table
 {
     protected HasTable $tableResource;
 
-    protected Request $request;
+    protected SupportCollection $params;
 
-    final public function __construct(HasTable $tableResource, Request $request)
+    final public function __construct(HasTable $tableResource, SupportCollection $params)
     {
         $this->tableResource = $tableResource;
-        $this->request = $request;
+        $this->params = $params;
     }
 
-    public static function make(HasTable $tableResource, Request $request): static
+    public static function make(HasTable $tableResource, SupportCollection $params): static
     {
-        return app(static::class, ['tableResource' => $tableResource, 'request' => $request]);
+        return app(static::class, ['tableResource' => $tableResource, 'params' => $params]);
     }
 
     public function getColumns(): array
@@ -44,7 +44,7 @@ class Table
 
     public function getRecords(): Collection | Paginator
     {
-        return $this->tableResource->getTableRecords($this->request);
+        return $this->tableResource->getTableRecords($this->params);
     }
 
     public function getRecordsInColumns(): SupportCollection

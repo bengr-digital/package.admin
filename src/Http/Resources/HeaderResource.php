@@ -4,7 +4,7 @@ namespace Bengr\Admin\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class RecordsResource extends JsonResource
+class HeaderResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,8 +15,9 @@ class RecordsResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'records' => $this->getTable($request)->getRecordsInColumns(),
-            'pagination' => $this->getTable($request)->getPagination()
+            'heading' => $this->getTitle(),
+            'subheading' => $this->getDescription(),
+            'actions' => ActionGroupResource::collection($this->getActions())
         ];
     }
 }

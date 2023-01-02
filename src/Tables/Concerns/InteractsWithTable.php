@@ -5,7 +5,7 @@ namespace Bengr\Admin\Tables\Concerns;
 use Bengr\Admin\Tables\Table;
 use Bengr\Admin\Tables\Concerns;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 trait InteractsWithTable
 {
@@ -20,10 +20,10 @@ trait InteractsWithTable
 
     protected Table $table;
 
-    public function getTable(Request $request): Table
+    public function getTable(Collection $params): Table
     {
         if (!isset($this->table)) {
-            $this->table = Table::make($this, $request);
+            $this->table = Table::make($this, $params);
         }
 
         return $this->table;

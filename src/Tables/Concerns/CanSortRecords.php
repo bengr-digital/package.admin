@@ -4,17 +4,18 @@ namespace Bengr\Admin\Tables\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 trait CanSortRecords
 {
-    protected function applySortingToTableQuery(Builder $query, Request $request): Builder
+    protected function applySortingToTableQuery(Builder $query, Collection $params): Builder
     {
-        $sortColumn = $this->getTableSortColumn($request);
+        $sortColumn = $this->getTableSortColumn($params);
 
         if (!$sortColumn) return $query;
 
-        $sortDirection = Str::of($this->getTableSortDirection($request))->lower()->value() === 'desc' ? 'desc' : 'asc';
+        $sortDirection = Str::of($this->getTableSortDirection($params))->lower()->value() === 'desc' ? 'desc' : 'asc';
 
         $column = $this->getTableColumn($sortColumn);
 
@@ -27,14 +28,20 @@ trait CanSortRecords
         return $query;
     }
 
-    protected function getTableSortColumn(Request $request): ?string
+    protected function getTableSortColumn(Collection $params): ?string
     {
-        return $request->get($this->getTableSortingSortColumnParam());
+        /** @var string */
+        $param = $params->get($this->getTableSortingSortColumnParam());
+
+        return $param;
     }
 
-    protected function getTableSortDirection(Request $request): ?string
+    protected function getTableSortDirection(Collection $params): ?string
     {
-        return $request->get($this->getTableSortingSortOrderParam());
+        /** @var string */
+        $param = $params->get($this->getTableSortingSortOrderParam());
+
+        return $param;
     }
 
     protected function getTableSortingSortColumnParam(): string

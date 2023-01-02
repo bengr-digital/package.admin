@@ -4,7 +4,7 @@ namespace Bengr\Admin\Tables\Concerns;
 
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 trait HasPagination
 {
@@ -14,9 +14,9 @@ trait HasPagination
         return true;
     }
 
-    protected function paginateTableQuery(Builder $query, Request $request): Paginator
+    protected function paginateTableQuery(Builder $query, Collection $params): Paginator
     {
-        $records = $query->paginate($this->getTablePaginationPerPage(), ['*'], $this->getTablePaginationPageName(), $request->get($this->getTablePaginationPageName()) ?? 1);
+        $records = $query->paginate($this->getTablePaginationPerPage(), ['*'], $this->getTablePaginationPageName(), $params->get($this->getTablePaginationPageName()) ?? 1);
 
         return $records;
     }

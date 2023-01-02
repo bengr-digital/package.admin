@@ -4,12 +4,13 @@ namespace Bengr\Admin\Tables\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 trait CanSearchRecords
 {
-    protected function applySearchToTableQuery(Builder $query, Request $request): Builder
+    protected function applySearchToTableQuery(Builder $query, Collection $params): Builder
     {
-        $searchQuery = $this->getTableSearchQuery($request);
+        $searchQuery = $this->getTableSearchQuery($params);
         $index = 0;
 
         if (!$searchQuery) return $query;
@@ -24,9 +25,12 @@ trait CanSearchRecords
         return $query;
     }
 
-    protected function getTableSearchQuery(Request $request): ?string
+    protected function getTableSearchQuery(Collection $params): ?string
     {
-        return $request->get($this->getTableSearchQueryParam());
+        /** @var string */
+        $param = $params->get($this->getTableSearchQueryParam());
+
+        return $param;
     }
 
     protected function getTableSearchQueryParam(): string

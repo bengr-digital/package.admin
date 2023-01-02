@@ -27,16 +27,8 @@ class PageResource extends JsonResource
             'layout' => [
                 'name' => $this->getLayout(),
                 'navigation' => $this->hasNavigation() ? NavigationResource::collection(BengrAdmin::getNavigation()) : null,
-                'topbar' => $this->hasTopbar() ? [
-                    'userMenu' => UserMenuResource::make(BengrAdmin::getUserMenuItems()),
-                    'notifications' => null,
-                    'globalSearch' => null
-                ] : [],
-                'header' => [
-                    'heading' => $this->getTitle(),
-                    'subheading' => $this->getDescription(),
-                    'actions' => ActionGroupResource::collection($this->getActions())
-                ],
+                'topbar' => $this->hasTopbar() ? TopbarResource::make($this) : null,
+                'header' => HeaderResource::make($this),
             ],
             'content' => [
                 'modals' => ModalResource::collection($this->getModals()),

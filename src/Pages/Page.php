@@ -136,7 +136,9 @@ class Page
 
     public function getRouteName(): string
     {
-        $slug = $this->getSlug();
+        $slug = $this->getSlug() === "" ? "index" : $this->getSlug();
+
+        $slug = str_replace('/', '.', $slug);
 
         return "admin.pages.{$slug}";
     }
@@ -172,12 +174,13 @@ class Page
         $this->breadcrumbs = collect($this->breadcrumbs)
             ->reverse()
             ->map(function ($item) {
-                return ["name" => app($item)->getTitle(), "url" => app($item)->getRouteUrl()];
-            })
-            ->mapWithKeys(function ($item) {
-                return [$item["url"] => $item["name"]];
+                return ["name" => app($item)->getTitle(), "route" => $this->getRouteUrl() === app($item)->getRouteUrl() ? null : [
+                    'name' => app($item)->getRouteName(),
+                    'url' => app($item)->getRouteUrl(),
+                ]];
             })
             ->toArray();
+
 
         return $this->breadcrumbs;
     }
@@ -215,11 +218,6 @@ class Page
     protected function getNavigationBadgeColor(): ?string
     {
         return null;
-    }
-
-    public function hasTable(): bool
-    {
-        return method_exists(static::class, 'getTable');
     }
 
     public function processMiddleware(int $index, Request $request, \Closure $response)

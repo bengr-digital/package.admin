@@ -12,7 +12,6 @@ use Bengr\Admin\Tables\Contracts\HasTable;
 use Bengr\Admin\Widgets\Widget;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 use function Bengr\Support\response;
@@ -26,6 +25,16 @@ class TableWidget extends Widget implements HasTable
     protected int $columnSpan = 12;
 
     protected string $model;
+
+    protected array $columns = [];
+
+    protected array $actions = [];
+
+    protected array $bulkActions = [];
+
+    protected array $params = [];
+
+    protected $transformed_actions;
 
     final public function __construct($model)
     {
@@ -111,7 +120,12 @@ class TableWidget extends Widget implements HasTable
 
     public function getData(Request $request): array
     {
-        $table = $this->getTable($request);
+        if ($request->has("params.{$this->getId()}")) {
+            $this->params = $request->get("params")[$this->getId()];
+        };
+
+        $table = $this->getTable(collect($this->params));
+
         return [
             'bulkActions' => ActionGroupResource::collection($table->getBulkActions()),
             'columns' => ColumnResource::collection($table->getColumns()),
