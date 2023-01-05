@@ -5,6 +5,7 @@ namespace Bengr\Admin\Http\Controllers\Auth;
 use Bengr\Admin\Facades\Admin as BengrAdmin;
 use Bengr\Admin\Http\Controllers\Controller;
 use Bengr\Admin\Http\Requests\Auth\LoginRequest;
+use Bengr\Admin\Http\Resources\TokenResource;
 use Bengr\Auth\NewToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -19,7 +20,7 @@ use function Bengr\Support\response;
 class AuthController extends Controller
 {
     /**
-     * Login Admin User
+     * Login admin user
      * 
      */
     public function login(LoginRequest $request)
@@ -28,17 +29,11 @@ class AuthController extends Controller
         $admin = $request->authenticate();
         $token = $admin->createToken('bengr-admin-token');
 
-        return response()->json([
-            'token' => [
-                'name' => $token->name,
-                'access_token' => $token->access_token,
-                'refresh_token' => $token->refresh_token,
-            ]
-        ]);
+        return response()->resource(TokenResource::class, $token);
     }
 
     /**
-     * Logout Admin User
+     * Logout admin user
      * 
      */
     public function logout(Request $request)
@@ -49,12 +44,12 @@ class AuthController extends Controller
             $token->delete();
 
             return response()->json([
-                'message' => 'logged in'
+                'message' => __('admin.auth.logged_out')
             ]);
         }
 
         return response()->json([
-            'message' => 'you are not event logged in'
+            'message' => __('admin.auth.not_logged_in')
         ]);
     }
 
@@ -74,15 +69,9 @@ class AuthController extends Controller
 
             $token = new NewToken($token, $plainAccessToken, $request->get('refresh_token'));
 
-            return response()->json([
-                'token' => [
-                    'name' => $token->name,
-                    'access_token' => $token->access_token,
-                    'refresh_token' => $token->refresh_token,
-                ]
-            ]);
+            return response()->resource(TokenResource::class, $token);
         }
 
-        throw new NotFoundHttpException();
+        return throw new NotFoundHttpException();
     }
 }

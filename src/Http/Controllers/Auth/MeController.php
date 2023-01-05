@@ -6,6 +6,7 @@ use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\Http\Controllers\Controller;
 use Bengr\Admin\Http\Requests\Auth\MeUpdateRequest;
 use Bengr\Admin\Http\Requests\Auth\MeUploadAvatarRequest;
+use Bengr\Admin\Http\Resources\MeResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -24,17 +25,11 @@ class MeController extends Controller
     {
         $user = $request->user(Admin::getGuardName());
 
-        return response()->json([
-            'username' => $user->username,
-            'email' => $user->email,
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
-            'avatar_url' => $user->getFirstMediaUrl('avatar')
-        ]);
+        return response()->resource(MeResource::class, $user);
     }
 
     /**
-     * Get logged in admin user
+     * Update logged in admin user
      */
     public function update(MeUpdateRequest $request)
     {
@@ -54,10 +49,13 @@ class MeController extends Controller
         }
 
         return response()->json([
-            'message' => 'Successfully updated'
+            'message' => __('admin.auth.me.updated')
         ]);
     }
 
+    /**
+     * Upload avatar of logged in admin user
+     */
     public function uploadAvatar(MeUploadAvatarRequest $request)
     {
         if ($request->has('image')) {
@@ -65,16 +63,20 @@ class MeController extends Controller
         }
 
         return response()->json([
-            'mesasge' => 'avatar uploaded'
+            'mesasge' => __('admin.auth.me.avatar.uploaded')
         ]);
     }
 
+
+    /**
+     * Delete avatar of logged in admin user
+     */
     public function deleteAvatar(Request $request)
     {
         $request->user(Admin::getGuardName())->getFirstMedia('avatar')->delete();
 
         return response()->json([
-            'mesasge' => 'avatar deleted'
+            'mesasge' => __('admin.auth.me.avatar.deleted')
         ]);
     }
 }

@@ -36,6 +36,8 @@ class TableWidget extends Widget implements HasTable
 
     protected $transformed_actions;
 
+    protected $transformed_bulkActions;
+
     final public function __construct($model)
     {
         $this->model = $model;
@@ -98,23 +100,51 @@ class TableWidget extends Widget implements HasTable
         });
     }
 
+    protected function loopBulkActions(array $bulkActions)
+    {
+        collect($bulkActions)->map(function ($bulkAction) {
+            if ($bulkAction instanceof ActionGroup) {
+                $this->loopActions($bulkAction->getActions());
+            } else {
+                $this->transformed_bulkActions->push($bulkAction);
+            }
+        });
+    }
+
     public function callAction(string $name, array $payload = [])
     {
         $this->transformed_actions = collect([]);
+        $this->transformed_bulkActions = collect([]);
 
         $this->loopActions($this->getTableActions());
+        $this->loopBulkActions($this->getTableBulkActions());
 
         $action = $this->transformed_actions->where(function (Action $action) use ($name) {
             return $action->getName() === $name && $action->hasHandle();
         })->first();
 
-        if (!$action) return response()->throw(ActionNotFoundException::class);
+        $bulkAction = $this->transformed_bulkActions->where(function (Action $bulkAction) use ($name) {
+            return $bulkAction->getName() === $name && $bulkAction->hasHandle();
+        })->first();
 
-        Validator::make($payload, [
-            'id' => ['required', Rule::exists($this->getTableModel(), 'id')]
-        ])->validate();
+        if (!$action && !$bulkAction || $action && $bulkAction) return response()->throw(ActionNotFoundException::class);
 
-        return $action->getHandleMethod()(app($this->getTableModel())->find($payload['id']), $payload);
+        if ($action) {
+            Validator::make($payload, [
+                'id' => ['required', Rule::exists($this->getTableModel(), 'id')->where('deleted_at', null)]
+            ])->validate();
+
+            return $action->getHandleMethod()(app($this->getTableModel())->find($payload['id']), $payload);
+        }
+
+        if ($bulkAction) {
+            Validator::make($payload, [
+                'ids' => ['required', 'array'],
+                'ids.*' => [Rule::exists($this->getTableModel(), 'id')->where('deleted_at', null)]
+            ])->validate();
+
+            return $bulkAction->getHandleMethod()(app($this->getTableModel())->whereIn('id', $payload['ids'])->get(), $payload);
+        }
     }
 
 

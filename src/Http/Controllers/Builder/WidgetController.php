@@ -11,8 +11,15 @@ use Bengr\Admin\Http\Resources\WidgetResource;
 
 use function Bengr\Support\response;
 
+/**
+ * @group Bengr Administration
+ * @subgroup Builder
+ */
 class WidgetController extends Controller
 {
+    /**
+     * Build a widget
+     */
     public function build(BuildWidgetRequest $request)
     {
         $page = BengrAdmin::getPageByUrl($request->get('url'));

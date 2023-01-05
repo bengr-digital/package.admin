@@ -10,8 +10,15 @@ use Bengr\Admin\Http\Resources\PageResource;
 
 use function Bengr\Support\response;
 
+/**
+ * @group Bengr Administration
+ * @subgroup Builder
+ */
 class PageController extends Controller
 {
+    /**
+     * Build a page
+     */
     public function build(BuildPageRequest $request)
     {
 

@@ -10,8 +10,15 @@ use Bengr\Admin\Http\Requests\Builder\CallActionRequest;
 
 use function Bengr\Support\response;
 
+/**
+ * @group Bengr Administration
+ * @subgroup Builder
+ */
 class ActionController extends Controller
 {
+    /**
+     * Call action on page or widget
+     */
     public function call(CallActionRequest $request)
     {
 

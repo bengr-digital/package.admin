@@ -20,6 +20,8 @@ class Widget
 
     protected int $columnSpan = 12;
 
+    protected $transformed_actions;
+
     public function columnSpan(int $columnSpan): self
     {
         $this->columnSpan = $columnSpan;

@@ -4,6 +4,7 @@ namespace Bengr\Admin\Http\Controllers\Settings;
 
 use Bengr\Admin\Http\Controllers\Controller;
 use Bengr\Admin\Http\Requests\Settings\AdminSettingsUpdateRequest;
+use Bengr\Admin\Http\Resources\SettingsResource;
 use Bengr\Admin\Models\AdminSettings;
 use Bengr\Admin\Models\AdminSettingsBilling;
 use Bengr\Admin\Models\AdminSettingsLanguage;
@@ -19,6 +20,9 @@ use function Bengr\Support\response;
  */
 class SettingsController extends Controller
 {
+    /**
+     * Get settings
+     */
     public function index(Request $request)
     {
         $settings = AdminSettings::first();
@@ -28,9 +32,12 @@ class SettingsController extends Controller
             $settings = AdminSettings::first();
         }
 
-        return response($settings);
+        return response()->resource(SettingsResource::class, $settings);
     }
 
+    /**
+     * Update settings
+     */
     public function update(AdminSettingsUpdateRequest $request)
     {
         $settings = AdminSettings::first();
@@ -106,24 +113,32 @@ class SettingsController extends Controller
             }
         });
 
-        return response(AdminSettings::first());
+        return response()->json([
+            'message' => __('admin.settings.updated')
+        ]);
     }
 
+    /**
+     * Delete social link from settings
+     */
     public function deleteSocial(Request $request, AdminSettingsSocial $social)
     {
         $social->delete();
 
         return response()->json([
-            'message' => 'social was deleted'
+            'message' => __('admin.settings.socials.deleted')
         ]);
     }
 
+    /**
+     * Delete language from settings
+     */
     public function deleteLanguage(Request $request, AdminSettingsLanguage $language)
     {
         $language->delete();
 
         return response()->json([
-            'message' => 'language was deleted'
+            'message' => __('admin.settings.languages.deleted')
         ]);
     }
 }

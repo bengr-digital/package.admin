@@ -13,7 +13,7 @@ class PageNotFoundException extends \Exception
         $dashboard = BengrAdmin::dashboardPage();
 
         return response()->json([
-            'message' => 'Page not found',
+            'message' => __('admin.exceptions.page_notfound'),
             'redirect' => $dashboard ? [
                 'url' => $dashboard->getRouteUrl(),
                 'name' => $dashboard->getRouteName()

@@ -13,7 +13,7 @@ class WidgetNotFoundException extends \Exception
         $dashboard = BengrAdmin::dashboardPage();
 
         return response()->json([
-            'message' => 'Widget not found',
+            'message' => __('admin.exceptions.widget_notfound'),
             'redirect' => $dashboard ? [
                 'url' => $dashboard->getRouteUrl(),
                 'name' => $dashboard->getRouteName()

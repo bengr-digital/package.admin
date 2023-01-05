@@ -17,10 +17,20 @@ class MakeAdminUserCommand extends Command
 
     protected $description = 'Creates a Bengr admin user.';
 
-    protected $signature = 'bengr:user';
+    protected $signature = 'bengr:user {--first_name=admin} {--last_name=admin} {--username=admin} {--email=admin@gmail.com} {--password=123456789} {--autocomplete}';
 
     protected function getUserData(): array
     {
+        if ($this->option('autocomplete')) {
+            return [
+                'first_name' => $this->option('first_name'),
+                'last_name' => $this->option('last_name'),
+                'username' => $this->option('username'),
+                'email' => $this->option('email'),
+                'password' => $this->option('password'),
+            ];
+        }
+
         return [
             'first_name' => $this->validate(fn () => $this->ask('First Name'), 'first_name', ['required']),
             'last_name' => $this->validate(fn () => $this->ask('Last Name'), 'last_name', ['required']),
@@ -62,10 +72,14 @@ class MakeAdminUserCommand extends Command
 
     public function handle(): int
     {
-        $user = $this->createUser();
+        try {
+            $user = $this->createUser();
 
-        $this->sendSuccessMessage($user);
+            $this->sendSuccessMessage($user);
 
-        return static::SUCCESS;
+            return static::SUCCESS;
+        } catch (\Throwable $e) {
+            return static::FAILURE;
+        }
     }
 }

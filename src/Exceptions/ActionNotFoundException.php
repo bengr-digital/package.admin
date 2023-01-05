@@ -13,7 +13,7 @@ class ActionNotFoundException extends \Exception
         $dashboard = BengrAdmin::dashboardPage();
 
         return response()->json([
-            'message' => 'Action not found',
+            'message' => __('admin.exceptions.action_notfound'),
             'redirect' => $dashboard ? [
                 'url' => $dashboard->getRouteUrl(),
                 'name' => $dashboard->getRouteName()
