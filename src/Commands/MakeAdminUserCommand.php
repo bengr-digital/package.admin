@@ -27,7 +27,7 @@ class MakeAdminUserCommand extends Command
                 'last_name' => $this->option('last_name'),
                 'username' => $this->option('username'),
                 'email' => $this->option('email'),
-                'password' => $this->option('password'),
+                'password' => Hash::make($this->option('password')),
             ];
         }
 
