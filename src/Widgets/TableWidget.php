@@ -20,9 +20,9 @@ class TableWidget extends Widget implements HasTable
 {
     use InteractsWithTable;
 
-    protected ?string $name = 'table';
+    protected ?string $widgetName = 'table';
 
-    protected int $columnSpan = 12;
+    protected int $widgetColumnSpan = 12;
 
     protected string $model;
 

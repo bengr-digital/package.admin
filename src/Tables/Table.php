@@ -6,7 +6,6 @@ use Bengr\Admin\Http\Resources\ActionGroupResource;
 use Bengr\Admin\Tables\Contracts\HasTable;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection as SupportCollection;
 

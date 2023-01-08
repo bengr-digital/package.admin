@@ -6,9 +6,9 @@ use Illuminate\Http\Request;
 
 class StatsCardWidget extends Widget
 {
-    protected ?string $name = 'stats-card';
+    protected ?string $widgetName = 'stats-card';
 
-    protected int $columnSpan = 4;
+    protected int $widgetColumnSpan = 4;
 
     protected string $label;
 

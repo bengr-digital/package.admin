@@ -12,57 +12,57 @@ use function Bengr\Support\response;
 
 class Widget
 {
-    protected ?int $sort = null;
+    protected ?int $widgetSort = null;
 
-    protected ?int $id = null;
+    protected ?int $widgetId = null;
 
-    protected ?string $name = null;
+    protected ?string $widgetName = null;
 
-    protected int $columnSpan = 12;
+    protected int $widgetColumnSpan = 12;
 
     protected $transformed_actions;
 
-    public function columnSpan(int $columnSpan): self
+    public function widgetColumnSpan(int $widgetColumnSpan): self
     {
-        $this->columnSpan = $columnSpan;
+        $this->widgetColumnSpan = $widgetColumnSpan;
 
         return $this;
     }
 
-    public function column(int $columnSpan): self
+    public function widgetColumn(int $widgetColumnSpan): self
     {
-        $this->columnSpan = $columnSpan;
+        $this->widgetColumnSpan = $widgetColumnSpan;
 
         return $this;
     }
 
-    public function id(int $id): self
+    public function widgetId(int $widgetId): self
     {
-        $this->id = $id;
+        $this->widgetId = $widgetId;
 
         return $this;
     }
 
-    public function getSort(): int
+    public function getWidgetSort(): int
     {
-        return $this->sort ?? -1;
+        return $this->widgetSort ?? -1;
     }
 
-    public function getId(): ?int
+    public function getWidgetId(): ?int
     {
-        return $this->id;
+        return $this->widgetId;
     }
 
-    public function getName(): string
+    public function getWidgetName(): string
     {
-        return $this->name ?? Str::of(class_basename(static::class))
+        return $this->widgetName ?? Str::of(class_basename(static::class))
             ->kebab()
             ->slug();
     }
 
-    public function getColumnSpan(): int
+    public function getWidgetColumnSpan(): int
     {
-        return $this->columnSpan;
+        return $this->widgetColumnSpan;
     }
 
     public function hasWidgets(): bool

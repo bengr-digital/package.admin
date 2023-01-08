@@ -6,9 +6,9 @@ use Bengr\Admin\Actions\Action;
 
 class AccountWidget extends Widget
 {
-    protected ?string $name = 'account';
+    protected ?string $widgetName = 'account';
 
-    protected int $columnSpan = 6;
+    protected int $widgetColumnSpan = 6;
 
     final public function __construct()
     {
