@@ -26,4 +26,9 @@ class Form
     {
         return $this->formResource->getCachedFormSchema();
     }
+
+    public function getInputs(): array
+    {
+        return $this->formResource->getCachedFormInputs();
+    }
 }

@@ -35,6 +35,11 @@ class CardWidget extends Widget
         return $this->widgets;
     }
 
+    public function hasWidgets(): bool
+    {
+        return true;
+    }
+
     public function getData(Request $request): ?array
     {
         return [

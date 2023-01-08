@@ -2,9 +2,13 @@
 
 namespace Bengr\Admin\Forms\Concerns;
 
+use Bengr\Admin\Forms\Widgets\Inputs\Input;
+use Bengr\Admin\Widgets\Widget;
+
 trait HasSchema
 {
     protected array $cachedFormSchema = [];
+    protected array $cachedFormInputs = [];
 
     public function getCachedFormSchema(): array
     {
@@ -17,13 +21,42 @@ trait HasSchema
         return $this->cachedFormSchema;
     }
 
+    public function getCachedFormInputs(): array
+    {
+        $this->cachedFormInputs = [];
+
+        foreach ($this->getFormInputs() as $input) {
+            $this->cachedFormInputs[] = $input;
+        }
+
+        return $this->cachedFormInputs;
+    }
+
     protected function getFormSchema(): array
     {
         return [];
     }
 
-    public function getFlatFormSchema(): array
+    protected function getFlatFormSchema(array $widgets): array
     {
-        return [];
+        $flat = [];
+
+        foreach ($widgets as $widget) {
+            if ($widget->hasWidgets()) {
+                $flat[] = $widget;
+                $flat = array_merge($flat, $this->getFlatFormSchema($widget->getWidgets()));
+            } else {
+                $flat[] = $widget;
+            }
+        }
+
+        return $flat;
+    }
+
+    protected function getFormInputs(): array
+    {
+        return collect($this->getFlatFormSchema($this->getFormSchema()))->filter(function (Widget $widget) {
+            return $widget instanceof Input;
+        })->toArray();
     }
 }
