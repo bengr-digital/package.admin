@@ -6,9 +6,12 @@ trait CanHandleAction
 {
     protected ?\Closure $handleMethod = null;
 
-    public function handle(\Closure $method): static
+    protected ?int $handleWidgetId = null;
+
+    public function handle(\Closure $method, ?int $widgetId = null): static
     {
         $this->handleMethod = $method;
+        $this->handleWidgetId = $widgetId;
 
         return $this;
     }
@@ -21,5 +24,10 @@ trait CanHandleAction
     public function getHandleMethod(): ?\Closure
     {
         return $this->handleMethod;
+    }
+
+    public function getHandleWidgetId(): ?int
+    {
+        return $this->handleWidgetId;
     }
 }

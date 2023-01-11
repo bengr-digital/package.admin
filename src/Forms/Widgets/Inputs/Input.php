@@ -14,6 +14,7 @@ class Input extends Widget
     use Concerns\HasPlaceholder;
     use Concerns\HasRules;
     use Concerns\HasValue;
+    use Concerns\HasDefaultValue;
     use Concerns\CanBeDisabled;
     use Concerns\CanBeHidden;
     use Concerns\CanBeReadonly;

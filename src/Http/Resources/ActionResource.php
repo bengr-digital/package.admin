@@ -30,7 +30,10 @@ class ActionResource extends JsonResource
                 'id' => $this->getModalId(),
                 'event' => $this->getModalEvent()
             ] : null,
-            'call' => null
+            'call' => $this->hasHandle() ? [
+                'name' => $this->getName(),
+                'widget_id' => $this->getHandleWidgetId()
+            ] : null
 
         ];
     }

@@ -150,8 +150,8 @@ class TableWidget extends Widget implements HasTable
 
     public function getData(Request $request): array
     {
-        if ($request->has("params.{$this->getId()}")) {
-            $this->params = $request->get("params")[$this->getId()];
+        if ($request->has("params.{$this->getWidgetId()}")) {
+            $this->params = $request->get("params")[$this->getWidgetId()];
         };
 
         $table = $this->getTable(collect($this->params));

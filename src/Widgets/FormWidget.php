@@ -2,6 +2,7 @@
 
 namespace Bengr\Admin\Widgets;
 
+use Bengr\Admin\Actions\Action;
 use Bengr\Admin\Forms\Contracts\HasForm;
 use Bengr\Admin\Forms\Concerns\InteractsWithForm;
 use Bengr\Admin\Http\Resources\WidgetResource;
@@ -20,6 +21,8 @@ class FormWidget extends Widget implements HasForm
 
     protected array $schema = [];
 
+    protected ?\Closure $submit_method = null;
+
     final public function __construct($model)
     {
         $this->model = $model;
@@ -37,6 +40,32 @@ class FormWidget extends Widget implements HasForm
         return $this;
     }
 
+    public function submit(?\Closure $callback): self
+    {
+        $this->submit_method = $callback;
+
+        return $this;
+    }
+
+    protected function getSubmitMethod(): ?\Closure
+    {
+        return $this->submit_method;
+    }
+
+    public function getActions(): array
+    {
+        return [
+            Action::make('submit')
+                ->handle(function (array $payload) {
+                    $form = $this->getForm(collect([]));
+
+                    $form->validate($payload);
+
+                    $this->getSubmitMethod()($payload);
+                })
+        ];
+    }
+
     protected function getFormSchema(): array
     {
         return $this->schema ?? [];
@@ -45,6 +74,8 @@ class FormWidget extends Widget implements HasForm
     public function getData(Request $request): array
     {
         $form = $this->getForm(collect([]));
+
+        $this->fillDefaultState();
 
         return [
             'children' => WidgetResource::collection($form->getSchema())

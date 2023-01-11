@@ -49,6 +49,10 @@ class Page
 
     protected ?string $model = null;
 
+    protected $transformed_widgets;
+
+    protected $transformed_actions;
+
     public function registerNavigationItems(): void
     {
         if (!$this->inNavigation()) {
@@ -275,7 +279,7 @@ class Page
         $this->loopWidgets($this->getWidgets());
 
         $widget = $this->transformed_widgets->where(function (Widget $widget) use ($id) {
-            return $widget->getId() === $id;
+            return $widget->getWidgetId() === $id;
         })->toArray();
 
         return array_shift($widget);
