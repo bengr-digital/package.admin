@@ -61,7 +61,7 @@ class FormWidget extends Widget implements HasForm
 
                     $form->validate($payload);
 
-                    $this->getSubmitMethod()($payload);
+                    return $this->getSubmitMethod()($payload);
                 })
         ];
     }
