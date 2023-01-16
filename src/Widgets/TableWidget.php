@@ -147,6 +147,26 @@ class TableWidget extends Widget implements HasTable
         }
     }
 
+    public function setColumnWidths(array $columns)
+    {
+        $full_width = 100;
+        $unused_columns = 0;
+
+        foreach ($columns as $column) {
+            if ($column->getWidth()) {
+                $full_width -= $column->getWidth();
+            } else {
+                $unused_columns++;
+            }
+        }
+
+        foreach ($columns as $column) {
+            if (!$column->getWidth()) {
+                $column->width($full_width / $unused_columns);
+            }
+        }
+    }
+
 
     public function getData(Request $request): array
     {
@@ -155,6 +175,8 @@ class TableWidget extends Widget implements HasTable
         };
 
         $table = $this->getTable(collect($this->params));
+
+        $this->setColumnWidths($table->getColumns());
 
         return [
             'bulkActions' => ActionGroupResource::collection($table->getBulkActions()),

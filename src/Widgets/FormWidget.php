@@ -71,6 +71,11 @@ class FormWidget extends Widget implements HasForm
         return $this->schema ?? [];
     }
 
+    public function getWidgets(): array
+    {
+        return $this->schema ?? [];
+    }
+
     public function getData(Request $request): array
     {
         $form = $this->getForm(collect([]));

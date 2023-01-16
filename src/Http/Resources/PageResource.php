@@ -22,7 +22,7 @@ class PageResource extends JsonResource
                 'name' => $this->getRouteName(),
                 'url' => $this->getRouteUrl(),
             ],
-            'auth' => $request->user('admin') ?? null,
+            'auth' => MeResource::make($request->user('admin')) ?? null,
             'breadcrumbs' => $this->getBreadcrumbs(),
             'layout' => [
                 'name' => $this->getLayout(),

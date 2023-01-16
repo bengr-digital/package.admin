@@ -14,6 +14,7 @@ class Column
     use Concerns\HasName;
     use Concerns\HasLabel;
     use Concerns\HasType;
+    use Concerns\HasWidth;
     use Concerns\InteractsWithTableQuery;
 
     final public function __construct(string $name)

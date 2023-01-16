@@ -18,6 +18,7 @@ class ColumnResource extends JsonResource
             'name' => $this->getName(),
             'label' => $this->getLabel(),
             'type' => $this->getType(),
+            'width' => $this->getWidth(),
             'isSortable' => $this->isSortable()
         ];
     }
