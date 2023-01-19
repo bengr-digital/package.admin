@@ -6,7 +6,9 @@ class UserMenuItem
 {
     protected string $label;
 
-    protected string $icon;
+    protected string $iconName;
+
+    protected string $iconType;
 
     protected ?int $sort = null;
 
@@ -30,9 +32,10 @@ class UserMenuItem
         return $this;
     }
 
-    public function icon(string $icon): self
+    public function icon(string $iconName, string $iconType): self
     {
-        $this->icon = $icon;
+        $this->iconName = $iconName;
+        $this->iconType = $iconType;
 
         return $this;
     }
@@ -57,9 +60,14 @@ class UserMenuItem
         return $this->label;
     }
 
-    public function getIcon(): string
+    public function getIconName(): string
     {
-        return $this->icon;
+        return $this->iconName;
+    }
+
+    public function getIconType(): string
+    {
+        return $this->iconType;
     }
 
     public function getSort(): ?int

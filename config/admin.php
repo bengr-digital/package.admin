@@ -28,8 +28,8 @@ return [
         ],
         'sorting' => [
             'params' => [
-                'sort_column' => 'sort_column',
-                'sort_order' => 'sort_order'
+                'sort_column' => 'sort_by',
+                'sort_order' => 'sort_direction'
             ]
         ]
     ],

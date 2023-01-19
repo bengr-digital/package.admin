@@ -15,16 +15,19 @@ class NavigationItemResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "label" => $this->getLabel(),
-            "icon" => $this->getIcon(),
-            "activeIcon" => $this->getActiveIcon(),
-            "badge" => $this->getBadge(),
-            "badgeColor" => $this->getBadgeColor(),
-            "route" => [
-                "name" => $this->getRouteName(),
-                "url" => $this->getRouteUrl()
+            'label' => $this->getLabel(),
+            'icon' => [
+                'name' => $this->getIconName(),
+                'activeName' => $this->getIconName(),
+                'type' => $this->getIconType(),
             ],
-            "children" => NavigationItemResource::collection($this->getChildren())
+            'badge' => $this->getBadge(),
+            'badgeColor' => $this->getBadgeColor(),
+            'route' => [
+                'name' => $this->getRouteName(),
+                'url' => $this->getRouteUrl()
+            ],
+            'children' => NavigationItemResource::collection($this->getChildren())
         ];
     }
 }

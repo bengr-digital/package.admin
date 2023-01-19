@@ -4,6 +4,7 @@ namespace Bengr\Admin\Tables;
 
 use Bengr\Admin\Http\Resources\ActionGroupResource;
 use Bengr\Admin\Tables\Contracts\HasTable;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
@@ -57,10 +58,11 @@ class Table
 
             $columns = [];
 
+
             foreach ($this->getColumns() as $column) {
                 $columns[] = [
                     'name' => $column->getName(),
-                    'value' => Arr::get($record, $column->getName()),
+                    'value' => $column->hasFormat() ? (new Carbon(Arr::get($record, $column->getName())))->format($column->getFormat()) : Arr::get($record, $column->getName()),
                     'params' => []
                 ];
             }
@@ -68,7 +70,6 @@ class Table
             $record_in_column->put('columns', $columns);
 
             $record_in_column->put('actions', ActionGroupResource::collection($this->getActions()));
-
 
             $records_in_columns->push($record_in_column);
         }

@@ -16,7 +16,11 @@ class UserMenuItemResource extends JsonResource
     {
         return [
             'label' => $this->getLabel(),
-            'icon' => $this->getIcon(),
+            'icon' => [
+                'name' => $this->getIconName(),
+                'activeName' => $this->getIconName(),
+                'type' => $this->getIconType(),
+            ],
             'route' => [
                 'name' => $this->getRouteName(),
                 'url' => $this->getRouteUrl(),

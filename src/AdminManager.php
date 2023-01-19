@@ -131,69 +131,49 @@ class AdminManager
         return Str::of($value)->startsWith('{') && Str::of($value)->endsWith('}');
     }
 
-    public function getPageByUrl($url)
+    public function urlHasParams($url)
     {
-        if ($this->getPagesUrls()->contains($url)) {
-            $page = collect($this->getPages())->first(function ($page) use ($url) {
-                return app($page)->getRouteUrl() === $url;
-            });
-
-            return app($page);
-        } else {
-            $page = collect($this->getPages())->first(function ($page) use ($url) {
-                return app($page)->getRouteUrl() === $this->getPagesUrls()->reject(function ($item) use ($url) {
-                    $itemParts = collect(explode('/', $item))->reject(fn ($item) => empty($item));
-                    $urlParts = collect(explode('/', $url))->reject(fn ($item) => empty($item));
-                    $hasParams = $itemParts->map(fn ($item) => $this->isParam($item))->contains(true);
-
-                    if ($itemParts->count() !== $urlParts->count()) return true;
-                    if (!$hasParams && $item !== $url) return true;
-
-                    if ($itemParts->map(function ($item, $index) use ($urlParts) {
-                        if (($urlParts->get($index) === $item && !$this->isParam($index)) || $this->isParam($item)) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    })->contains(false)) return true;
-                })->first();;
-            });
-
-            if (!$page || !app($page)->getModel()) {
-                return null;
-            }
-
-            $params = collect();
-
-
-            collect(explode('/', app($page)->getRouteUrl()))->reject(fn ($item) => empty($item))->each(function ($item, $index) use ($url, $params) {
-                if ($this->isParam($item)) {
-                    $key = Str::of($item)->after('{')->before('}');
-                    $params->put($key->value(), collect(explode('/', $url))->reject(fn ($item) => empty($item))->get($index));
-                }
-            });
-
-
-            $model = app($page)->getModel()->where(function ($query) use ($params) {
-                $params->each(function ($value, $key) use ($query) {
-                    $query->where($key, $value);
-                });
-            })->first();
-
-            if ($model) return app($page);
-            else return null;
-        }
+        return Str::of($url)
+            ->explode("/")
+            ->filter()
+            ->map(function ($part) {
+                return $this->isParam($part);
+            })
+            ->contains(true);
     }
 
-    public function getPageByName($name)
+    public function getPageByUrl($url)
     {
-        $page = collect($this->getPages())->first(function ($page) use ($name) {
-            return app($page)->getRouteName() === $name;
+        $page = collect($this->getPages())->first(function ($page) use ($url) {
+            if (!$this->urlHasParams(app($page)->getRouteUrl())) {
+                return app($page)->getRouteUrl() === $url;
+            }
+
+            $page = $this->getPagesUrls()
+                ->filter(function ($pageUrl) use ($url) {
+                    return Str::of($pageUrl)->explode("/")->filter()->count() === Str::of($url)->explode("/")->filter()->count() && $this->urlHasParams($pageUrl);
+                })
+                ->filter(function ($pageUrl) use ($url) {
+                    $url_parts = Str::of($url)->explode("/")->filter()->values();
+
+                    if (Str::of($pageUrl)->explode("/")->filter()->values()->map(function ($part, $index) use ($url_parts) {
+                        if ($part === $url_parts->get($index) && !$this->isParam($part)) {
+                            return true;
+                        }
+
+                        if ($part !== $url_parts->get($index) && !$this->isParam($part)) {
+                            return false;
+                        }
+
+                        return true;
+                    })->contains(false)) return false;
+
+
+                    return true;
+                })->values();
         });
 
-        if (!$page) return null;
-
-        return app($page);
+        return $page ? app($page) : null;
     }
 
     public function getUserMenuItems(): Collection

@@ -6,7 +6,9 @@ class NavigationItem
 {
     protected string $label;
 
-    protected string $icon;
+    protected string $iconName;
+
+    protected string $iconType;
 
     protected ?string $activeIcon = null;
 
@@ -43,9 +45,10 @@ class NavigationItem
         return $this;
     }
 
-    public function icon(string $icon): self
+    public function icon(string $iconName, string $iconType): self
     {
-        $this->icon = $icon;
+        $this->iconName = $iconName;
+        $this->iconType = $iconType;
 
         return $this;
     }
@@ -89,11 +92,22 @@ class NavigationItem
 
     public function children(array $children): self
     {
-        collect($children)->each(function ($item) {
-            if (app($item)->getNavigationItems()) {
-                $this->children[] = app($item)->getNavigationItems()[0];
-            }
-        });
+        if (count($children)) {
+            $this->children[] = NavigationItem::make($this->getLabel())
+                ->group($this->getGroup())
+                ->icon($this->getIconName(), $this->getIconType())
+                ->activeIcon($this->getActiveIcon())
+                ->sort($this->getSort())
+                ->badge($this->getBadge(), $this->getBadgeColor())
+                ->route($this->getRouteName(), $this->getRouteUrl());
+
+            collect($children)->each(function ($item) {
+                if (app($item)->getNavigationItems()) {
+                    $this->children[] = app($item)->getNavigationItems()[0];
+                }
+            });
+        }
+
 
         return $this;
     }
@@ -103,9 +117,14 @@ class NavigationItem
         return $this->label;
     }
 
-    public function getIcon(): string
+    public function getIconName(): string
     {
-        return $this->icon;
+        return $this->iconName;
+    }
+
+    public function getIconType(): string
+    {
+        return $this->iconType;
     }
 
     public function getActiveIcon(): ?string
