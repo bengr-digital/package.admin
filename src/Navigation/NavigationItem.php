@@ -92,22 +92,24 @@ class NavigationItem
 
     public function children(array $children): self
     {
-        if (count($children)) {
-            $this->children[] = NavigationItem::make($this->getLabel())
-                ->group($this->getGroup())
-                ->icon($this->getIconName(), $this->getIconType())
-                ->activeIcon($this->getActiveIcon())
-                ->sort($this->getSort())
-                ->badge($this->getBadge(), $this->getBadgeColor())
-                ->route($this->getRouteName(), $this->getRouteUrl());
+        collect($children)->each(function ($item) {
+            if (app($item)->getNavigationItems()) {
+                $this->children[] = app($item)->getNavigationItems()[0];
+            }
+        });
 
-            collect($children)->each(function ($item) {
-                if (app($item)->getNavigationItems()) {
-                    $this->children[] = app($item)->getNavigationItems()[0];
-                }
-            });
+        if (count($this->children)) {
+            array_unshift(
+                $this->children,
+                NavigationItem::make($this->getLabel())
+                    ->group($this->getGroup())
+                    ->icon($this->getIconName(), $this->getIconType())
+                    ->activeIcon($this->getActiveIcon())
+                    ->sort($this->getSort())
+                    ->badge($this->getBadge(), $this->getBadgeColor())
+                    ->route($this->getRouteName(), $this->getRouteUrl())
+            );
         }
-
 
         return $this;
     }

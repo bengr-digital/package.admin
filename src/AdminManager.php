@@ -3,12 +3,15 @@
 namespace Bengr\Admin;
 
 use Bengr\Admin\Events\ServingAdmin;
+use Bengr\Admin\Models\AdminUser;
 use Bengr\Admin\Navigation;
 use Bengr\Admin\Navigation\UserMenuItem;
 use Bengr\Admin\Pages\Page;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class AdminManager
@@ -149,7 +152,7 @@ class AdminManager
                 return app($page)->getRouteUrl() === $url;
             }
 
-            $page = $this->getPagesUrls()
+            $page_url = $this->getPagesUrls()
                 ->filter(function ($pageUrl) use ($url) {
                     return Str::of($pageUrl)->explode("/")->filter()->count() === Str::of($url)->explode("/")->filter()->count() && $this->urlHasParams($pageUrl);
                 })
@@ -168,12 +171,53 @@ class AdminManager
                         return true;
                     })->contains(false)) return false;
 
-
                     return true;
-                })->values();
+                })->first();
+
+            return $page_url === app($page)->getRouteUrl() ? true : false;
         });
 
-        return $page ? app($page) : null;
+        if (!$page) return null;
+
+        if ($this->urlHasParams(app($page)->getRouteUrl())) {
+            $page_url_parts = Str::of(app($page)->getRouteUrl())->explode("/")->filter()->values();
+            $url_parts = Str::of($url)->explode("/")->filter()->values();
+
+            $params = $page_url_parts->map(function ($part, $index) use ($url_parts, $page) {
+                if ($this->isParam($part)) {
+                    $table = null;
+                    $column = null;
+                    $value = $url_parts->get($index);
+
+                    $parsed_param = Str::of($part)->replace('{', '')->replace('}', '')->explode(':');
+                    if ($parsed_param->count() == 2) {
+                        $table = $parsed_param[0];
+                        $column = $parsed_param[1];
+                    } else {
+                        $table = app($page)->getModel() ? app($page)->getModel()->getTable() : null;
+                        $column = $parsed_param[0];
+                    }
+
+                    return [
+                        'table' => $table,
+                        'column' => $column,
+                        'value' => $value
+                    ];
+                }
+            })->filter()->values();
+
+            if ($params->map(function ($param) {
+                if (!$param['table']) return false;
+
+                return DB::table($param['table'])->where($param['column'], $param['value'])->exists();
+            })->contains(false)) return false;;
+
+            $page = app($page)->setSlug($url);
+
+            return $page;
+        }
+
+        return app($page);
     }
 
     public function getUserMenuItems(): Collection

@@ -156,6 +156,13 @@ class Page
         return "/{$slug}";
     }
 
+    public function setSlug(string $slug)
+    {
+        $this->slug = Str::of($slug)->explode('/')->filter()->join('/');
+
+        return $this;
+    }
+
     public function getParent(): ?string
     {
         return $this->parent;
@@ -180,13 +187,15 @@ class Page
         $this->breadcrumbs = collect($this->breadcrumbs)
             ->reverse()
             ->map(function ($item) {
-                return ["name" => app($item)->getTitle(), "route" => $this->getRouteUrl() === app($item)->getRouteUrl() ? null : [
+                return ["name" => app($item)->getTitle(), "route" => [
                     'name' => app($item)->getRouteName(),
                     'url' => app($item)->getRouteUrl(),
                 ]];
-            })
-            ->toArray();
+            })->values()->toArray();
 
+        if (count($this->breadcrumbs)) {
+            $this->breadcrumbs[count($this->breadcrumbs) - 1]['route'] = null;
+        }
 
         return $this->breadcrumbs;
     }
