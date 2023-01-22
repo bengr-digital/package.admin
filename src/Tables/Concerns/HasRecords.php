@@ -27,6 +27,7 @@ trait HasRecords
 
         foreach ($this->getCachedTableColumns() as $column) {
             $column->applyEagerLoading($query);
+            $column->applyRelationshipAggregates($query);
         }
 
         if ($this->isTablePaginationEnabled()) {

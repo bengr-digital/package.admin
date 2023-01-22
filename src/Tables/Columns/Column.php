@@ -3,10 +3,13 @@
 namespace Bengr\Admin\Tables\Columns;
 
 use Bengr\Admin\Concerns\EvaluatesClosures;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 class Column
 {
     use EvaluatesClosures;
+    use Concerns\CanAggregateRelatedModels;
     use Concerns\CanBeSearchable;
     use Concerns\CanBeSortable;
     use Concerns\CanBeHidden;
@@ -15,7 +18,6 @@ class Column
     use Concerns\HasLabel;
     use Concerns\HasType;
     use Concerns\HasWidth;
-    use Concerns\HasFormat;
     use Concerns\InteractsWithTableQuery;
 
     final public function __construct(string $name)
@@ -28,5 +30,15 @@ class Column
         $static = app(static::class, ['name' => $name]);
 
         return $static;
+    }
+
+    public function getValue(Model $record)
+    {
+        return Arr::get($record, $this->getName());
+    }
+
+    public function getProps(Model $record): array
+    {
+        return [];
     }
 }

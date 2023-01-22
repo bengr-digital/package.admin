@@ -62,8 +62,8 @@ class Table
             foreach ($this->getColumns() as $column) {
                 $columns[] = [
                     'name' => $column->getName(),
-                    'value' => $column->hasFormat() ? (new Carbon(Arr::get($record, $column->getName())))->format($column->getFormat()) : Arr::get($record, $column->getName()),
-                    'params' => []
+                    'value' => $column->getValue($record),
+                    'props' => $column->getProps($record)
                 ];
             }
 
@@ -73,6 +73,7 @@ class Table
 
             $records_in_columns->push($record_in_column);
         }
+
 
         return $records_in_columns;
     }
