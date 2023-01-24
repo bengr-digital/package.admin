@@ -26,6 +26,10 @@ class ActionResource extends JsonResource
             'tooltip' => $this->getTooltip(),
             'isDisabled' => $this->isDisabled(),
             'isHidden' => $this->isHidden(),
+            'confirm' => $this->hasConfirm() ? [
+                'title' => $this->getConfirmTitle(),
+                'description' => $this->getConfirmDescription(),
+            ] : null,
             'redirect' => $this->getRouteName() && $this->getRouteUrl() ? [
                 'name' => $this->getRouteName(),
                 'url' => $this->getRouteUrl(),

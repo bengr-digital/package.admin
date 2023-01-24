@@ -3,6 +3,7 @@
 namespace Bengr\Admin\Forms\Concerns;
 
 use Bengr\Admin\Forms\Widgets\Inputs\Input;
+use Bengr\Admin\Widgets\ActionWidget;
 use Bengr\Admin\Widgets\Widget;
 
 trait HasSchema
@@ -57,6 +58,13 @@ trait HasSchema
     {
         return collect($this->getFlatFormSchema($this->getFormSchema()))->filter(function (Widget $widget) {
             return $widget instanceof Input;
+        })->toArray();
+    }
+
+    protected function getFormActions(): array
+    {
+        return collect($this->getFlatFormSchema($this->getFormSchema()))->filter(function (Widget $widget) {
+            return $widget instanceof ActionWidget;
         })->toArray();
     }
 }

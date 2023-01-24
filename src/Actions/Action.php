@@ -9,6 +9,7 @@ class Action
 {
     use EvaluatesClosures;
     use Concerns\HasName;
+    use Concerns\HasConfirm;
     use Concerns\HasLabel;
     use Concerns\HasIcon;
     use Concerns\HasColor;

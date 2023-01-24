@@ -29,6 +29,7 @@ class ActionController extends Controller
         if ($request->has('widget_id')) {
             $widget = $page->getWidget($request->get('widget_id'));
 
+
             if (!$widget) return response()->throw(WidgetNotFoundException::class);
 
             return $page->processToResponse($request, fn () => $widget->callAction($request->get('name'), $request->get('payload', [])));

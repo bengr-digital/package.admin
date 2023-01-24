@@ -23,6 +23,7 @@ class ActionWidget extends Widget
     use Concerns\CanBeHidden;
     use Concerns\CanHandleModal;
     use Concerns\CanHandleAction;
+    use Concerns\HasConfirm;
 
     protected ?string $widgetName = 'action';
 
@@ -61,6 +62,10 @@ class ActionWidget extends Widget
             'tooltip' => $this->getTooltip(),
             'isDisabled' => $this->isDisabled(),
             'isHidden' => $this->isHidden(),
+            'confirm' => $this->hasConfirm() ? [
+                'title' => $this->getConfirmTitle(),
+                'description' => $this->getConfirmDescription(),
+            ] : null,
             'redirect' => $this->getRouteName() && $this->getRouteUrl() ? [
                 'name' => $this->getRouteName(),
                 'url' => $this->getRouteUrl(),

@@ -8,6 +8,7 @@ use Bengr\Admin\Navigation;
 use Bengr\Admin\Navigation\UserMenuItem;
 use Bengr\Admin\Pages\Page;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -206,16 +207,32 @@ class AdminManager
                 }
             })->filter()->values();
 
-            if ($params->map(function ($param) {
-                if (!$param['table']) return false;
+            $params = $params->map(function ($param) {
 
-                return DB::table($param['table'])->where($param['column'], $param['value'])->exists();
-            })->contains(false)) return false;;
+                $param['record'] = !$param['table'] ? null : DB::table($param['table'])->where($param['column'], $param['value']);
 
-            $page = app($page)->setSlug($url);
+                try {
+                    if ($param['record']->first()->deleted_at !== null) {
+                        $param['record'] = null;
+                    }
+                } catch (QueryException $e) {
+                    $param['record'] = null;
+                }
+
+                return $param;
+            });
+
+            if ($params->first(function ($param) {
+                $column = $param['column'];
+
+                return $param['record'] === null || !$param['record']->exists() || $param['record']->first()->$column != $param['value'];
+            })) return null;
+
+            $page = app($page)->slug($url)->params($params->toArray());
 
             return $page;
         }
+
 
         return app($page);
     }

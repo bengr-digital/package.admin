@@ -67,7 +67,7 @@ class Widget
 
     public function hasWidgets(): bool
     {
-        return false;
+        return count($this->getWidgets()) ? true : false;
     }
 
     public function getWidgets(): array

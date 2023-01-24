@@ -51,9 +51,25 @@ class Page
 
     protected ?string $model = null;
 
+    protected array $params = [];
+
     protected $transformed_widgets;
 
     protected $transformed_actions;
+
+    public function slug(string $slug): self
+    {
+        $this->slug = Str::of($slug)->explode('/')->filter()->join('/');
+
+        return $this;
+    }
+
+    public function params(array $params): self
+    {
+        $this->params = $params;
+
+        return $this;
+    }
 
     public function registerNavigationItems(): void
     {
@@ -154,13 +170,6 @@ class Page
         $slug = $this->getSlug();
 
         return "/{$slug}";
-    }
-
-    public function setSlug(string $slug)
-    {
-        $this->slug = Str::of($slug)->explode('/')->filter()->join('/');
-
-        return $this;
     }
 
     public function getParent(): ?string
@@ -272,6 +281,11 @@ class Page
         return $this->inNavigation;
     }
 
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
     protected function loopWidgets(array $widgets)
     {
         collect($widgets)->map(function ($widget) {
@@ -293,6 +307,7 @@ class Page
         $this->transformed_widgets = collect([]);
 
         $this->loopWidgets($this->getWidgets());
+
 
         $widget = $this->transformed_widgets->where(function (Widget $widget) use ($id) {
             return $widget->getWidgetId() === $id;
