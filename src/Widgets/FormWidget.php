@@ -11,6 +11,8 @@ use Bengr\Admin\Widgets\Widget;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
+use function Bengr\Support\response;
+
 class FormWidget extends Widget implements HasForm
 {
     use InteractsWithForm;
@@ -31,7 +33,6 @@ class FormWidget extends Widget implements HasForm
     {
         $this->record = $record;
         $this->model = $model;
-        $this->fillDefaultState();
     }
 
     public static function make(string $model, ?Model $record = null): static
@@ -79,9 +80,13 @@ class FormWidget extends Widget implements HasForm
             return $action->getName() === $name && $action->hasHandle();
         })->first();
 
-        if (!$action) return response()->throw(ActionNotFoundException::class);
+        if (!$action && !$this->submit_method && $name !== 'submit') return response()->throw(ActionNotFoundException::class);
 
-        return $action->getHandleMethod()($this, $payload);
+        $validated = $this->getForm(collect([]))->validate($payload);
+
+        if ($this->submit_method && $name === 'submit') return $this->getSubmitMethod()($this, $validated);
+
+        return $action->getHandleMethod()($this, $validated);
     }
 
     public function getWidgets(): array
@@ -92,6 +97,7 @@ class FormWidget extends Widget implements HasForm
     public function getData(Request $request): array
     {
         $form = $this->getForm(collect([]));
+        $this->fill($this->record);
 
         return [
             'children' => WidgetResource::collection($form->getSchema())

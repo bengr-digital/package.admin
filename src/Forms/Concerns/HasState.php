@@ -3,6 +3,8 @@
 namespace Bengr\Admin\Forms\Concerns;
 
 use Bengr\Admin\Forms\Widgets\Inputs\Input;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 trait HasState
 {
@@ -13,15 +15,18 @@ trait HasState
         return $this->state;
     }
 
-    protected function fillState(array $state)
+    public function fill(?Model $record = null): self
     {
-        $this->state = $state;
-    }
+        if ($record) {
+            collect($this->getFormInputs())->each(function (Input $input) use ($record) {
+                $input->value(Arr::get($record, $input->getName()));
+            });
+        }
 
-    protected function fillDefaultState()
-    {
         collect($this->getFormInputs())->each(function (Input $input) {
             $this->state[$input->getName()] = $input->getValue();
         });
+
+        return $this;
     }
 }

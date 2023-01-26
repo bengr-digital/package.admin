@@ -32,7 +32,10 @@ class Form
             return $input->getRules();
         })->toArray();
 
-        Validator::make($payload, $rules)->validate();
+        $validator = Validator::make($payload, $rules);
+        $validator->validate();
+
+        return $validator->validated();
     }
 
     public function getSchema(): array
