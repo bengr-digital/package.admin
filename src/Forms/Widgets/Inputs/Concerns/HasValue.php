@@ -4,16 +4,21 @@ namespace Bengr\Admin\Forms\Widgets\Inputs\Concerns;
 
 trait HasValue
 {
-    protected null | string | array | bool | int $value = null;
+    protected $value = null;
 
-    public function value(null | string | array | bool | int $value): self
+    public function transformValue()
+    {
+        return $this->value;
+    }
+
+    public function value($value = null): self
     {
         $this->value = $value;
 
         return $this;
     }
 
-    public function getValue(): null | string | array | bool | int
+    public function getValue()
     {
         return $this->value;
     }

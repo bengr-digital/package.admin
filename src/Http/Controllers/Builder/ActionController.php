@@ -32,9 +32,9 @@ class ActionController extends Controller
 
             if (!$widget) return response()->throw(WidgetNotFoundException::class);
 
-            return $page->processToResponse($request, fn () => $widget->callAction($request->get('name'), $request->get('payload', [])));
+            return $page->processToResponse($request, fn () => $widget->callAction($request->get('name'), $request->payload ?? []));
         }
 
-        return $page->processToResponse($request, fn () => $page->callAction($request->get('name'), $request->get('payload', [])));
+        return $page->processToResponse($request, fn () => $page->callAction($request->get('name'), $request->payload ?? []));
     }
 }

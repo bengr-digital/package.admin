@@ -15,6 +15,8 @@ trait HasRules
 
     public function getRules(): array
     {
-        return $this->rules;
+        return [
+            $this->getName() => $this->rules
+        ];
     }
 }

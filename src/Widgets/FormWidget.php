@@ -76,13 +76,24 @@ class FormWidget extends Widget implements HasForm
 
     public function callAction(string $name, array $payload = [])
     {
+        $form = $this->getForm(collect([]));
+        $payload = collect($payload)->map(function ($value, $key) use ($form) {
+            $input = $form->getInput($key);
+
+            if (!$input) return null;
+
+            $input->value($value);
+
+            return $input->transformValue();
+        })->toArray();
+
         $action = collect($this->getActions())->where(function (ActionWidget $action) use ($name) {
             return $action->getName() === $name && $action->hasHandle();
         })->first();
 
         if (!$action && !$this->submit_method && $name !== 'submit') return response()->throw(ActionNotFoundException::class);
 
-        $validated = $this->getForm(collect([]))->validate($payload);
+        $validated = $form->validate($payload);
 
         if ($this->submit_method && $name === 'submit') return $this->getSubmitMethod()($this, $validated);
 

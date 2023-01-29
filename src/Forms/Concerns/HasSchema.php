@@ -33,6 +33,11 @@ trait HasSchema
         return $this->cachedFormInputs;
     }
 
+    public function getCachedFormInput(string $name): ?Input
+    {
+        return $this->getFormInput($name);
+    }
+
     protected function getFormSchema(): array
     {
         return [];
@@ -59,6 +64,13 @@ trait HasSchema
         return collect($this->getFlatFormSchema($this->getFormSchema()))->filter(function (Widget $widget) {
             return $widget instanceof Input;
         })->toArray();
+    }
+
+    protected function getFormInput(string $name): ?Input
+    {
+        return collect($this->getFormInputs())->first(function ($input) use ($name) {
+            return $input->getName() === $name;
+        });
     }
 
     protected function getFormActions(): array
