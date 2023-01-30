@@ -21,9 +21,8 @@ class FileInput extends Input
 
     protected int $widgetColumnSpan = 12;
 
-    public function transformValue()
+    public function transformToUploadedFile()
     {
-        return $this->value;
         return collect($this->value)->map(function ($file) {
             $file_path = storage_path('app/' . $file['path']);
             $finfo = new finfo(FILEINFO_MIME_TYPE);
@@ -70,7 +69,10 @@ class FileInput extends Input
             Action::make('upload')->handle(function ($payload) {
                 $value = [];
 
-                Validator::make($payload, $this->getRules())->validate();
+                Validator::make($payload, [
+                    $this->getName() => ['required', 'array'],
+                    $this->getName() . ".*" => ['required', 'file']
+                ])->validate();
 
 
                 foreach ($payload[$this->getName()] as $file) {
