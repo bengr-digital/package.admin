@@ -9,7 +9,7 @@ class BoxWidget extends Widget
 {
     protected ?string $widgetName = 'box';
 
-    protected int $widgetColumnSpan = 12;
+    protected ?int $widgetColumnSpan = 12;
 
     protected array $widgets = [];
 

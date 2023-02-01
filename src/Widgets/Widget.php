@@ -18,18 +18,18 @@ class Widget
 
     protected ?string $widgetName = null;
 
-    protected int $widgetColumnSpan = 12;
+    protected ?int $widgetColumnSpan = 12;
 
     protected $transformed_actions;
 
-    public function widgetColumnSpan(int $widgetColumnSpan): self
+    public function widgetColumnSpan(?int $widgetColumnSpan): self
     {
         $this->widgetColumnSpan = $widgetColumnSpan;
 
         return $this;
     }
 
-    public function widgetColumn(int $widgetColumnSpan): self
+    public function widgetColumn(?int $widgetColumnSpan): self
     {
         $this->widgetColumnSpan = $widgetColumnSpan;
 
@@ -60,7 +60,7 @@ class Widget
             ->slug();
     }
 
-    public function getWidgetColumnSpan(): int
+    public function getWidgetColumnSpan(): ?int
     {
         return $this->widgetColumnSpan;
     }

@@ -20,6 +20,6 @@ trait HasValue
 
     public function getValue()
     {
-        return $this->value;
+        return $this->getType() === 'password' ? null : $this->value;
     }
 }

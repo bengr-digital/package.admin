@@ -27,7 +27,7 @@ class ActionWidget extends Widget
 
     protected ?string $widgetName = 'action';
 
-    protected int $widgetColumnSpan = 12;
+    protected ?int $widgetColumnSpan = 12;
 
     protected array $widgets = [];
 

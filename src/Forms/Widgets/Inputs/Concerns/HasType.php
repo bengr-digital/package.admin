@@ -4,7 +4,7 @@ namespace Bengr\Admin\Forms\Widgets\Inputs\Concerns;
 
 trait HasType
 {
-    protected ?string $type = null;
+    protected ?string $type = 'text';
 
     public function type(string $type): self
     {

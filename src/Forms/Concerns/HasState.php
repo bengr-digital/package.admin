@@ -10,22 +10,33 @@ trait HasState
 {
     protected array $state = [];
 
+    public function getCachedValue(?string $name = null)
+    {
+        if ($name) {
+            return array_key_exists($name, $this->state) ? $this->state[$name] : null;
+        }
+
+        return $this->state;
+    }
+
     protected function getFormState(): array
     {
         return $this->state;
     }
 
-    public function fill(?Model $record = null): self
+    public function fill(array | Model $payload = null): self
     {
-        if ($record) {
-            collect($this->getFormInputs())->each(function (Input $input) use ($record) {
-                $input->value(Arr::get($record, $input->getName()));
+        if ($payload instanceof Model) {
+            collect($this->getFormInputs())->each(function (Input $input) use ($payload) {
+                $input->value(Arr::get($payload, $input->getName()));
             });
+        } else if (!$payload) {
+            collect($this->getFormInputs())->each(function (Input $input) {
+                $this->state[$input->getName()] = $input->getValue();
+            });
+        } else {
+            $this->state = $payload;
         }
-
-        collect($this->getFormInputs())->each(function (Input $input) {
-            $this->state[$input->getName()] = $input->getValue();
-        });
 
         return $this;
     }

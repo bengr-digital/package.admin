@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 trait InteractsWithForm
 {
     use HasSchema;
+    use HasRecord;
     use HasState;
 
     protected Form $form;

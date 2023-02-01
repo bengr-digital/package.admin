@@ -8,7 +8,7 @@ class AccountWidget extends Widget
 {
     protected ?string $widgetName = 'account';
 
-    protected int $widgetColumnSpan = 6;
+    protected ?int $widgetColumnSpan = 6;
 
     final public function __construct()
     {

@@ -6,7 +6,9 @@ use Bengr\Admin\Actions\Action;
 use Bengr\Admin\Exceptions\ActionNotFoundException;
 use Bengr\Admin\Forms\Contracts\HasForm;
 use Bengr\Admin\Forms\Concerns\InteractsWithForm;
+use Bengr\Admin\Forms\Form;
 use Bengr\Admin\Http\Resources\WidgetResource;
+use Bengr\Admin\Pages\Page;
 use Bengr\Admin\Widgets\Widget;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -19,25 +21,27 @@ class FormWidget extends Widget implements HasForm
 
     protected ?string $widgetName = 'form';
 
-    protected int $widgetColumnSpan = 12;
+    protected ?int $widgetColumnSpan = 12;
 
-    protected string $model;
+    protected Form $form;
 
-    protected ?Model $record = null;
+    protected Page $page;
 
     protected array $schema = [];
 
     protected ?\Closure $submit_method = null;
 
-    final public function __construct($model, $record)
+
+    final public function __construct($model, $page)
     {
-        $this->record = $record;
-        $this->model = $model;
+        $this->page = $page;
+        $this->model($model);
+        $this->form = $this->getForm(collect());
     }
 
-    public static function make(string $model, ?Model $record = null): static
+    public static function make(string $model, ?Page $page = null): static
     {
-        return app(static::class, ['model' => $model, 'record' => $record]);
+        return app(static::class, ['model' => $model, 'page' => $page]);
     }
 
     public function schema(array $schema): self
@@ -69,16 +73,10 @@ class FormWidget extends Widget implements HasForm
         return $this->schema ?? [];
     }
 
-    public function getRecord(): ?Model
-    {
-        return $this->record;
-    }
-
     public function callAction(string $name, array $payload = [])
     {
-        $form = $this->getForm(collect([]));
-        $payload = collect($payload)->map(function ($value, $key) use ($form) {
-            $input = $form->getInput($key);
+        $payload = collect($payload)->map(function ($value, $key) {
+            $input = $this->form->getInput($key);
 
             if (!$input) return null;
 
@@ -93,11 +91,13 @@ class FormWidget extends Widget implements HasForm
 
         if (!$action && !$this->submit_method && $name !== 'submit') return response()->throw(ActionNotFoundException::class);
 
-        $validated = $form->validate($payload);
+        $validated = $this->form->validate($payload);
 
-        if ($this->submit_method && $name === 'submit') return $this->getSubmitMethod()($this, $validated);
+        $this->fill($validated);
 
-        return $action->getHandleMethod()($this, $validated);
+        if ($this->submit_method && $name === 'submit') return $this->getSubmitMethod()($this->form);
+
+        return $action->getHandleMethod()($this->form);
     }
 
     public function getWidgets(): array
@@ -107,11 +107,11 @@ class FormWidget extends Widget implements HasForm
 
     public function getData(Request $request): array
     {
-        $form = $this->getForm(collect([]));
-        $this->fill($this->record);
+        $this->record($this->page);
+        $this->fill($this->getRecord());
 
         return [
-            'children' => WidgetResource::collection($form->getSchema())
+            'children' => WidgetResource::collection($this->form->getSchema())
         ];
     }
 }

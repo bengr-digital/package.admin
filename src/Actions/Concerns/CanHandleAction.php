@@ -8,7 +8,7 @@ trait CanHandleAction
 
     protected ?int $handleWidgetId = null;
 
-    public function handle(\Closure $method, ?int $widgetId = null): static
+    public function handle(?\Closure $method, ?int $widgetId = null): static
     {
         $this->handleMethod = $method;
         $this->handleWidgetId = $widgetId;

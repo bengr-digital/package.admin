@@ -19,10 +19,11 @@ class Input extends Widget
     use Concerns\CanBeHidden;
     use Concerns\CanBeReadonly;
     use Concerns\CanBeRequired;
+    use Concerns\InteractsWithTableQuery;
 
     protected ?string $widgetName = 'input';
 
-    protected int $widgetColumnSpan = 12;
+    protected ?int $widgetColumnSpan = 12;
 
     final public function __construct(string $name)
     {
@@ -32,11 +33,6 @@ class Input extends Widget
     public static function make(string $name): static
     {
         return app(static::class, ['name' => $name]);
-    }
-
-    public function getType(): ?string
-    {
-        return 'text';
     }
 
     public function getData(Request $request): array

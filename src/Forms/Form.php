@@ -46,6 +46,11 @@ class Form
         return $this->formResource->getCachedFormInputs();
     }
 
+    public function getValue(?string $name = null)
+    {
+        return $this->formResource->getCachedValue($name);
+    }
+
     public function getInput(string $name): ?Input
     {
         return $this->formResource->getCachedFormInput($name);

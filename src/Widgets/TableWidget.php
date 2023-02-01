@@ -22,7 +22,7 @@ class TableWidget extends Widget implements HasTable
 
     protected ?string $widgetName = 'table';
 
-    protected int $widgetColumnSpan = 12;
+    protected ?int $widgetColumnSpan = 12;
 
     protected string $model;
 

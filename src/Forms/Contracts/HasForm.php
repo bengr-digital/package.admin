@@ -9,4 +9,5 @@ interface HasForm
     public function getCachedFormSchema(): array;
     public function getCachedFormInputs(): array;
     public function getCachedFormInput(string $name): ?Input;
+    public function getCachedValue(?string $name = null);
 }
