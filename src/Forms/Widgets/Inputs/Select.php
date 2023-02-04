@@ -12,7 +12,7 @@ class Select extends Input
 
     protected ?string $widgetName = 'input-select';
 
-    protected int $widgetColumnSpan = 12;
+    protected ?int $widgetColumnSpan = 12;
 
     public function getType(): ?string
     {
@@ -28,6 +28,7 @@ class Select extends Input
             'required' => $this->isRequired(),
             'multiple' => $this->isMultiple(),
             'searchable' => $this->isSearchable(),
+            'value' => $this->getValue(),
             'options' => $this->getOptions(),
             'rules' => $this->getRules(),
         ];

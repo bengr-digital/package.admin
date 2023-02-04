@@ -12,6 +12,11 @@ class Checkbox extends Input
 
     protected int $widgetColumnSpan = 12;
 
+    public function getType(): ?string
+    {
+        return 'checkbox';
+    }
+
     public function getData(Request $request): array
     {
         return [

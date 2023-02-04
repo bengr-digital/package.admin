@@ -41,12 +41,12 @@ trait HasRecord
         return $this;
     }
 
-    protected function getRecord(): ?Model
+    public function getRecord(): ?Model
     {
         return $this->record;
     }
 
-    protected function getModel(): ?string
+    public function getModel(): ?string
     {
         return $this->model;
     }

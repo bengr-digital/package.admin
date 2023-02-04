@@ -174,6 +174,8 @@ class TableWidget extends Widget implements HasTable
             $this->params = $request->get("params")[$this->getWidgetId()];
         };
 
+        dd($this->params);
+
         $table = $this->getTable(collect($this->params));
 
         $this->setColumnWidths($table->getColumns());

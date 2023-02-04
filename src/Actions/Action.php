@@ -15,6 +15,7 @@ class Action
     use Concerns\HasColor;
     use Concerns\HasSize;
     use Concerns\HasRoute;
+    use Concerns\HasRedirect;
     use Concerns\HasTooltip;
     use Concerns\CanBeDisabled;
     use Concerns\CanBeHidden;

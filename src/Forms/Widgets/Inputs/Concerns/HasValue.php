@@ -2,6 +2,9 @@
 
 namespace Bengr\Admin\Forms\Widgets\Inputs\Concerns;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
+
 trait HasValue
 {
     protected $value = null;
@@ -20,6 +23,13 @@ trait HasValue
 
     public function getValue()
     {
-        return $this->getType() === 'password' ? null : $this->value;
+        return $this->value;
+    }
+
+    public function getValueFromData(array | Model | null $data)
+    {
+        if (!$data) return $this->getValue();
+
+        return Arr::get($data, $this->getName());
     }
 }

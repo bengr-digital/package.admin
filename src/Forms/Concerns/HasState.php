@@ -2,9 +2,11 @@
 
 namespace Bengr\Admin\Forms\Concerns;
 
+use Bengr\Admin\Forms\Widgets\Inputs\FileInput;
 use Bengr\Admin\Forms\Widgets\Inputs\Input;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 trait HasState
 {
@@ -24,19 +26,22 @@ trait HasState
         return $this->state;
     }
 
-    public function fill(array | Model $payload = null): self
+    public function fill(array | Model | null $data = null): self
     {
-        if ($payload instanceof Model) {
-            collect($this->getFormInputs())->each(function (Input $input) use ($payload) {
-                $input->value(Arr::get($payload, $input->getName()));
-            });
-        } else if (!$payload) {
-            collect($this->getFormInputs())->each(function (Input $input) {
-                $this->state[$input->getName()] = $input->getValue();
-            });
-        } else {
-            $this->state = $payload;
-        }
+        collect($this->getFormInputs())->each(function (Input $input) use ($data) {
+            $input->value($input->getValueFromData($data));
+            $parts = Str::of($input->getName())->explode('.');
+
+            if ($parts->first() !== $parts->last()) {
+                if (!array_key_exists($parts->first(), $this->state)) {
+                    $this->state[$parts->first()] = [];
+                }
+
+                $this->state[$parts->first()][$parts->last()] = $input->getValue();
+            } else {
+                $this->state[$parts->first()] = $input->getValue();
+            }
+        });
 
         return $this;
     }

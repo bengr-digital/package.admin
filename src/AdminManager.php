@@ -212,11 +212,11 @@ class AdminManager
                 $param['record'] = !$param['table'] ? null : DB::table($param['table'])->where($param['column'], $param['value']);
 
                 try {
-                    if ($param['record']->first() && $param['record']->first()->deleted_at !== null) {
+                    if ($param['record']->first()->deleted_at !== null) {
                         $param['record'] = null;
                     }
-                } catch (QueryException $e) {
-                    $param['record'] = null;
+                } catch (\Throwable $e) {
+                    $param['record'] = $param['record'];
                 }
 
                 return $param;

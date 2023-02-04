@@ -4,30 +4,31 @@ namespace Bengr\Admin\Forms\Widgets\Inputs;
 
 use Illuminate\Http\Request;
 
-class Toggle extends Input
+class AvatarInput extends FileInput
 {
-    use Concerns\CanBeChecked;
+    use Concerns\CanBeMultiple;
 
-    protected ?string $widgetName = 'input-toggle';
+    protected ?string $widgetName = 'input-avatar';
 
     protected ?int $widgetColumnSpan = 12;
 
-    public function getType(): ?string
+    public function isMultiple(): bool
     {
-        return 'checkbox';
+        return false;
     }
 
     public function getData(Request $request): array
     {
         return [
+            'type' => $this->getType(),
             'name' => $this->getName(),
             'id' => $this->getId(),
             'label' => $this->getLabel(),
             'value' => $this->getValue(),
             'required' => $this->isRequired(),
-            'checked' => $this->isChecked(),
             'disabled' => $this->isDisabled(),
             'hidden' => $this->isHidden(),
+            'multiple' => $this->isMultiple(),
             'readonly' => $this->isReadonly(),
             'rules' => $this->getRules(),
         ];

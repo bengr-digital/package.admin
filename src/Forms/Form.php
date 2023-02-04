@@ -4,7 +4,9 @@ namespace Bengr\Admin\Forms;
 
 use Bengr\Admin\Forms\Contracts\HasForm;
 use Bengr\Admin\Forms\Widgets\Inputs\Input;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection as SupportCollection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -25,20 +27,29 @@ class Form
         return app(static::class, ['formResource' => $formResource, 'params' => $params]);
     }
 
-    public function validate(array $payload)
+    public function validate()
     {
         $rules = collect($this->getInputs())->mapWithKeys(function (Input $input) {
             return $input->getRules();
         })->toArray();
-        $validator = Validator::make($payload, $rules);
-        $validator->validate();
 
-        return $validator->validated();
+        Validator::make($this->getValue(), $rules)->validate();
     }
 
     public function getSchema(): array
     {
         return $this->formResource->getCachedFormSchema();
+    }
+
+    public function getRecord(): ?Model
+    {
+        return $this->formResource->getRecord();
+    }
+
+
+    public function getModel(): ?string
+    {
+        return $this->formResource->getModel();
     }
 
     public function getInputs(): array
@@ -54,5 +65,17 @@ class Form
     public function getInput(string $name): ?Input
     {
         return $this->formResource->getCachedFormInput($name);
+    }
+
+    public function save(): bool
+    {
+        DB::transaction(function () {
+            // $this->getRecord();
+
+            // collect($this->getInputs())->each(function (Input $input) {
+            //     $this->getRecord()->first_name = "fsdfsdf";
+            // });
+        });
+        return true;
     }
 }

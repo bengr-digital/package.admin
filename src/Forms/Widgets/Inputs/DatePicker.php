@@ -2,30 +2,41 @@
 
 namespace Bengr\Admin\Forms\Widgets\Inputs;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class Toggle extends Input
+class DatePicker extends Input
 {
-    use Concerns\CanBeChecked;
+    use Concerns\HasDate;
 
-    protected ?string $widgetName = 'input-toggle';
+    protected ?string $widgetName = 'input-datepicker';
 
     protected ?int $widgetColumnSpan = 12;
 
+    public function value($value = null): self
+    {
+        $this->value = $value ? $value->format($this->getFormat()) : null;
+
+        return $this;
+    }
+
     public function getType(): ?string
     {
-        return 'checkbox';
+        return 'datepicker';
     }
 
     public function getData(Request $request): array
     {
         return [
+            'type' => $this->getType(),
             'name' => $this->getName(),
             'id' => $this->getId(),
             'label' => $this->getLabel(),
             'value' => $this->getValue(),
+            'format' => $this->getFormat(),
+            'minDate' => $this->getMinDate(true),
+            'maxDate' => $this->getMaxDate(true),
             'required' => $this->isRequired(),
-            'checked' => $this->isChecked(),
             'disabled' => $this->isDisabled(),
             'hidden' => $this->isHidden(),
             'readonly' => $this->isReadonly(),

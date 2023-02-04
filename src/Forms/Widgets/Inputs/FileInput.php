@@ -3,13 +3,14 @@
 namespace Bengr\Admin\Forms\Widgets\Inputs;
 
 use Bengr\Admin\Actions\Action;
+use Bengr\Support\Rules\BengrFile;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
-use finfo;
 
 use function Bengr\Support\response;
 
@@ -19,28 +20,7 @@ class FileInput extends Input
 
     protected ?string $widgetName = 'input-file';
 
-    protected int $widgetColumnSpan = 12;
-
-    public function transformToUploadedFile()
-    {
-        return collect($this->value)->map(function ($file) {
-            $file_path = storage_path('app/' . $file['path']);
-            $finfo = new finfo(FILEINFO_MIME_TYPE);
-
-            if (Storage::disk('local')->exists($file['path'])) {
-
-                return new UploadedFile(
-                    $file_path,
-                    $file['path'],
-                    $finfo->file($file_path),
-                    0,
-                    false
-                );
-            }
-
-            return null;
-        })->toArray();
-    }
+    protected ?int $widgetColumnSpan = 12;
 
     public function value($value = null): self
     {
@@ -48,40 +28,75 @@ class FileInput extends Input
             if ($this->isMultiple()) {
                 $value->each(function ($file) {
                     $this->value[] = [
+                        'uuid' => $file->uuid,
                         'path' => $file->getUrl(),
                         'temporary' => false,
                     ];
                 });
             } else {
+                $this->value['uuid'] = $value[0]->uuid;
                 $this->value['path'] = $value[0]->getUrl();
                 $this->value['temporary'] = false;
             };
         } else {
-            $this->value = $value;
+            if ($value && array_key_exists(0, $value) && !$this->isMultiple()) {
+                $this->value = $value[0];
+            } else {
+                $this->value = $value;
+            }
         }
 
         return $this;
     }
 
+    public function getValueFromData(array | Model | null $data)
+    {
+        if ($data instanceof Model) {
+            $mediaCollection = $data->getMedia($this->getName());
+
+            if ($mediaCollection->count()) {
+                return $mediaCollection;
+            } else {
+                return [
+                    'uuid' => null,
+                    'path' => $data->getFallbackMediaUrl($this->getName()),
+                    'temporary' => false,
+                ];
+            }
+        }
+
+        if (!$data) return $this->getValue();
+
+        return Arr::get($data, $this->getName());
+    }
+
     public function getActions(): array
     {
         return [
-            Action::make('upload')->handle(function ($payload) {
+            Action::make('input')->handle(function ($payload) {
                 $value = [];
 
-                Validator::make($payload, [
-                    $this->getName() => ['required', 'array'],
-                    $this->getName() . ".*" => ['required', 'file']
-                ])->validate();
+                Validator::make($payload, $this->getUploadedFileRules())->validate();
 
+                if ($this->isMultiple()) {
+                    foreach ($payload[$this->getName()] as $file) {
+                        $file = Storage::disk('local')->put("/tmp", $file);
+                        $value[] = [
+                            'uuid' => null,
+                            'path' => $file,
+                            'temporary' => true
+                        ];
+                    }
+                } else {
+                    $file = Storage::disk('local')->put("/tmp", $payload[$this->getName()]);
 
-                foreach ($payload[$this->getName()] as $file) {
-                    $file = Storage::disk('local')->put("/tmp", $file);
-                    $value[] = [
+                    $value = [
+                        'uuid' => null,
                         'path' => $file,
                         'temporary' => true
                     ];
                 }
+
 
                 return response()->json([
                     'value' => $value
@@ -89,6 +104,35 @@ class FileInput extends Input
             })
         ];
     }
+
+    protected function getUploadedFileRules(): array
+    {
+
+        if ($this->isMultiple()) {
+            return [
+                $this->getName() => in_array('required', $this->rules) ? ['required', 'array'] : ['array'],
+                "{$this->getName()}.*" => collect($this->getRules()[$this->getName()])->map(function ($rule) {
+                    if ($rule instanceof BengrFile) {
+                        return 'file';
+                    }
+
+                    return $rule;
+                })->toArray(),
+
+            ];
+        }
+
+        return [
+            $this->getName() => collect($this->getRules()[$this->getName()])->map(function ($rule) {
+                if ($rule instanceof BengrFile) {
+                    return 'file';
+                }
+
+                return $rule;
+            })->toArray(),
+        ];
+    }
+
 
     public function getRules(): array
     {
