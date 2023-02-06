@@ -12,6 +12,8 @@ interface HasTable
 
     public function getCachedTableActions(): array;
 
+    public function getCachedTableFilters(): array;
+
     public function getCachedTableBulkActions(): array;
 
     public function getTableRecords(SupportCollection $params): Collection | Paginator;

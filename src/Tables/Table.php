@@ -3,6 +3,7 @@
 namespace Bengr\Admin\Tables;
 
 use Bengr\Admin\Http\Resources\ActionGroupResource;
+use Bengr\Admin\Tables\Columns\Column;
 use Bengr\Admin\Tables\Contracts\HasTable;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\Paginator;
@@ -37,6 +38,11 @@ class Table
         return $this->tableResource->getCachedTableActions();
     }
 
+    public function getFilters(): array
+    {
+        return $this->tableResource->getCachedTableFilters();
+    }
+
     public function getBulkActions(): array
     {
         return $this->tableResource->getCachedTableBulkActions();
@@ -45,6 +51,22 @@ class Table
     public function getRecords(): Collection | Paginator
     {
         return $this->tableResource->getTableRecords($this->params);
+    }
+
+    public function getWidgetsInFilters(): array
+    {
+        $widgets = [];
+
+        foreach ($this->getFilters() as $filter) {
+            $widgets = [...$widgets, ...$filter->getSchema()];
+        }
+
+        return $widgets;
+    }
+
+    public function isSearchable(): bool
+    {
+        return collect($this->getColumns())->contains(fn (Column $column) => $column->isSearchable());
     }
 
     public function getRecordsInColumns(): SupportCollection

@@ -7,6 +7,7 @@ use Bengr\Admin\Actions\ActionGroup;
 use Bengr\Admin\Exceptions\ActionNotFoundException;
 use Bengr\Admin\Http\Resources\ActionGroupResource;
 use Bengr\Admin\Http\Resources\ColumnResource;
+use Bengr\Admin\Http\Resources\WidgetResource;
 use Bengr\Admin\Tables\Concerns\InteractsWithTable;
 use Bengr\Admin\Tables\Contracts\HasTable;
 use Bengr\Admin\Widgets\Widget;
@@ -31,6 +32,8 @@ class TableWidget extends Widget implements HasTable
     protected array $actions = [];
 
     protected array $bulkActions = [];
+
+    protected array $filters = [];
 
     protected array $params = [];
 
@@ -69,6 +72,13 @@ class TableWidget extends Widget implements HasTable
         return $this;
     }
 
+
+    public function filters(array $filters): self
+    {
+        $this->filters = $filters;
+
+        return $this;
+    }
     protected function getTableColumns()
     {
         return $this->columns ?? [];
@@ -77,6 +87,11 @@ class TableWidget extends Widget implements HasTable
     protected function getTableActions(): array
     {
         return $this->actions ?? [];
+    }
+
+    protected function getTableFilters(): array
+    {
+        return $this->filters ?? [];
     }
 
     protected function getTableBulkActions(): array
@@ -174,8 +189,6 @@ class TableWidget extends Widget implements HasTable
             $this->params = $request->get("params")[$this->getWidgetId()];
         };
 
-        dd($this->params);
-
         $table = $this->getTable(collect($this->params));
 
         $this->setColumnWidths($table->getColumns());
@@ -184,6 +197,8 @@ class TableWidget extends Widget implements HasTable
             'bulkActions' => ActionGroupResource::collection($table->getBulkActions()),
             'columns' => ColumnResource::collection($table->getColumns()),
             'records' => $table->getRecordsInColumns(),
+            'filters' => WidgetResource::collection($table->getWidgetsInFilters()),
+            'isSearchable' => $table->isSearchable(),
             'pagination' => $table->getPagination()
         ];
     }
