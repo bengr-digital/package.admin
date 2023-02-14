@@ -40,6 +40,13 @@ class AdminUser extends Authenticatable implements HasMedia
         );
     }
 
+    public function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => "{$this->first_name} {$this->last_name}"
+        );
+    }
+
     public function registerMediaCollections(): void
     {
         $this

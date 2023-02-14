@@ -17,6 +17,7 @@ trait InteractsWithTable
     use Concerns\HasActions;
     use Concerns\HasFilters;
     use Concerns\HasBulkActions;
+    use Concerns\HasActionOnClick;
 
     protected Table $table;
 

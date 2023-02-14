@@ -21,6 +21,7 @@ class Action
     use Concerns\CanBeHidden;
     use Concerns\CanHandleModal;
     use Concerns\CanHandleAction;
+    use Concerns\InteractsWithRecord;
 
     final public function __construct(string $name)
     {

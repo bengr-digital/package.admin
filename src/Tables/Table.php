@@ -2,12 +2,15 @@
 
 namespace Bengr\Admin\Tables;
 
+use Bengr\Admin\Actions\Action;
 use Bengr\Admin\Http\Resources\ActionGroupResource;
+use Bengr\Admin\Http\Resources\ActionResource;
 use Bengr\Admin\Tables\Columns\Column;
 use Bengr\Admin\Tables\Contracts\HasTable;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection as SupportCollection;
 
@@ -33,9 +36,14 @@ class Table
         return $this->tableResource->getCachedTableColumns();
     }
 
-    public function getActions(): array
+    public function getActions(?Model $record = null): array
     {
-        return $this->tableResource->getCachedTableActions();
+        return $this->tableResource->getCachedTableActions($record);
+    }
+
+    public function getActionOnClick(?Model $record = null): ?Action
+    {
+        return $this->tableResource->getCachedTableActionOnClick($record);
     }
 
     public function getFilters(): array
@@ -91,7 +99,9 @@ class Table
 
             $record_in_column->put('columns', $columns);
 
-            $record_in_column->put('actions', ActionGroupResource::collection($this->getActions()));
+            $record_in_column->put('actionOnClick', $this->getActionOnClick($record) ? ActionResource::make($this->getActionOnClick($record)) : null);
+
+            $record_in_column->put('actions', ActionGroupResource::collection($this->getActions($record)));
 
             $records_in_columns->push($record_in_column);
         }

@@ -30,9 +30,17 @@ class ActionResource extends JsonResource
                 'title' => $this->getConfirmTitle(),
                 'description' => $this->getConfirmDescription(),
             ] : null,
-            'redirect' => $this->getRedirectName() && $this->getRedirectUrl() ? [
-                'name' => $this->getRedirectName(),
-                'url' => $this->getRedirectUrl(),
+            'redirect' => $this->getRedirectName([
+                'record' => $this->getRecord()
+            ]) && $this->getRedirectUrl([
+                'record' => $this->getRecord()
+            ]) ? [
+                'name' => $this->getRedirectName([
+                    'record' => $this->getRecord()
+                ]),
+                'url' => $this->getRedirectUrl([
+                    'record' => $this->getRecord()
+                ]),
             ] : null,
             'modal' => $this->getModalId() && $this->getModalEvent() ? [
                 'id' => $this->getModalId(),
