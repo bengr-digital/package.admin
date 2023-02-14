@@ -160,7 +160,7 @@ class TableWidget extends Widget implements HasTable
 
         if ($action) {
             Validator::make($payload, [
-                'id' => ['required', Rule::exists($this->getTableModel(), 'id')->where('deleted_at', null)]
+                'id' => ['required', Rule::exists($this->getTableModel(), 'id')]
             ])->validate();
 
             return $action->getHandleMethod()(app($this->getTableModel())->find($payload['id']), $payload);
@@ -169,7 +169,7 @@ class TableWidget extends Widget implements HasTable
         if ($bulkAction) {
             Validator::make($payload, [
                 'ids' => ['required', 'array'],
-                'ids.*' => [Rule::exists($this->getTableModel(), 'id')->where('deleted_at', null)]
+                'ids.*' => [Rule::exists($this->getTableModel(), 'id')]
             ])->validate();
 
             return $bulkAction->getHandleMethod()(app($this->getTableModel())->whereIn('id', $payload['ids'])->get(), $payload);
