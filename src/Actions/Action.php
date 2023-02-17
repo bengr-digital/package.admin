@@ -19,6 +19,7 @@ class Action
     use Concerns\HasTooltip;
     use Concerns\CanBeDisabled;
     use Concerns\CanBeHidden;
+    use Concerns\CanBeDownload;
     use Concerns\CanHandleModal;
     use Concerns\CanHandleAction;
     use Concerns\InteractsWithRecord;

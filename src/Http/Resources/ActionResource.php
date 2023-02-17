@@ -48,7 +48,8 @@ class ActionResource extends JsonResource
             ] : null,
             'call' => $this->hasHandle() ? [
                 'name' => $this->getName(),
-                'widget_id' => $this->getHandleWidgetId()
+                'widget_id' => $this->getHandleWidgetId(),
+                'download' => $this->isDownload()
             ] : null
 
         ];

@@ -3,10 +3,8 @@
 namespace Bengr\Admin\Widgets;
 
 use Bengr\Admin\Concerns\EvaluatesClosures;
-use Bengr\Admin\Http\Resources\WidgetResource;
 use Illuminate\Http\Request;
 use Bengr\Admin\Actions\Concerns;
-use Bengr\Admin\Http\Resources\ActionResource;
 use Illuminate\Support\Str;
 
 class ActionWidget extends Widget
@@ -22,6 +20,7 @@ class ActionWidget extends Widget
     use Concerns\CanBeDisabled;
     use Concerns\CanBeHidden;
     use Concerns\CanHandleModal;
+    use Concerns\CanBeDownload;
     use Concerns\CanHandleAction;
     use Concerns\HasConfirm;
 
@@ -76,7 +75,8 @@ class ActionWidget extends Widget
             ] : null,
             'call' => $this->hasHandle() ? [
                 'name' => $this->getName(),
-                'widget_id' => $this->getHandleWidgetId()
+                'widget_id' => $this->getHandleWidgetId(),
+                'download' => $this->isDownload()
             ] : null
         ];
     }
