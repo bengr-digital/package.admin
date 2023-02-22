@@ -20,6 +20,10 @@ class Widget
 
     protected ?int $widgetColumnSpan = 12;
 
+    protected bool $showOnlyChildren = false;
+
+    protected bool $withoutProps = false;
+
     protected $transformed_actions;
 
     public function widgetColumnSpan(?int $widgetColumnSpan): self
@@ -32,6 +36,20 @@ class Widget
     public function widgetColumn(?int $widgetColumnSpan): self
     {
         $this->widgetColumnSpan = $widgetColumnSpan;
+
+        return $this;
+    }
+
+    public function showOnlyChildren(bool $condition = true): self
+    {
+        $this->showOnlyChildren = $condition;
+
+        return $this;
+    }
+
+    public function withoutProps(bool $condition = true): self
+    {
+        $this->withoutProps = $condition;
 
         return $this;
     }
@@ -63,6 +81,16 @@ class Widget
     public function getWidgetColumnSpan(): ?int
     {
         return $this->widgetColumnSpan;
+    }
+
+    public function getShowOnlyChildren(): bool
+    {
+        return $this->showOnlyChildren;
+    }
+
+    public function getWithoutProps(): bool
+    {
+        return $this->withoutProps;
     }
 
     public function hasWidgets(): bool

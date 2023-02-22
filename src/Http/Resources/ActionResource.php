@@ -29,10 +29,11 @@ class ActionResource extends JsonResource
             'confirm' => $this->hasConfirm() ? [
                 'title' => $this->getConfirmTitle(),
                 'description' => $this->getConfirmDescription(),
+                'color' => $this->getConfirmColor(),
+                'confirmText' => $this->getConfirmConfirmText(),
+                'cancelText' => $this->getConfirmCancelText(),
             ] : null,
-            'redirect' => $this->getRedirectName([
-                'record' => $this->getRecord()
-            ]) && $this->getRedirectUrl([
+            'redirect' => $this->getRedirectUrl([
                 'record' => $this->getRecord()
             ]) ? [
                 'name' => $this->getRedirectName([
@@ -41,6 +42,7 @@ class ActionResource extends JsonResource
                 'url' => $this->getRedirectUrl([
                     'record' => $this->getRecord()
                 ]),
+                'inNewTab' => $this->openInNewTab()
             ] : null,
             'modal' => $this->getModalId() && $this->getModalEvent() ? [
                 'id' => $this->getModalId(),

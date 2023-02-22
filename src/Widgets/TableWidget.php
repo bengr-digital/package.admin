@@ -6,6 +6,7 @@ use Bengr\Admin\Actions\Action;
 use Bengr\Admin\Actions\ActionGroup;
 use Bengr\Admin\Exceptions\ActionNotFoundException;
 use Bengr\Admin\Http\Resources\ActionGroupResource;
+use Bengr\Admin\Http\Resources\ActionResource;
 use Bengr\Admin\Http\Resources\ColumnResource;
 use Bengr\Admin\Http\Resources\WidgetResource;
 use Bengr\Admin\Tables\Concerns\InteractsWithTable;

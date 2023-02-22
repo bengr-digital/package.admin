@@ -14,11 +14,12 @@ class WidgetResource extends JsonResource
      */
     public function toArray($request)
     {
+
         return [
             'id' => $this->getWidgetId(),
             'type' => $this->getWidgetName(),
             'columnSpan' => $this->getWidgetColumnSpan(),
-            'props' => $this->getData($request)
+            'props' => !$this->getWithoutProps() ? $this->getData($request) : [],
         ];
     }
 }

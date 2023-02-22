@@ -8,6 +8,7 @@ use Bengr\Admin\Actions\ActionGroup;
 use Bengr\Admin\Exceptions\ActionNotFoundException;
 use Bengr\Admin\Facades\Admin as BengrAdmin;
 use Bengr\Admin\Navigation\NavigationItem;
+use Bengr\Admin\Widgets\FormWidget;
 use Bengr\Admin\Widgets\Widget;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -46,6 +47,8 @@ class Page
     protected bool $hasNavigation = true;
 
     protected bool $hasTopbar = true;
+
+    protected bool $hasLargeForm = false;
 
     protected array $breadcrumbs = [];
 
@@ -316,6 +319,16 @@ class Page
         return array_shift($widget);
     }
 
+    public function getLargeForm(): ?FormWidget
+    {
+        if (collect($this->getWidgets())->first() instanceof FormWidget && $this->hasLargeForm()) {
+            collect($this->getWidgets())->first()->showOnlyChildren(true);
+            return collect($this->getWidgets())->first()->withoutProps();
+        }
+
+        return null;
+    }
+
     public function hasNavigation(): bool
     {
         return $this->hasNavigation;
@@ -324,6 +337,11 @@ class Page
     public function hasTopbar(): bool
     {
         return $this->hasTopbar;
+    }
+
+    public function hasLargeForm(): bool
+    {
+        return $this->hasLargeForm;
     }
 
     protected function loopActions(array $actions)

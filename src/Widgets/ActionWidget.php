@@ -16,6 +16,7 @@ class ActionWidget extends Widget
     use Concerns\HasColor;
     use Concerns\HasSize;
     use Concerns\HasRoute;
+    use Concerns\HasRedirect;
     use Concerns\HasTooltip;
     use Concerns\CanBeDisabled;
     use Concerns\CanBeHidden;
@@ -64,10 +65,14 @@ class ActionWidget extends Widget
             'confirm' => $this->hasConfirm() ? [
                 'title' => $this->getConfirmTitle(),
                 'description' => $this->getConfirmDescription(),
+                'color' => $this->getConfirmColor(),
+                'confirmText' => $this->getConfirmConfirmText(),
+                'cancelText' => $this->getConfirmCancelText(),
             ] : null,
-            'redirect' => $this->getRouteName() && $this->getRouteUrl() ? [
-                'name' => $this->getRouteName(),
-                'url' => $this->getRouteUrl(),
+            'redirect' => $this->getRedirectUrl() ? [
+                'name' => $this->getRedirectName(),
+                'url' => $this->getRedirectUrl(),
+                'inNewTab' => $this->openInNewTab(),
             ] : null,
             'modal' => $this->getModalId() && $this->getModalEvent() ? [
                 'id' => $this->getModalId(),

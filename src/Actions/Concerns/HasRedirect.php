@@ -14,10 +14,7 @@ trait HasRedirect
 
     protected ?string $redirectUrl = null;
 
-    public function isParam($value): bool
-    {
-        return Str::of($value)->startsWith('{') && Str::of($value)->endsWith('}');
-    }
+    protected bool $inNewTab = false;
 
     public function redirect(string | \Closure | null $page, array | \Closure | null $params = []): static
     {
@@ -27,15 +24,31 @@ trait HasRedirect
         return $this;
     }
 
+    public function inNewTab(bool $condition = true)
+    {
+        $this->inNewTab = $condition;
+
+        return $this;
+    }
+
+
+    public function isParam($value): bool
+    {
+        return Str::of($value)->startsWith('{') && Str::of($value)->endsWith('}');
+    }
+
     public function evaluateRedirect(...$parameters)
     {
         return;
     }
 
-    public function getRedirectUrl($parameters): ?string
+    public function getRedirectUrl($parameters = []): ?string
     {
+        if (!class_exists($this->redirectPage)) return $this->redirectPage;
+
         $page = $this->evaluate($this->redirectPage, $parameters);
         $params = $this->evaluate($this->redirectParams, $parameters);
+
         if ($page) {
             $url = collect(Str::of(app($page)->getRouteUrl())->explode("/")->filter()->values())->map(function ($part) use ($params) {
                 if ($this->isParam($part)) {
@@ -62,8 +75,10 @@ trait HasRedirect
         return $this->redirectUrl ?? null;
     }
 
-    public function getRedirectName($parameters): ?string
+    public function getRedirectName($parameters = []): ?string
     {
+        if (!class_exists($this->redirectPage)) return null;
+
         $page = $this->evaluate($this->redirectPage, $parameters);
         $params = $this->evaluate($this->redirectParams, $parameters);
 
@@ -91,5 +106,10 @@ trait HasRedirect
         }
 
         return $this->redirectName ?? null;
+    }
+
+    public function openInNewTab(): bool
+    {
+        return $this->inNewTab;
     }
 }
