@@ -26,7 +26,7 @@ class ActionController extends Controller
 
         if (!$page) return response()->throw(PageNotFoundException::class);
 
-        if ($request->has('widget_id')) {
+        if ($request->get('widget_id')) {
             $widget = $page->getWidget($request->get('widget_id'));
 
 
