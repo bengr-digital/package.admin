@@ -18,7 +18,7 @@ trait CanHandleAction
 
     public function hasHandle()
     {
-        return $this->handleMethod ? true : false;
+        return $this->handleMethod || $this->handleWidgetId;
     }
 
     public function getHandleMethod(): ?\Closure

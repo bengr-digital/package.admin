@@ -3,12 +3,13 @@
 namespace Bengr\Admin\Tables\Filters\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 trait InteractsWithTableQuery
 {
     protected ?\Closure $modifyQueryUsing = null;
 
-    public function apply(Builder $query, array $data = []): Builder
+    public function apply(Builder $query, Collection $data): Builder
     {
         if ($this->isHidden()) {
             return $query;

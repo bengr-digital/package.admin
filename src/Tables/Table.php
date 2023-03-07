@@ -41,9 +41,9 @@ class Table
         return $this->tableResource->getCachedTableActions($record);
     }
 
-    public function getActionOnClick(?Model $record = null): ?Action
+    public function getActionOnClick(): ?Action
     {
-        return $this->tableResource->getCachedTableActionOnClick($record);
+        return $this->tableResource->getCachedTableActionOnClick();
     }
 
     public function getFilters(): array
@@ -99,9 +99,23 @@ class Table
 
             $record_in_column->put('columns', $columns);
 
-            $record_in_column->put('actionOnClick', $this->getActionOnClick($record) ? ActionResource::make($this->getActionOnClick($record)) : null);
+            if ($this->getActionOnClick()) {
+                $actionOnClick = (clone $this->getActionOnClick())->record($record);
+                $record_in_column->put('actionOnClick', ActionResource::make($actionOnClick));
+            } else {
+                $record_in_column->put('actionOnClick', null);
+            }
 
-            $record_in_column->put('actions', ActionGroupResource::collection($this->getActions($record)));
+
+
+            $actions = collect($this->getActions())->map(function ($action) {
+                return clone $action;
+            })->each(function ($action) use ($record) {
+                $action->record($record);
+            });
+
+
+            $record_in_column->put('actions', ActionGroupResource::collection($actions));
 
             $records_in_columns->push($record_in_column);
         }

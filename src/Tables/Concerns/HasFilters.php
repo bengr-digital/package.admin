@@ -16,7 +16,7 @@ trait HasFilters
             foreach ($this->getCachedTableFilters() as $filter) {
                 $filter->apply(
                     $query,
-                    !$filter->getName() ? $data : $data[$filter->getName()] ?? [],
+                    !$filter->getName() ? collect($data) : collect($data[$filter->getName()] ?? []),
                 );
             }
         });

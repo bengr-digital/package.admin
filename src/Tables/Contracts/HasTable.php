@@ -12,9 +12,9 @@ interface HasTable
 {
     public function getCachedTableColumns(): array;
 
-    public function getCachedTableActions(?Model $record): array;
+    public function getCachedTableActions(): array;
 
-    public function getCachedTableActionOnClick(?Model $record): ?Action;
+    public function getCachedTableActionOnClick(): ?Action;
 
     public function getCachedTableFilters(): array;
 

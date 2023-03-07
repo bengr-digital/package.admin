@@ -26,4 +26,9 @@ trait HasIcon
     {
         return $this->evaluate($this->icon_type);
     }
+
+    public function hasIcon(): bool
+    {
+        return $this->icon_name && $this->icon_type;
+    }
 }

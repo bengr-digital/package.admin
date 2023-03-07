@@ -7,12 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 trait HasActionOnClick
 {
-    public function getCachedTableActionOnClick(?Model $record): ?Action
+    public function getCachedTableActionOnClick(): ?Action
     {
-        if ($record && $this->getTableActionOnClick()) {
-            $this->getTableActionOnClick()->record($record);
-        }
-
         return $this->getTableActionOnClick();
     }
 
