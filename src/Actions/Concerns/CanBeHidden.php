@@ -24,13 +24,13 @@ trait CanBeHidden
         return $this;
     }
 
-    public function isHidden(): bool
+    public function isHidden($parameters = []): bool
     {
-        if ($this->evaluate($this->isHidden)) {
+        if ($this->evaluate($this->isHidden, $parameters)) {
             return true;
         }
 
-        if (!$this->evaluate($this->isVisible)) {
+        if (!$this->evaluate($this->isVisible, $parameters)) {
             return true;
         }
 

@@ -10,6 +10,10 @@ class UserMenuItem
 
     protected string $iconType;
 
+    protected ?string $activeIconName = null;
+
+    protected ?string $activeIconType = null;
+
     protected ?int $sort = null;
 
     protected string $routeName;
@@ -36,6 +40,14 @@ class UserMenuItem
     {
         $this->iconName = $iconName;
         $this->iconType = $iconType;
+
+        return $this;
+    }
+
+    public function activeIcon(?string $activeIconName, ?string $activeIconType): self
+    {
+        $this->activeIconName = $activeIconName;
+        $this->activeIconType = $activeIconType;
 
         return $this;
     }
@@ -68,6 +80,16 @@ class UserMenuItem
     public function getIconType(): string
     {
         return $this->iconType;
+    }
+
+    public function getActiveIconName(): ?string
+    {
+        return $this->activeIconName ?? $this->getIconName();
+    }
+
+    public function getActiveIconType(): ?string
+    {
+        return $this->activeIconType ?? $this->getIconType();
     }
 
     public function getSort(): ?int

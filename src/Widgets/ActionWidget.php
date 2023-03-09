@@ -54,8 +54,9 @@ class ActionWidget extends Widget
             'label' => $this->getLabel(),
             'icon' => $this->hasIcon() ? [
                 'name' => $this->getIconName(),
-                'activeName' => $this->getIconName(),
                 'type' => $this->getIconType(),
+                'activeName' => $this->getActiveIconName(),
+                'activeType' => $this->getActiveIconType(),
             ] : null,
             'color' => $this->getColor(),
             'size' => $this->getSize(),

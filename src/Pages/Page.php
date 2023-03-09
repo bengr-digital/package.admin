@@ -36,7 +36,9 @@ class Page
 
     protected ?string $navigationIconType = null;
 
-    protected ?string $navigationActiveIcon = null;
+    protected ?string $navigationActiveIconName = null;
+
+    protected ?string $navigationActiveIconType = null;
 
     protected ?string $navigationGroup = null;
 
@@ -94,7 +96,7 @@ class Page
             NavigationItem::make($this->getNavigationLabel())
                 ->group($this->getNavigationGroup())
                 ->icon($this->getNavigationIconName(), $this->getNavigationIconType())
-                ->activeIcon($this->getNavigationActiveIcon())
+                ->activeIcon($this->getNavigationActiveIconName(), $this->getNavigationActiveIconType())
                 ->sort($this->getNavigationSort())
                 ->badge($this->getNavigationBadge(), $this->getNavigationBadgeColor())
                 ->route($this->getRouteName(), $this->getRouteUrl())
@@ -227,9 +229,14 @@ class Page
         return $this->navigationIconType ?? 'outlined';
     }
 
-    protected function getNavigationActiveIcon(): ?string
+    protected function getNavigationActiveIconName(): ?string
     {
-        return $this->navigationActiveIcon ?? $this->getNavigationIconName();
+        return $this->navigationActiveIconName ?? $this->getNavigationIconName();
+    }
+
+    protected function getNavigationActiveIconType(): ?string
+    {
+        return $this->navigationActiveIconType ?? $this->getNavigationIconType();
     }
 
     protected function getNavigationGroup(): ?string

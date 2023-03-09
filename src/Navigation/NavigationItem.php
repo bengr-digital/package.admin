@@ -10,7 +10,9 @@ class NavigationItem
 
     protected string $iconType;
 
-    protected ?string $activeIcon = null;
+    protected ?string $activeIconName = null;
+
+    protected ?string $activeIconType = null;
 
     protected ?string $group = null;
 
@@ -53,9 +55,10 @@ class NavigationItem
         return $this;
     }
 
-    public function activeIcon(string $activeIcon): self
+    public function activeIcon(?string $activeIconName, ?string $activeIconType): self
     {
-        $this->activeIcon = $activeIcon;
+        $this->activeIconName = $activeIconName;
+        $this->activeIconType = $activeIconType;
 
         return $this;
     }
@@ -104,7 +107,7 @@ class NavigationItem
                 NavigationItem::make($this->getLabel())
                     ->group($this->getGroup())
                     ->icon($this->getIconName(), $this->getIconType())
-                    ->activeIcon($this->getActiveIcon())
+                    ->activeIcon($this->getActiveIconName(), $this->getActiveIconType())
                     ->sort($this->getSort())
                     ->badge($this->getBadge(), $this->getBadgeColor())
                     ->route($this->getRouteName(), $this->getRouteUrl())
@@ -129,9 +132,14 @@ class NavigationItem
         return $this->iconType;
     }
 
-    public function getActiveIcon(): ?string
+    public function getActiveIconName(): ?string
     {
-        return $this->activeIcon;
+        return $this->activeIconName;
+    }
+
+    public function getActiveIconType(): ?string
+    {
+        return $this->activeIconType;
     }
 
     public function getGroup(): ?string

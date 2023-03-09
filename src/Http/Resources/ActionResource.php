@@ -18,14 +18,17 @@ class ActionResource extends JsonResource
             'label' => $this->getLabel(),
             'icon' => $this->hasIcon() ? [
                 'name' => $this->getIconName(),
-                'activeName' => $this->getIconName(),
                 'type' => $this->getIconType(),
+                'activeName' => $this->getActiveIconName(),
+                'activeType' => $this->getActiveIconType(),
             ] : null,
             'color' => $this->getColor(),
             'size' => $this->getSize(),
             'tooltip' => $this->getTooltip(),
             'isDisabled' => $this->isDisabled(),
-            'isHidden' => $this->isHidden(),
+            'isHidden' => $this->isHidden([
+                'record' => $this->getRecord()
+            ]),
             'confirm' => $this->hasConfirm() ? [
                 'title' => $this->getConfirmTitle(),
                 'description' => $this->getConfirmDescription(),

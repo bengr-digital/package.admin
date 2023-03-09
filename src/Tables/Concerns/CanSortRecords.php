@@ -3,7 +3,6 @@
 namespace Bengr\Admin\Tables\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -16,7 +15,7 @@ trait CanSortRecords
         if (!$sortColumn) return $query;
 
 
-        $sortDirection = Str::of($this->getTableSortDirection($params))->lower()->value() === 'desc' ? 'desc' : 'asc';
+        $sortDirection = Str::of($this->getTableSortDirection($params))->lower()->value() === 'asc' ? 'asc' : 'desc';
 
         $column = $this->getTableColumn($sortColumn);
 
