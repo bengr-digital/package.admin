@@ -32,6 +32,6 @@ trait InteractsWithTable
 
     protected function getTableQuery(): Builder
     {
-        return app($this->getTableModel())->query()->orderBy('created_at', 'desc');
+        return app($this->getTableModel())->query();
     }
 }
