@@ -3,6 +3,7 @@
 namespace Bengr\Admin\Tables\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
 
 trait HasFilters
@@ -12,14 +13,14 @@ trait HasFilters
         $data = $params->get($this->getTableFilterParam());
         if (!$data) return $query;
 
-        return $query->where(function (Builder $query) use ($data) {
-            foreach ($this->getCachedTableFilters() as $filter) {
-                $filter->apply(
-                    $query,
-                    !$filter->getName() ? collect($data) : collect($data[$filter->getName()] ?? []),
-                );
-            }
-        });
+        foreach ($this->getCachedTableFilters() as $filter) {
+            $filter->apply(
+                $query,
+                !$filter->getName() ? collect($data) : collect($data[$filter->getName()] ?? []),
+            );
+        }
+
+        return $query;
     }
 
     protected function getTableFilterParam(): string

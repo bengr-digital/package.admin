@@ -26,6 +26,7 @@ trait HasRecords
         $this->applySortingToTableQuery($query, $params);
         $this->applySearchToTableQuery($query, $params);
 
+
         foreach ($this->getCachedTableColumns() as $column) {
             $column->applyEagerLoading($query);
             $column->applyRelationshipAggregates($query);
