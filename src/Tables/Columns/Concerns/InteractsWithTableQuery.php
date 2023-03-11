@@ -71,7 +71,7 @@ trait InteractsWithTableQuery
                 $direction,
             ),
             fn ($query) => $query->orderBy($this->getName(), $direction),
-        );
+        )->orderBy('id', $direction);
 
         return $query;
     }

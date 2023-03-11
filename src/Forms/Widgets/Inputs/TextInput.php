@@ -8,7 +8,7 @@ class TextInput extends Input
 {
     protected ?string $widgetName = 'input-text';
 
-    protected int $widgetColumnSpan = 12;
+    protected ?int $widgetColumnSpan = 12;
 
     public function getData(Request $request): array
     {
@@ -22,8 +22,7 @@ class TextInput extends Input
             'required' => $this->isRequired(),
             'disabled' => $this->isDisabled(),
             'hidden' => $this->isHidden(),
-            'readonly' => $this->isReadonly(),
-            'rules' => $this->getRules(),
+            'readonly' => $this->isReadonly()
         ];
     }
 }

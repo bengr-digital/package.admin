@@ -21,6 +21,11 @@ return [
         'register' => []
     ],
 
+    'global_actions' => [
+        'namespace' => 'App\\Admin\\GlobalActions',
+        'path' => app_path('Admin/GlobalActions')
+    ],
+
     'tables' => [
         'pagination' => [
             'per_page' => 5,

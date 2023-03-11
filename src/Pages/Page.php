@@ -7,11 +7,15 @@ use Bengr\Admin\Actions\Action;
 use Bengr\Admin\Actions\ActionGroup;
 use Bengr\Admin\Exceptions\ActionNotFoundException;
 use Bengr\Admin\Facades\Admin as BengrAdmin;
+use Bengr\Admin\GlobalSearch\GlobalSearchResult;
 use Bengr\Admin\Navigation\NavigationItem;
 use Bengr\Admin\Widgets\FormWidget;
 use Bengr\Admin\Widgets\Widget;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 use function Bengr\Support\response;
@@ -61,6 +65,10 @@ class Page
     protected $transformed_widgets;
 
     protected $transformed_actions;
+
+    protected bool $isGloballySearchable = false;
+
+    protected int $globalSearchResultsLimit = 5;
 
     public function slug(string $slug): self
     {
@@ -375,5 +383,94 @@ class Page
         if (!$action) return response()->throw(ActionNotFoundException::class);
 
         return $action->getHandleMethod()($payload);
+    }
+
+    public function getGlobalSearchCategoryLabel(): ?string
+    {
+        return $this->getTitle();
+    }
+
+    public function canGloballySearch(): bool
+    {
+        return $this->isGloballySearchable;
+    }
+
+    public function getGlobalSearchResultsLimit(): int
+    {
+        return $this->globalSearchResultsLimit;
+    }
+
+    public function getGloballySearchableAttributes(): array
+    {
+        return [];
+    }
+
+    public function getGlobalSearchResult(Model $record): array
+    {
+        return [];
+    }
+
+    public function getGlobalSearchResults(string $searchQuery): Collection
+    {
+        $query = $this->getModel()->query();
+
+        $this->getGlobalSearchEloquentQuery($query);
+
+        foreach (explode(' ', $searchQuery) as $searchQueryWord) {
+            $query->where(function (Builder $query) use ($searchQueryWord) {
+                $isFirst = true;
+
+                foreach ($this->getGloballySearchableAttributes() as $attributes) {
+                    $this->applyGlobalSearchAttributeConstraint($query, Arr::wrap($attributes), $searchQueryWord, $isFirst);
+                }
+            });
+        }
+
+
+        return $query
+            ->limit($this->getGlobalSearchResultsLimit())
+            ->get()
+            ->map(function (Model $record): ?GlobalSearchResult {
+                $result = $this->getGlobalSearchResult($record);
+
+                return new GlobalSearchResult(
+                    title: $result['title'],
+                    description: $result['description'] ?? null,
+                    redirect: $result['redirect'],
+                    icon: $result['icon'] ?? null,
+                    image: $result['image'] ?? null
+                );
+            })
+            ->filter();
+    }
+
+    protected function applyGlobalSearchAttributeConstraint(Builder $query, array $searchAttributes, string $searchQuery, bool &$isFirst): Builder
+    {
+        foreach ($searchAttributes as $searchAttribute) {
+            $whereClause = $isFirst ? 'where' : 'orWhere';
+
+            $query->when(
+                Str::of($searchAttribute)->contains('.'),
+                fn ($query) => $query->{"{$whereClause}Relation"}(
+                    (string) Str::of($searchAttribute)->beforeLast('.'),
+                    (string) Str::of($searchAttribute)->afterLast('.'),
+                    'like',
+                    "%{$searchQuery}%",
+                ),
+                fn ($query) => $query->{$whereClause}(
+                    $searchAttribute,
+                    'like',
+                    "%{$searchQuery}%",
+                ),
+            );
+            $isFirst = false;
+        }
+
+        return $query;
+    }
+
+    protected function getGlobalSearchEloquentQuery(Builder $query): Builder
+    {
+        return $query;
     }
 }

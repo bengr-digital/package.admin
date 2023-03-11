@@ -4,6 +4,7 @@ namespace Bengr\Admin;
 
 use Bengr\Admin\Commands\MakeAdminUserCommand;
 use Bengr\Admin\Facades;
+use Bengr\Admin\GlobalActions\GlobalAction;
 use Bengr\Admin\Pages\Page;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
@@ -14,6 +15,7 @@ use Symfony\Component\Finder\SplFileInfo;
 class AdminServiceProvider extends PackageServiceProvider
 {
     protected array $pages = [];
+    protected array $globalActions = [];
 
     public function configurePackage(Package $package): void
     {
@@ -37,6 +39,7 @@ class AdminServiceProvider extends PackageServiceProvider
     {
         $this->app->resolving('admin', function () {
             Facades\Admin::registerPages($this->getPages());
+            Facades\Admin::registerGlobalActions($this->getGlobalActions());
         });
 
         $this->app->booting(function () {
@@ -64,6 +67,12 @@ class AdminServiceProvider extends PackageServiceProvider
             $this->pages,
             config('admin.pages.path'),
             config('admin.pages.namespace'),
+        );
+        $this->registerComponentsFromDirectory(
+            GlobalAction::class,
+            $this->globalActions,
+            config('admin.global_actions.path'),
+            config('admin.global_actions.namespace'),
         );
     }
 
@@ -110,5 +119,10 @@ class AdminServiceProvider extends PackageServiceProvider
     protected function getPages(): array
     {
         return $this->pages;
+    }
+
+    protected function getGlobalActions(): array
+    {
+        return $this->globalActions;
     }
 }

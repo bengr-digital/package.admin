@@ -2,11 +2,13 @@
 
 namespace Bengr\Admin\Forms\Widgets\Inputs;
 
+use Bengr\Admin\Concerns\EvaluatesClosures;
 use Bengr\Admin\Widgets\Widget;
 use Illuminate\Http\Request;
 
 class Input extends Widget
 {
+    use EvaluatesClosures;
     use Concerns\HasId;
     use Concerns\HasType;
     use Concerns\HasName;
@@ -47,8 +49,7 @@ class Input extends Widget
             'required' => $this->isRequired(),
             'disabled' => $this->isDisabled(),
             'hidden' => $this->isHidden(),
-            'readonly' => $this->isReadonly(),
-            'rules' => $this->getRules(),
+            'readonly' => $this->isReadonly()
         ];
     }
 }

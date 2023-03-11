@@ -17,4 +17,9 @@ trait CanBeChecked
     {
         return $this->isChecked;
     }
+
+    public function checkable(): bool
+    {
+        return true;
+    }
 }

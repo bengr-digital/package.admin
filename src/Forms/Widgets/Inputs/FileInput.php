@@ -134,17 +134,17 @@ class FileInput extends Input
     }
 
 
-    public function getRules(): array
+    public function getRules(array $parameters = []): array
     {
         if ($this->isMultiple()) {
             return [
-                $this->getName() => in_array('required', $this->rules) ? ['required', 'array'] : ['array'],
-                "{$this->getName()}.*" => $this->rules,
+                $this->getName() => in_array('required', $this->evaluate($this->rules, $parameters)) ? ['required', 'array'] : ['array'],
+                "{$this->getName()}.*" => $this->evaluate($this->rules, $parameters),
             ];
         }
 
         return [
-            $this->getName() => $this->rules
+            $this->getName() => $this->evaluate($this->rules, $parameters)
         ];
     }
 
@@ -165,8 +165,7 @@ class FileInput extends Input
             'disabled' => $this->isDisabled(),
             'hidden' => $this->isHidden(),
             'multiple' => $this->isMultiple(),
-            'readonly' => $this->isReadonly(),
-            'rules' => $this->getRules(),
+            'readonly' => $this->isReadonly()
         ];
     }
 }

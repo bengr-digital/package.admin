@@ -4,18 +4,9 @@ namespace Bengr\Admin\Forms\Widgets\Inputs;
 
 use Illuminate\Http\Request;
 
-class Toggle extends Input
+class Toggle extends Checkbox
 {
-    use Concerns\CanBeChecked;
-
     protected ?string $widgetName = 'input-toggle';
-
-    protected ?int $widgetColumnSpan = 12;
-
-    public function getType(): ?string
-    {
-        return 'checkbox';
-    }
 
     public function getData(Request $request): array
     {
@@ -28,8 +19,7 @@ class Toggle extends Input
             'checked' => $this->isChecked(),
             'disabled' => $this->isDisabled(),
             'hidden' => $this->isHidden(),
-            'readonly' => $this->isReadonly(),
-            'rules' => $this->getRules(),
+            'readonly' => $this->isReadonly()
         ];
     }
 }

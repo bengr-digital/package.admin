@@ -2,11 +2,13 @@
 
 namespace Bengr\Admin\Http\Controllers\Builder;
 
+use Bengr\Admin\Exceptions\ActionNotFoundException;
 use Bengr\Admin\Http\Controllers\Controller;
 use Bengr\Admin\Exceptions\PageNotFoundException;
 use Bengr\Admin\Exceptions\WidgetNotFoundException;
+use Bengr\Admin\Exceptions\GlobalActionNotFoundException;
 use Bengr\Admin\Facades\Admin as BengrAdmin;
-use Bengr\Admin\Http\Requests\Builder\CallActionRequest;
+use Illuminate\Http\Request;
 
 use function Bengr\Support\response;
 
@@ -19,8 +21,17 @@ class ActionController extends Controller
     /**
      * Call action on page or widget
      */
-    public function call(CallActionRequest $request)
+    public function call(Request $request)
     {
+        if (!$request->get('name')) return response()->throw(ActionNotFoundException::class);
+
+        if (!$request->has('url') && !$request->has('widget_id')) {
+            $globalAction = BengrAdmin::getGlobalActionByName($request->get('name'));
+
+            if (!$globalAction) return response()->throw(GlobalActionNotFoundException::class);
+
+            return $globalAction->processToResponse($request, fn () => $globalAction->call($request->get('payload') ?? []));
+        }
 
         $page = BengrAdmin::getPageByUrl($request->get('url'));
 

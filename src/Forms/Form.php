@@ -30,7 +30,9 @@ class Form
     public function validate()
     {
         $rules = collect($this->getInputs())->mapWithKeys(function (Input $input) {
-            return $input->getRules();
+            return $input->getRules([
+                'record' => $this->getRecord()
+            ]);
         })->toArray();
 
         Validator::make($this->getValue(), $rules)->validate();

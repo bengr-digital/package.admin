@@ -10,7 +10,7 @@ class Radio extends Input
 
     protected ?string $widgetName = 'input-radio';
 
-    protected int $widgetColumnSpan = 12;
+    protected ?int $widgetColumnSpan = 12;
 
     public function getData(Request $request): array
     {
@@ -18,9 +18,9 @@ class Radio extends Input
             'name' => $this->getName(),
             'id' => $this->getId(),
             'label' => $this->getLabel(),
+            'value' => $this->getValue(),
             'required' => $this->isRequired(),
-            'options' => $this->getOptions(),
-            'rules' => $this->getRules(),
+            'options' => $this->getOptions()
         ];
     }
 }

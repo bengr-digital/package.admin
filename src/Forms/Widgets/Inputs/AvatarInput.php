@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 
 class AvatarInput extends FileInput
 {
-    use Concerns\CanBeMultiple;
-
     protected ?string $widgetName = 'input-avatar';
 
     protected ?int $widgetColumnSpan = 12;
@@ -29,8 +27,7 @@ class AvatarInput extends FileInput
             'disabled' => $this->isDisabled(),
             'hidden' => $this->isHidden(),
             'multiple' => $this->isMultiple(),
-            'readonly' => $this->isReadonly(),
-            'rules' => $this->getRules(),
+            'readonly' => $this->isReadonly()
         ];
     }
 }

@@ -3,21 +3,21 @@
 namespace Bengr\Admin;
 
 use Bengr\Admin\Events\ServingAdmin;
-use Bengr\Admin\Models\AdminUser;
+use Bengr\Admin\GlobalSearch\GlobalSearchProvider;
 use Bengr\Admin\Navigation;
 use Bengr\Admin\Navigation\UserMenuItem;
 use Bengr\Admin\Pages\Page;
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class AdminManager
 {
     protected bool $isNavigationMounted = false;
+
+    protected string $globalSearchProvider = GlobalSearchProvider::class;
 
     protected array $navigationGroups = [];
 
@@ -26,6 +26,8 @@ class AdminManager
     protected array $userMenuItems = [];
 
     protected array $pages = [];
+
+    protected array $globalActions = [];
 
     public function auth(): Guard
     {
@@ -79,6 +81,11 @@ class AdminManager
         $this->pages = array_merge($this->pages, $pages);
     }
 
+    public function registerGlobalActions(array $globalActions): void
+    {
+        $this->globalActions = array_merge($this->globalActions, $globalActions);
+    }
+
     public function registerUserMenuItems(array $items): void
     {
         $this->userMenuItems = array_merge($this->userMenuItems, $items);
@@ -121,6 +128,11 @@ class AdminManager
     public function getPages(): array
     {
         return array_unique($this->pages);
+    }
+
+    public function getGlobalActions(): array
+    {
+        return array_unique($this->globalActions);
     }
 
     public function getPagesUrls(): Collection
@@ -237,9 +249,26 @@ class AdminManager
         return app($page);
     }
 
+    public function getGlobalActionByName(string $name)
+    {
+        $globalAction = collect($this->getGlobalActions())->first(function ($globalAction) use ($name) {
+            return app($globalAction)->getName() === $name;
+        });
+
+        if (!$globalAction) return null;
+
+        return app($globalAction);
+    }
+
     public function getUserMenuItems(): Collection
     {
         return collect($this->userMenuItems)
             ->sort(fn (UserMenuItem $item): int => $item->getSort());
+    }
+
+
+    public function getGlobalSearchProvider(): GlobalSearchProvider
+    {
+        return app($this->globalSearchProvider);
     }
 }

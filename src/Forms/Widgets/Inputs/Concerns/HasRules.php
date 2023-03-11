@@ -4,19 +4,19 @@ namespace Bengr\Admin\Forms\Widgets\Inputs\Concerns;
 
 trait HasRules
 {
-    protected array $rules = [];
+    protected array | \Closure $rules = [];
 
-    public function rules(array $rules): self
+    public function rules(array | \Closure $rules): self
     {
         $this->rules = $rules;
 
         return $this;
     }
 
-    public function getRules(): array
+    public function getRules(array $parameters = []): array
     {
         return [
-            $this->getName() => $this->rules
+            $this->getName() => $this->evaluate($this->rules, $parameters)
         ];
     }
 }
