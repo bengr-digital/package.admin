@@ -4,7 +4,7 @@ namespace Bengr\Admin\Forms\Concerns;
 
 use Bengr\Admin\Pages\Page;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 trait HasRecord
 {
@@ -21,7 +21,7 @@ trait HasRecord
         if (!$param) {
             $this->record = null;
         } else {
-            $query = app($this->getModel())->query()->withTrashed();
+            $query = in_array(SoftDeletes::class, class_uses($this->getModel()), true) ? app($this->getModel())->query()->withTrashed() : app($this->getModel())->query();
             $query->where($param['column'], $param['value']);
 
             foreach ($this->getFormInputs() as $input) {

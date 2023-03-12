@@ -6,7 +6,6 @@ use Bengr\Admin\Actions\Action;
 use Bengr\Admin\Actions\ActionGroup;
 use Bengr\Admin\Exceptions\ActionNotFoundException;
 use Bengr\Admin\Http\Resources\ActionGroupResource;
-use Bengr\Admin\Http\Resources\ActionResource;
 use Bengr\Admin\Http\Resources\ColumnResource;
 use Bengr\Admin\Http\Resources\WidgetResource;
 use Bengr\Admin\Tables\Concerns\InteractsWithTable;
@@ -15,6 +14,7 @@ use Bengr\Admin\Widgets\Widget;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use function Bengr\Support\response;
 
@@ -164,7 +164,11 @@ class TableWidget extends Widget implements HasTable
                 'id' => ['required', Rule::exists($this->getTableModel(), 'id')]
             ])->validate();
 
-            return $action->getHandleMethod()(app($this->getTableModel())->withTrashed()->find($payload['id']), $payload);
+            if (in_array(SoftDeletes::class, class_uses($this->getTableModel()), true)) {
+                return $action->getHandleMethod()(app($this->getTableModel())->withTrashed()->find($payload['id']), $payload);
+            }
+
+            return $action->getHandleMethod()(app($this->getTableModel())->find($payload['id']), $payload);
         }
 
         if ($bulkAction) {
@@ -173,7 +177,12 @@ class TableWidget extends Widget implements HasTable
                 'ids.*' => [Rule::exists($this->getTableModel(), 'id')]
             ])->validate();
 
-            return $bulkAction->getHandleMethod()(app($this->getTableModel())->withTrashed()->whereIn('id', $payload['ids'])->get(), $payload);
+            if (in_array(SoftDeletes::class, class_uses($this->getTableModel()), true)) {
+                return $bulkAction->getHandleMethod()(app($this->getTableModel())->withTrashed()->whereIn('id', $payload['ids'])->get(), $payload);
+            }
+
+
+            return $bulkAction->getHandleMethod()(app($this->getTableModel())->whereIn('id', $payload['ids'])->get(), $payload);
         }
     }
 
