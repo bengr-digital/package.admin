@@ -50,7 +50,7 @@ class Input extends Widget
             'disabled' => $this->isDisabled(),
             'hidden' => $this->isHidden(),
             'readonly' => $this->isReadonly(),
-            'rules' => []
+            'rules' => $this->getRules()
         ];
     }
 }

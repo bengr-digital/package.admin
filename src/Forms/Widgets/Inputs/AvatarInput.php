@@ -28,7 +28,7 @@ class AvatarInput extends FileInput
             'hidden' => $this->isHidden(),
             'multiple' => $this->isMultiple(),
             'readonly' => $this->isReadonly(),
-            'rules' => []
+            'rules' => $this->getRules()
         ];
     }
 }

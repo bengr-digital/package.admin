@@ -30,7 +30,7 @@ class Select extends Input
             'searchable' => $this->isSearchable(),
             'value' => $this->getValue(),
             'options' => $this->getOptions(),
-            'rules' => []
+            'rules' => $this->getRules()
         ];
     }
 }

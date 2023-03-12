@@ -21,7 +21,7 @@ class Radio extends Input
             'value' => $this->getValue(),
             'required' => $this->isRequired(),
             'options' => $this->getOptions(),
-            'rules' => []
+            'rules' => $this->getRules()
         ];
     }
 }
