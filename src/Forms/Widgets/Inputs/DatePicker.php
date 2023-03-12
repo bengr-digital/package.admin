@@ -39,7 +39,8 @@ class DatePicker extends Input
             'required' => $this->isRequired(),
             'disabled' => $this->isDisabled(),
             'hidden' => $this->isHidden(),
-            'readonly' => $this->isReadonly()
+            'readonly' => $this->isReadonly(),
+            'rules' => []
         ];
     }
 }

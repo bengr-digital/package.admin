@@ -19,7 +19,8 @@ class Toggle extends Checkbox
             'checked' => $this->isChecked(),
             'disabled' => $this->isDisabled(),
             'hidden' => $this->isHidden(),
-            'readonly' => $this->isReadonly()
+            'readonly' => $this->isReadonly(),
+            'rules' => []
         ];
     }
 }

@@ -29,7 +29,8 @@ class Select extends Input
             'multiple' => $this->isMultiple(),
             'searchable' => $this->isSearchable(),
             'value' => $this->getValue(),
-            'options' => $this->getOptions()
+            'options' => $this->getOptions(),
+            'rules' => []
         ];
     }
 }

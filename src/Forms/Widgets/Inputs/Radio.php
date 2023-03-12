@@ -20,7 +20,8 @@ class Radio extends Input
             'label' => $this->getLabel(),
             'value' => $this->getValue(),
             'required' => $this->isRequired(),
-            'options' => $this->getOptions()
+            'options' => $this->getOptions(),
+            'rules' => []
         ];
     }
 }

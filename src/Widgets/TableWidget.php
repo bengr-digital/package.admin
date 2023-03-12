@@ -164,7 +164,7 @@ class TableWidget extends Widget implements HasTable
                 'id' => ['required', Rule::exists($this->getTableModel(), 'id')]
             ])->validate();
 
-            return $action->getHandleMethod()(app($this->getTableModel())->find($payload['id']), $payload);
+            return $action->getHandleMethod()(app($this->getTableModel())->withTrashed()->find($payload['id']), $payload);
         }
 
         if ($bulkAction) {
@@ -173,7 +173,7 @@ class TableWidget extends Widget implements HasTable
                 'ids.*' => [Rule::exists($this->getTableModel(), 'id')]
             ])->validate();
 
-            return $bulkAction->getHandleMethod()(app($this->getTableModel())->whereIn('id', $payload['ids'])->get(), $payload);
+            return $bulkAction->getHandleMethod()(app($this->getTableModel())->withTrashed()->whereIn('id', $payload['ids'])->get(), $payload);
         }
     }
 

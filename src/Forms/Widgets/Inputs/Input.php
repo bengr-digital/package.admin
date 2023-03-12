@@ -49,7 +49,8 @@ class Input extends Widget
             'required' => $this->isRequired(),
             'disabled' => $this->isDisabled(),
             'hidden' => $this->isHidden(),
-            'readonly' => $this->isReadonly()
+            'readonly' => $this->isReadonly(),
+            'rules' => []
         ];
     }
 }

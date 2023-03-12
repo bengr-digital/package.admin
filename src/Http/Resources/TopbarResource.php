@@ -18,7 +18,7 @@ class TopbarResource extends JsonResource
         return [
             'userMenu' => UserMenuResource::make(BengrAdmin::getUserMenuItems()),
             'notifications' => null,
-            'globalSearch' => null
+            'globalSearch' => true
         ];
     }
 }

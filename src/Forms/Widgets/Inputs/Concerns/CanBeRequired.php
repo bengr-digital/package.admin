@@ -15,6 +15,6 @@ trait CanBeRequired
 
     public function isRequired(): bool
     {
-        return $this->isRequired || in_array('required', $this->rules);
+        return $this->isRequired || in_array('required', $this->evaluate($this->rules, []));
     }
 }

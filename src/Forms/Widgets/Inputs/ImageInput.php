@@ -24,7 +24,8 @@ class ImageInput extends FileInput
             'disabled' => $this->isDisabled(),
             'hidden' => $this->isHidden(),
             'multiple' => $this->isMultiple(),
-            'readonly' => $this->isReadonly()
+            'readonly' => $this->isReadonly(),
+            'rules' => []
         ];
     }
 }
