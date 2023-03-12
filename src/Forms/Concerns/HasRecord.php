@@ -21,7 +21,7 @@ trait HasRecord
         if (!$param) {
             $this->record = null;
         } else {
-            $query = app($this->getModel())->query();
+            $query = app($this->getModel())->query()->withTrashed();
             $query->where($param['column'], $param['value']);
 
             foreach ($this->getFormInputs() as $input) {
