@@ -4,6 +4,9 @@ namespace Bengr\Admin\Forms\Widgets\Inputs;
 
 use Bengr\Admin\Actions\Action;
 use Bengr\Support\Rules\BengrFile;
+use Bengr\Support\Rules\BengrFileMax;
+use Bengr\Support\Rules\BengrFileMime;
+use Bengr\Support\Rules\BengrFileMin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -116,6 +119,24 @@ class FileInput extends Input
                         return 'file';
                     }
 
+                    if ($rule instanceof BengrFileMax) {
+                        $size = $rule->getSize();
+
+                        return "max:{$size}";
+                    }
+
+                    if ($rule instanceof BengrFileMin) {
+                        $size = $rule->getSize();
+
+                        return "min:{$size}";
+                    }
+
+                    if ($rule instanceof BengrFileMime) {
+                        $mimes = implode(',', $rule->getMimes());
+
+                        return "mimes:{$mimes}";
+                    }
+
                     return $rule;
                 })->toArray(),
 
@@ -126,6 +147,24 @@ class FileInput extends Input
             $this->getName() => collect($this->getRules()[$this->getName()])->map(function ($rule) {
                 if ($rule instanceof BengrFile) {
                     return 'file';
+                }
+
+                if ($rule instanceof BengrFileMax) {
+                    $size = $rule->getSize();
+
+                    return "max:{$size}";
+                }
+
+                if ($rule instanceof BengrFileMin) {
+                    $size = $rule->getSize();
+
+                    return "min:{$size}";
+                }
+
+                if ($rule instanceof BengrFileMime) {
+                    $mimes = implode(',', $rule->getMimes());
+
+                    return "mimes:{$mimes}";
                 }
 
                 return $rule;

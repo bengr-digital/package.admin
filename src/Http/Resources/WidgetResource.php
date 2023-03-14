@@ -19,6 +19,7 @@ class WidgetResource extends JsonResource
             'id' => $this->getWidgetId(),
             'type' => $this->getWidgetName(),
             'columnSpan' => $this->getWidgetColumnSpan(),
+            'lazyload' => $this->getLazyload(),
             'props' => !$this->getWithoutProps() ? $this->getData($request) : [],
         ];
     }

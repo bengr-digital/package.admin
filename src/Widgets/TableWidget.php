@@ -206,6 +206,11 @@ class TableWidget extends Widget implements HasTable
         }
     }
 
+    public function getLazyload(): bool
+    {
+        return $this->lazyload ? (request()->getPathInfo() === '/admin/builder/widgets' ? true : false) : true;
+    }
+
 
     public function getData(Request $request): array
     {
@@ -220,10 +225,10 @@ class TableWidget extends Widget implements HasTable
         return [
             'bulkActions' => ActionGroupResource::collection($table->getBulkActions()),
             'columns' => ColumnResource::collection($table->getColumns()),
-            'records' => $table->getRecordsInColumns(),
+            'records' => $this->getLazyload() ? $table->getRecordsInColumns() : null,
             'filters' => WidgetResource::collection($table->getWidgetsInFilters()),
             'isSearchable' => $table->isSearchable(),
-            'pagination' => $table->getPagination()
+            'pagination' => $this->getLazyload() ? $table->getPagination() : null
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Bengr\Admin\Http\Resources;
 
+use App\Models\Admin;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class TokenResource extends JsonResource

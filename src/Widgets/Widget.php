@@ -24,6 +24,8 @@ class Widget
 
     protected bool $withoutProps = false;
 
+    protected bool $lazyload = false;
+
     protected $transformed_actions;
 
     public function widgetColumnSpan(?int $widgetColumnSpan): self
@@ -57,6 +59,13 @@ class Widget
     public function widgetId(int $widgetId): self
     {
         $this->widgetId = $widgetId;
+
+        return $this;
+    }
+
+    public function lazyload(bool $lazyload = true): self
+    {
+        $this->lazyload = $lazyload;
 
         return $this;
     }
@@ -97,6 +106,12 @@ class Widget
     {
         return count($this->getWidgets()) ? true : false;
     }
+
+    public function getLazyload(): bool
+    {
+        return $this->lazyload;
+    }
+
 
     public function getWidgets(): array
     {
