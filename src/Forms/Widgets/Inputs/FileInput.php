@@ -112,9 +112,10 @@ class FileInput extends Input
     {
 
         if ($this->isMultiple()) {
+
             return [
                 $this->getName() => in_array('required', $this->rules) ? ['required', 'array'] : ['array'],
-                "{$this->getName()}.*" => collect($this->getRules()[$this->getName()])->map(function ($rule) {
+                "{$this->getName()}.*" => collect($this->getRules()["{$this->getName()}.*"])->map(function ($rule) {
                     if ($rule instanceof BengrFile) {
                         return 'file';
                     }
