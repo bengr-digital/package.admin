@@ -324,8 +324,13 @@ class Page
     public function getWidget(?int $id): ?Widget
     {
         $this->transformed_widgets = collect([]);
+        $widgets_to_transform = $this->getWidgets();
 
-        $this->loopWidgets($this->getWidgets());
+        foreach ($this->getModals() as $modal) {
+            array_push($widgets_to_transform, ...$modal->getWidgets());
+        }
+
+        $this->loopWidgets($widgets_to_transform);
 
 
         $widget = $this->transformed_widgets->where(function (Widget $widget) use ($id) {
