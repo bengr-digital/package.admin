@@ -52,26 +52,6 @@ class AdminUser extends Authenticatable implements HasMedia
         $this
             ->addMediaCollection('avatar')
             ->useFallbackUrl(config('app.url') . '/media/profile_image.jpg')
-            ->useFallbackUrl(config('app.url') . '/media/profile_image.jpg', '64x64')
-            ->useFallbackUrl(config('app.url') . '/media/profile_image.jpg', '128x128')
-            ->useFallbackUrl(config('app.url') . '/media/profile_image.jpg', '256x256')
-            ->singleFile()
-            ->registerMediaConversions(function () {
-                $this
-                    ->addMediaConversion('64x64')
-                    ->width(64)
-                    ->height(64)
-                    ->nonQueued();
-                $this
-                    ->addMediaConversion('128x128')
-                    ->width(128)
-                    ->height(128)
-                    ->nonQueued();
-                $this
-                    ->addMediaConversion('256x256')
-                    ->width(256)
-                    ->height(256)
-                    ->nonQueued();
-            });
+            ->singleFile();
     }
 }

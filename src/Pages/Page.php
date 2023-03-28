@@ -446,9 +446,10 @@ class Page
 
     protected function applyGlobalSearchAttributeConstraint(Builder $query, array $searchAttributes, string $searchQuery, bool &$isFirst): Builder
     {
+        $searchQuery = strtolower($searchQuery);
+
         foreach ($searchAttributes as $searchAttribute) {
             $whereClause = $isFirst ? 'where' : 'orWhere';
-
             $query->when(
                 Str::of($searchAttribute)->contains('.'),
                 fn ($query) => $query->{"{$whereClause}Relation"}(
@@ -458,7 +459,7 @@ class Page
                     "%{$searchQuery}%",
                 ),
                 fn ($query) => $query->{$whereClause}(
-                    $searchAttribute,
+                    "LOWER($searchAttribute)",
                     'like',
                     "%{$searchQuery}%",
                 ),
