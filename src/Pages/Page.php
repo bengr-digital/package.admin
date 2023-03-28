@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 use function Bengr\Support\response;
@@ -459,7 +460,7 @@ class Page
                     "%{$searchQuery}%",
                 ),
                 fn ($query) => $query->{$whereClause}(
-                    "LOWER($searchAttribute)",
+                    DB::raw("lower($searchAttribute)"),
                     'like',
                     "%{$searchQuery}%",
                 ),
