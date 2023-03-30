@@ -32,6 +32,8 @@ class TableWidget extends Widget implements HasTable
 
     protected array $actions = [];
 
+    protected ?\Closure $query = null;
+
     protected ?Action $actionOnClick = null;
 
     protected array $bulkActions = [];
@@ -68,6 +70,13 @@ class TableWidget extends Widget implements HasTable
         return $this;
     }
 
+    public function query(\Closure $query)
+    {
+        $this->query = $query;
+
+        return $this;
+    }
+
     public function actionOnClick(Action $actionOnClick): self
     {
         $this->actionOnClick = $actionOnClick;
@@ -89,9 +98,15 @@ class TableWidget extends Widget implements HasTable
 
         return $this;
     }
+
     protected function getTableColumns()
     {
         return $this->columns ?? [];
+    }
+
+    protected function getTableQueryQuery(): ?\Closure
+    {
+        return $this->query;
     }
 
     protected function getTableActions(): array

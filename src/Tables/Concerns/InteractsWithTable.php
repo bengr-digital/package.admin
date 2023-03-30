@@ -2,6 +2,7 @@
 
 namespace Bengr\Admin\Tables\Concerns;
 
+use Bengr\Admin\Concerns\EvaluatesClosures;
 use Bengr\Admin\Tables\Table;
 use Bengr\Admin\Tables\Concerns;
 use Illuminate\Database\Eloquent\Builder;
@@ -9,6 +10,7 @@ use Illuminate\Support\Collection;
 
 trait InteractsWithTable
 {
+    use EvaluatesClosures;
     use Concerns\CanSortRecords;
     use Concerns\CanSearchRecords;
     use Concerns\HasPagination;
@@ -18,6 +20,7 @@ trait InteractsWithTable
     use Concerns\HasFilters;
     use Concerns\HasBulkActions;
     use Concerns\HasActionOnClick;
+    use Concerns\HasQuery;
 
     protected Table $table;
 

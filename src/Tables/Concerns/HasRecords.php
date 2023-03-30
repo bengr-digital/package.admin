@@ -22,6 +22,8 @@ trait HasRecords
 
         $query = $this->getTableQuery();
 
+
+        $this->applyQueryToTableQuery($query, $params);
         $this->applyFiltersToTableQuery($query, $params);
         $this->applySortingToTableQuery($query, $params);
         $this->applySearchToTableQuery($query, $params);
