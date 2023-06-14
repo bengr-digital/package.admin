@@ -59,13 +59,17 @@ class FileInput extends Input
 
             if ($mediaCollection->count()) {
                 return $mediaCollection;
-            } else {
+            }
+
+            if ($data->getFallbackMediaUrl($this->getName())) {
                 return [
                     'uuid' => null,
                     'path' => $data->getFallbackMediaUrl($this->getName()),
                     'temporary' => false,
                 ];
             }
+
+            return null;
         }
 
         if (!$data) return $this->getValue();
