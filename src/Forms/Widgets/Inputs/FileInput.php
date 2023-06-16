@@ -9,8 +9,9 @@ use Bengr\Support\Rules\BengrFileMime;
 use Bengr\Support\Rules\BengrFileMin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
@@ -34,12 +35,22 @@ class FileInput extends Input
                         'uuid' => $file->uuid,
                         'path' => $file->getUrl(),
                         'temporary' => false,
+                        'customProperties' => [
+                            'filename' => $file->file_name,
+                            'size' => $file->size,
+                            'mime' => $file->mime_type,
+                        ]
                     ];
                 });
             } else {
                 $this->value['uuid'] = $value[0]->uuid;
                 $this->value['path'] = $value[0]->getUrl();
                 $this->value['temporary'] = false;
+                $this->value['customProperties'] = [
+                    'filename' => $value[0]->file_name,
+                    'size' => $value[0]->size,
+                    'mime' => $value[0]->mime_type,
+                ];
             };
         } else {
             if ($value && array_key_exists(0, $value) && !$this->isMultiple()) {
@@ -87,7 +98,8 @@ class FileInput extends Input
 
                 if ($this->isMultiple()) {
                     foreach ($payload[$this->getName()] as $file) {
-                        $file = Storage::disk('local')->put("/tmp", $file);
+                        $directory = 'tmp/' . Str::random(10);
+                        $file = Storage::disk('local')->putFileAs($directory, $file, $file->getClientOriginalName());
                         $value[] = [
                             'uuid' => null,
                             'path' => $file,
@@ -95,7 +107,8 @@ class FileInput extends Input
                         ];
                     }
                 } else {
-                    $file = Storage::disk('local')->put("/tmp", $payload[$this->getName()]);
+                    $directory = 'tmp/' . Str::random(10);
+                    $file = Storage::disk('local')->putFileAs($directory, $payload[$this->getName()], $payload[$this->getName()]->getClientOriginalName());
 
                     $value = [
                         'uuid' => null,
@@ -104,6 +117,25 @@ class FileInput extends Input
                     ];
                 }
 
+                $files = Storage::disk('local')->allFiles('tmp');
+                $directories = Storage::disk('local')->directories('tmp');
+
+                collect($files)->each(function ($file) {
+                    $lastModified = Carbon::createFromTimestamp(Storage::disk('local')->lastModified($file));
+
+                    if ($lastModified->isBefore(Carbon::now()->subHours(12))) {
+                        Storage::disk('local')->delete($file);
+                    }
+                });
+
+                collect($directories)->each(function ($dir) {
+                    $filesCount = count(Storage::disk('local')->files($dir));
+
+
+                    if ($filesCount == 0) {
+                        Storage::disk('local')->deleteDirectory($dir);
+                    }
+                });
 
                 return response()->json([
                     'value' => $value

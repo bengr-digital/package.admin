@@ -15,7 +15,7 @@ trait CanSortRecords
         if (!$sortColumn) return $query;
 
 
-        $sortDirection = Str::of($this->getTableSortDirection($params))->lower()->value() === 'asc' ? 'asc' : 'desc';
+        $sortDirection = Str::of($this->getTableSortDirection($params))->lower()->value() === 'desc' ? 'desc' : 'asc';
 
         $column = $this->getTableColumn($sortColumn);
 

@@ -14,7 +14,7 @@ trait HasIcon
 
     protected string | Closure | null $activeIconType = null;
 
-    public function icon(string | Closure | null $iconName, string | Closure | null $iconType): static
+    public function icon(string | Closure | null $iconName, string | Closure | null $iconType = 'outlined'): static
     {
         $this->iconName = $iconName;
         $this->iconType = $iconType;

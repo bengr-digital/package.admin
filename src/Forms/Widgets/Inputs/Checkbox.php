@@ -21,15 +21,22 @@ class Checkbox extends Input
 
     public function getValueFromData(array | Model | null $data)
     {
-        if (!$data || !Arr::get($data, $this->getName())) {
+        if (!$data || !Arr::has($data, $this->getName())) {
             $this->checked($this->getDefaultValue() ?? false);
 
             return $this->getDefaultValue() ?? false;
         };
 
-        $this->checked(true);
 
-        return true;
+        if (Arr::get($data, $this->getName())) {
+            $this->checked(true);
+
+            return true;
+        }
+
+        $this->checked(false);
+
+        return false;
     }
 
     public function getData(Request $request): array

@@ -39,7 +39,7 @@ class FormWidget extends Widget implements HasForm
         $this->form = $this->getForm(collect());
     }
 
-    public static function make(string $model, ?Page $page = null): static
+    public static function make(string $model, Page $page = null): static
     {
         return app(static::class, ['model' => $model, 'page' => $page]);
     }
