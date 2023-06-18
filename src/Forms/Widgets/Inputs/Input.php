@@ -21,6 +21,7 @@ class Input extends Widget
     use Concerns\CanBeHidden;
     use Concerns\CanBeReadonly;
     use Concerns\CanBeRequired;
+    use Concerns\CanSave;
     use Concerns\InteractsWithTableQuery;
 
     protected ?string $widgetName = 'input';

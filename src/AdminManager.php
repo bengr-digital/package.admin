@@ -4,11 +4,9 @@ namespace Bengr\Admin;
 
 use Bengr\Admin\Events\ServingAdmin;
 use Bengr\Admin\GlobalSearch\GlobalSearchProvider;
-use Bengr\Admin\Models\AdminSettingsSocial;
 use Bengr\Admin\Navigation;
 use Bengr\Admin\Navigation\UserMenuItem;
 use Bengr\Admin\Pages\Page;
-use Bengr\Support\Helpers\DBModel;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;

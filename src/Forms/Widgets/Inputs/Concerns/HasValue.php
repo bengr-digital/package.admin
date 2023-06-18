@@ -28,7 +28,9 @@ trait HasValue
 
     public function getValueFromData(array | Model | null $data)
     {
-        if (!$data) return $this->getValue();
+        if (!$data || !Arr::has($data, $this->getName())) {
+            return $this->getValue();
+        }
 
         return Arr::get($data, $this->getName());
     }

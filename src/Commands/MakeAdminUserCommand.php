@@ -12,12 +12,11 @@ use Illuminate\Support\Facades\Hash;
 
 class MakeAdminUserCommand extends Command
 {
-
     use CanValidateInput;
 
-    protected $description = 'Creates a Bengr admin user.';
+    protected $description = 'Creates a admin user.';
 
-    protected $signature = 'bengr:user {--first_name=admin} {--last_name=admin} {--username=admin} {--email=admin@gmail.com} {--password=123456789} {--autocomplete}';
+    protected $signature = 'admin:user {--first_name=admin} {--last_name=admin} {--username=admin} {--email=admin@gmail.com} {--password=123456789} {--autocomplete}';
 
     protected function getUserData(): array
     {

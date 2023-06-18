@@ -12,10 +12,14 @@ trait CanSortRecords
     {
         $sortColumn = $this->getTableSortColumn($params);
 
-        if (!$sortColumn) return $query;
+        if (!$sortColumn) {
+            $query->orderBy('created_at', 'desc');
+
+            return $query;
+        }
 
 
-        $sortDirection = Str::of($this->getTableSortDirection($params))->lower()->value() === 'desc' ? 'desc' : 'asc';
+        $sortDirection = Str::of($this->getTableSortDirection($params))->lower()->value() === 'asc' ? 'asc' : 'desc';
 
         $column = $this->getTableColumn($sortColumn);
 

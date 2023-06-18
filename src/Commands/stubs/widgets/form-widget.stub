@@ -1,0 +1,5 @@
+FormWidget::make(AdminUser::class, $this)
+    ->schema([
+
+    ])
+    ->submit(fn (Form $form) => $form->save())

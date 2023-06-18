@@ -2,6 +2,8 @@
 
 namespace Bengr\Admin;
 
+use Bengr\Admin\Commands\AdminPageListCommand;
+use Bengr\Admin\Commands\MakeAdminPageCommand;
 use Bengr\Admin\Commands\MakeAdminUserCommand;
 use Bengr\Admin\Facades;
 use Bengr\Admin\GlobalActions\GlobalAction;
@@ -23,7 +25,9 @@ class AdminServiceProvider extends PackageServiceProvider
             ->name('admin')
             ->hasConfigFile()
             ->hasCommands([
-                MakeAdminUserCommand::class
+                MakeAdminUserCommand::class,
+                MakeAdminPageCommand::class,
+                AdminPageListCommand::class,
             ])
             ->hasMigrations([
                 'create_admin_users_table',

@@ -1,0 +1,26 @@
+<?php
+
+namespace {{ namespace }};
+
+use Bengr\Admin\Pages\Page;
+
+class {{ class }} extends Page 
+{
+    protected ?string $title = {{ title }};
+
+    protected ?string $description = {{ description }};
+
+    protected ?string $slug = {{ slug }};
+
+    protected string | array $middlewares = {{ middlewares }};
+
+    public function getWidgets(): array
+    {
+        return [];
+    }
+
+    public function getActions(): array
+    {
+        return [];
+    }
+}

@@ -72,12 +72,15 @@ class Form
     public function save(): bool
     {
         DB::transaction(function () {
-            // $this->getRecord();
+            $record = $this->getRecord() ?? app($this->getModel());
 
-            // collect($this->getInputs())->each(function (Input $input) {
-            //     $this->getRecord()->first_name = "fsdfsdf";
-            // });
+            collect($this->getInputs())->each(function (Input $input) use ($record) {
+                $input->save($record, !$this->getRecord());
+            });
+
+            $record->save();
         });
+
         return true;
     }
 }

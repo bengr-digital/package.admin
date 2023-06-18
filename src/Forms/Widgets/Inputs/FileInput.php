@@ -15,16 +15,55 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 use function Bengr\Support\response;
 
 class FileInput extends Input
 {
     use Concerns\CanBeMultiple;
+    use Concerns\CanBeSortable;
+    use Concerns\InteractsWithMedia;
 
     protected ?string $widgetName = 'input-file';
 
     protected ?int $widgetColumnSpan = 12;
+
+    public function save(Model $record, bool $isNew = true): self
+    {
+        if (!$this->getValue() && !$isNew) {
+            $record->clearMediaCollection($this->getName());
+        }
+
+        if ($this->isMultiple()) {
+            $value = $this->getValue();
+
+            $record->getMedia($this->getName())->each(function ($media) use ($value) {
+                if (!collect($value)->contains(fn ($file) => $file['uuid'] == $media->uuid)) {
+                    $media->delete();
+                }
+            });
+
+
+            foreach ($value as $index => $file) {
+                if ($file['temporary']) {
+                    $mediaItem = $record->addMediaFromDisk($file['path'], 'local')->toMediaCollection($this->getName());
+                    $mediaItem->order_column = $index;
+                    $mediaItem->save();
+                } else {
+                    $mediaItem = Media::findByUuid($file['uuid']);
+                    $mediaItem->order_column = $index;
+                    $mediaItem->save();
+                }
+            }
+        } else {
+            if ($this->getValue() && $this->getValue()['temporary']) {
+                $record->addMediaFromDisk($this->getValue()['path'], 'local')->toMediaCollection($this->getName());
+            }
+        }
+
+        return $this;
+    }
 
     public function value($value = null): self
     {
@@ -242,6 +281,7 @@ class FileInput extends Input
             'hidden' => $this->isHidden(),
             'multiple' => $this->isMultiple(),
             'readonly' => $this->isReadonly(),
+            'sortable' => $this->isSortable(),
             'rules' => $this->getRules()
         ];
     }
