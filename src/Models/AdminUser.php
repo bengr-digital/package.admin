@@ -47,6 +47,13 @@ class AdminUser extends Authenticatable implements HasMedia
         );
     }
 
+    public function password(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => bcrypt($value)
+        );
+    }
+
     public function registerMediaCollections(): void
     {
         $this

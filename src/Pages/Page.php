@@ -480,4 +480,9 @@ class Page
     {
         return $query;
     }
+
+    protected function response($content = ''): PageResponse
+    {
+        return PageResponse::make($content);
+    }
 }

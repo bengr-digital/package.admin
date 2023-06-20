@@ -26,7 +26,7 @@ class MakeAdminUserCommand extends Command
                 'last_name' => $this->option('last_name'),
                 'username' => $this->option('username'),
                 'email' => $this->option('email'),
-                'password' => Hash::make($this->option('password')),
+                'password' => $this->option('password'),
             ];
         }
 
@@ -35,7 +35,7 @@ class MakeAdminUserCommand extends Command
             'last_name' => $this->validate(fn () => $this->ask('Last Name'), 'last_name', ['required']),
             'username' => $this->validate(fn () => $this->ask('Username'), 'username', ['required']),
             'email' => $this->validate(fn () => $this->ask('Email'), 'email', ['required', 'email', 'unique:' . $this->getUserModel()]),
-            'password' => Hash::make($this->validate(fn () => $this->secret('Password'), 'password', ['required', 'min:8'])),
+            'password' => $this->validate(fn () => $this->secret('Password'), 'password', ['required', 'min:8']),
         ];
     }
 

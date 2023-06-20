@@ -42,6 +42,13 @@ class Widget
         return $this;
     }
 
+    public function columnSpan(?int $widgetColumnSpan): self
+    {
+        $this->widgetColumnSpan = $widgetColumnSpan;
+
+        return $this;
+    }
+
     public function showOnlyChildren(bool $condition = true): self
     {
         $this->showOnlyChildren = $condition;

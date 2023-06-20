@@ -7,8 +7,8 @@ use Bengr\Admin\Forms\Widgets\Inputs\Input;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class Form
 {
@@ -69,14 +69,42 @@ class Form
         return $this->formResource->getCachedFormInput($name);
     }
 
-    public function save(): bool
+    public function save(array $ignore = [], array $replace = []): bool
     {
-        DB::transaction(function () {
-            $record = $this->getRecord() ?? app($this->getModel());
+        DB::transaction(function () use ($ignore, $replace) {
+            $query = $this->getRecord()->query() ?? app($this->getModel())->query();
 
-            collect($this->getInputs())->each(function (Input $input) use ($record) {
-                $input->save($record, !$this->getRecord());
+            collect($this->getInputs())->each(function (Input $input) use ($query) {
+                $input->applyEagerLoading($query);
             });
+
+            $record = $query->first();
+
+            collect($this->getValue())->each(function ($value, $key) use ($record, $ignore, $replace) {
+                if (in_array($key, $ignore)) return;
+
+                if ($record->isRelation($key)) {
+                    $relationData = [];
+                    $inputs = collect($this->getInputs())->filter(fn (Input $input) => Str::of($input->getName())->startsWith("{$key}."))->toArray();
+
+                    foreach ($inputs as $input) {
+                        $input->save($relationData, !$this->getRecord(), Str::of($input->getName())->afterLast('.'));
+                    }
+
+                    if ($record->$key) {
+                        $record->{$key}()->update($relationData);
+                    } else {
+                        $record->{$key}()->create($relationData);
+                    }
+                } else {
+                    if (key_exists($key, $replace)) {
+                        $this->getInput($key)->save($record, !$this->getRecord(), $replace[$key]);
+                    } else {
+                        $this->getInput($key)->save($record, !$this->getRecord());
+                    }
+                }
+            });
+
 
             $record->save();
         });

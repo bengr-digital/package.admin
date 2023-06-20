@@ -32,6 +32,10 @@ trait HasValue
             return $this->getValue();
         }
 
+        if ($data instanceof Model && in_array($this->getName(), $data->getHidden())) {
+            return null;
+        }
+
         return Arr::get($data, $this->getName());
     }
 }

@@ -12,23 +12,31 @@ trait HasRecord
 
     protected ?string $model = null;
 
-    protected function record(?Page $page): self
+    public function record(Model | Page $entity): self
     {
-        $param = collect($page->getParams())->first(function ($param) {
-            return $param['table'] === app($this->getModel())->getTable();
-        });
+        if ($this->getRecord()) return $this;
 
-        if (!$param) {
-            $this->record = null;
-        } else {
-            $query = in_array(SoftDeletes::class, class_uses($this->getModel()), true) ? app($this->getModel())->query()->withTrashed() : app($this->getModel())->query();
-            $query->where($param['column'], $param['value']);
+        if ($entity instanceof Model) {
+            $this->record = $entity;
+        }
 
-            foreach ($this->getFormInputs() as $input) {
-                $input->applyEagerLoading($query);
+        if ($entity instanceof Page) {
+            $param = collect($entity->getParams())->first(function ($param) {
+                return $param['table'] === app($this->getModel())->getTable();
+            });
+
+            if (!$param) {
+                $this->record = null;
+            } else {
+                $query = in_array(SoftDeletes::class, class_uses($this->getModel()), true) ? app($this->getModel())->query()->withTrashed() : app($this->getModel())->query();
+                $query->where($param['column'], $param['value']);
+
+                foreach ($this->getFormInputs() as $input) {
+                    $input->applyEagerLoading($query);
+                }
+
+                $this->record = $query->first();
             }
-
-            $this->record = $query->first();
         }
 
         return $this;

@@ -29,7 +29,7 @@ class FileInput extends Input
 
     protected ?int $widgetColumnSpan = 12;
 
-    public function save(Model $record, bool $isNew = true): self
+    public function save(Model | array &$record, bool $isNew = true, string $name = null): self
     {
         if (!$this->getValue() && !$isNew) {
             $record->clearMediaCollection($this->getName());
@@ -51,7 +51,7 @@ class FileInput extends Input
                     $mediaItem->order_column = $index;
                     $mediaItem->save();
                 } else {
-                    $mediaItem = Media::findByUuid($file['uuid']);
+                    $mediaItem = Media::findByUuid($file['uuid'] ?? "");
                     $mediaItem->order_column = $index;
                     $mediaItem->save();
                 }

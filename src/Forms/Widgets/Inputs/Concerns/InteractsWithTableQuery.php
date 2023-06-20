@@ -50,4 +50,9 @@ trait InteractsWithTableQuery
     {
         return (string) Str::of($this->getName())->beforeLast('.');
     }
+
+    public function getRelationshipValue()
+    {
+        return Str::of($this->getName())->afterLast('.');
+    }
 }
