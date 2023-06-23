@@ -6,6 +6,8 @@ class Modal
 {
     protected ?int $id = null;
 
+    protected ?string $codeId = null;
+
     protected ?string $type = null;
 
     protected ?string $heading = null;
@@ -20,13 +22,16 @@ class Modal
 
     protected bool $hasCross = false;
 
-    final public function __construct()
+    protected bool $lazyload = false;
+
+    final public function __construct(string $codeId)
     {
+        $this->codeId = $codeId;
     }
 
-    public static function make(): static
+    public static function make(string $codeId): static
     {
-        return app(static::class);
+        return app(static::class, ['codeId' => $codeId]);
     }
 
 
@@ -86,6 +91,13 @@ class Modal
         return $this;
     }
 
+    public function lazyload(bool $lazyload = true): self
+    {
+        $this->lazyload = $lazyload;
+
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -124,5 +136,55 @@ class Modal
     public function hasCross(): bool
     {
         return $this->hasCross;
+    }
+
+    public function getTransformedWidgets()
+    {
+        return $this->getWidgetsWithAutomaticIds($this->getWidgets(), $this->getId() + 1);
+    }
+
+    public function getCodeId(): ?string
+    {
+        return $this->codeId;
+    }
+
+    public function getLazyload(): bool
+    {
+        return $this->lazyload;
+    }
+
+    public function getFlatWidgets(?array $widgets = null): array
+    {
+        $flatten = [];
+        $widgets = $widgets ?? $this->getTransformedWidgets();
+
+        foreach ($widgets as $widget) {
+            $flatten[] = $widget;
+
+            if ($widget->hasWidgets()) {
+                $flatten = array_merge($flatten, $this->getFlatWidgets($widget->getWidgets()));
+            }
+        }
+
+        return $flatten;
+    }
+
+    public function getWidgetsWithAutomaticIds(array $widgets, int $index): array
+    {
+        foreach ($widgets as $widget) {
+            if (!$widget->getWidgetId()) {
+                $widget->widgetId($index);
+            }
+
+            $index += 1;
+
+            if ($widget->hasWidgets()) {
+                $this->getWidgetsWithAutomaticIds($widget->getWidgets(), $index);
+            }
+
+            $index = $index + count($this->getFlatWidgets($widget->getWidgets()));
+        }
+
+        return $widgets;
     }
 }

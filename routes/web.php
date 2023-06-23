@@ -3,6 +3,7 @@
 use Bengr\Admin\Http\Controllers\Auth\AuthController;
 use Bengr\Admin\Http\Controllers\Auth\MeController;
 use Bengr\Admin\Http\Controllers\Builder\ActionController;
+use Bengr\Admin\Http\Controllers\Builder\ModalController;
 use Bengr\Admin\Http\Controllers\Builder\PageController;
 use Bengr\Admin\Http\Controllers\Builder\WidgetController;
 use Bengr\Admin\Http\Controllers\Settings\SettingsController;
@@ -82,5 +83,9 @@ Route::prefix(config('admin.routes.url'))
                 Route::post(config('admin.routes.routes.builder.routes.actions.url'), [ActionController::class, 'call'])
                     ->name(config('admin.routes.routes.builder.routes.actions.name'))
                     ->middleware(config('admin.routes.routes.builder.routes.actions.middleware'));
+
+                Route::get(config('admin.routes.routes.builder.routes.modals.url'), [ModalController::class, 'build'])
+                    ->name(config('admin.routes.routes.builder.routes.modals.name'))
+                    ->middleware(config('admin.routes.routes.builder.routes.modals.middleware'));
             });
     });

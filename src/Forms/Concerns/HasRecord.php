@@ -12,9 +12,9 @@ trait HasRecord
 
     protected ?string $model = null;
 
-    public function record(Model | Page $entity): self
+    public function record(Model | Page | null $entity): self
     {
-        if ($this->getRecord()) return $this;
+        if ($this->getRecord() || !$entity) return $this;
 
         if ($entity instanceof Model) {
             $this->record = $entity;

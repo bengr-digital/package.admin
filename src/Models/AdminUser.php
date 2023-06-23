@@ -10,12 +10,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
 class AdminUser extends Authenticatable implements HasMedia
 {
-    use HasAuthTokens, HasFactory, Notifiable, SoftDeletes, InteractsWithMedia;
+    use HasAuthTokens, HasFactory, Notifiable, SoftDeletes, InteractsWithMedia, LogsActivity;
 
     protected $fillable = ['first_name', 'last_name', 'username', 'email', 'password'];
 
@@ -53,6 +55,14 @@ class AdminUser extends Authenticatable implements HasMedia
             set: fn ($value) => bcrypt($value)
         );
     }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['first_name', 'last_name', 'username', 'email', 'password', 'deleted_at'])
+            ->logOnlyDirty();
+    }
+
 
     public function registerMediaCollections(): void
     {

@@ -36,7 +36,7 @@ class UserMenuItem
         return $this;
     }
 
-    public function icon(string $iconName, string $iconType): self
+    public function icon(string $iconName, ?string $iconType = 'outlined'): self
     {
         $this->iconName = $iconName;
         $this->iconType = $iconType;

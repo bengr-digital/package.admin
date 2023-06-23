@@ -10,7 +10,6 @@ use Bengr\Admin\Forms\Form;
 use Bengr\Admin\Http\Resources\WidgetResource;
 use Bengr\Admin\Pages\Page;
 use Bengr\Admin\Widgets\Widget;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 use function Bengr\Support\response;
@@ -70,7 +69,7 @@ class FormWidget extends Widget implements HasForm
 
     protected function getFormSchema(): array
     {
-        return $this->schema ?? [];
+        return $this->getAutomatedFormSchema();
     }
 
     public function callAction(string $name, array $payload = [])
@@ -78,12 +77,12 @@ class FormWidget extends Widget implements HasForm
         $this->record($this->page);
         $this->fill($payload);
 
+
         $action = collect($this->getActions())->where(function (ActionWidget $action) use ($name) {
             return $action->getName() === $name && $action->hasHandle();
         })->first();
 
         if (!$action && !$this->submit_method && $name !== 'submit') return response()->throw(ActionNotFoundException::class);
-
         $this->form->validate();
 
         if ($this->submit_method && $name === 'submit') return $this->getSubmitMethod()($this->form);
@@ -93,7 +92,26 @@ class FormWidget extends Widget implements HasForm
 
     public function getWidgets(): array
     {
-        return $this->schema ?? [];
+        return $this->getAutomatedFormSchema();
+    }
+
+    protected function getAutomatedFormSchema(?array $widgets = null): array
+    {
+        $widgets = $widgets ?? $this->schema;
+
+        foreach ($widgets as $widget) {
+            if ($widget instanceof FormWidget) break;
+
+            if ($widget instanceof ActionWidget && !$widget->hasHandle() && $widget->getName() == 'submit') {
+                $widget->handle(null, $this->getWidgetId());
+            }
+
+            if ($widget->hasWidgets()) {
+                $this->getAutomatedFormSchema($widget->getWidgets());
+            }
+        }
+
+        return $widgets;
     }
 
     public function getData(Request $request): array

@@ -69,16 +69,11 @@ class Form
         return $this->formResource->getCachedFormInput($name);
     }
 
-    public function save(array $ignore = [], array $replace = []): bool
+    public function save(array $ignore = [], array $replace = []): ?Model
     {
-        DB::transaction(function () use ($ignore, $replace) {
-            $query = $this->getRecord()->query() ?? app($this->getModel())->query();
+        $record = $this->getRecord() ?? app($this->getModel());
 
-            collect($this->getInputs())->each(function (Input $input) use ($query) {
-                $input->applyEagerLoading($query);
-            });
-
-            $record = $query->first();
+        DB::transaction(function () use ($ignore, $replace, $record) {
 
             collect($this->getValue())->each(function ($value, $key) use ($record, $ignore, $replace) {
                 if (in_array($key, $ignore)) return;
@@ -90,6 +85,8 @@ class Form
                     foreach ($inputs as $input) {
                         $input->save($relationData, !$this->getRecord(), Str::of($input->getName())->afterLast('.'));
                     }
+
+                    if (!$inputs) return $this->getInput($key)->save($record, !$this->getRecord());
 
                     if ($record->$key) {
                         $record->{$key}()->update($relationData);
@@ -109,6 +106,6 @@ class Form
             $record->save();
         });
 
-        return true;
+        return $record;
     }
 }

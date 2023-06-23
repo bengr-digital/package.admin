@@ -3,6 +3,8 @@
 namespace Bengr\Admin\Tables\Columns;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class ImageColumn extends Column
 {
@@ -50,8 +52,10 @@ class ImageColumn extends Column
 
     public function getValue(Model $record)
     {
+        $record = Str::of('avatar')->contains('.') ? Arr::get($record, Str::of('causer.avatar')->beforeLast('.')->toString()) : $record;
+
         if (array_key_exists('Spatie\MediaLibrary\HasMedia', class_implements($record)) && array_key_exists('Spatie\MediaLibrary\InteractsWithMedia', class_uses($record))) {
-            return $record->getFirstMediaUrl($this->getName());
+            return $record->getFirstMediaUrl(Str::of('avatar')->contains('.') ? Str::of($this->getName())->afterLast('avatar')->toString() : $this->getName());
         }
 
         return null;

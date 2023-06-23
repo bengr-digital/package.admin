@@ -6,11 +6,18 @@ trait CanHandleModal
 {
     protected ?int $modalId = null;
 
+    protected ?string $modalCodeId = null;
+
     protected ?string $modalEvent = null;
 
-    public function modal(int $id, ?string $event = null): static
+    public function modal(int | string | null $id = null, ?string $event = 'open'): static
     {
-        $this->modalId = $id;
+        if (is_int($id)) {
+            $this->modalId = $id;
+        } else {
+            $this->modalCodeId = $id ?? $this->getName();
+        }
+
         $this->modalEvent = $event;
 
         return $this;
@@ -19,6 +26,11 @@ trait CanHandleModal
     public function getModalId(): ?int
     {
         return $this->modalId;
+    }
+
+    public function getModalCodeId(): ?string
+    {
+        return $this->modalCodeId;
     }
 
     public function getModalEvent(): string

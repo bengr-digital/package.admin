@@ -25,6 +25,22 @@ class PageEditor extends Input
         return app(static::class, ['name' => $name]);
     }
 
+    public function save(Model | array &$record, bool $isNew = true, string $name = null): self
+    {
+        $name = $name ?? $this->getName();
+
+        $content = collect($this->getValue())->map(function ($item) use ($record, $name) {
+            $content = $record->$name()->where('id', $item['id'])->withTrashed()->first();
+            $content->text = $item['text'];
+
+            return $content;
+        });
+
+        $record->$name()->saveMany($content);
+
+        return $this;
+    }
+
     public function columns(array $columns): self
     {
         $this->columns = $columns;

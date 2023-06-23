@@ -3,6 +3,7 @@
 namespace Bengr\Admin\Tables\Columns;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 
 class TagsColumn extends Column
 {
@@ -32,6 +33,11 @@ class TagsColumn extends Column
     public function getLimit(): ?int
     {
         return $this->evaluate($this->limit);
+    }
+
+    public function getValue(Model $record)
+    {
+        return is_array(Arr::get($record, $this->getName())) ? Arr::get($record, $this->getName()) : array_map('trim', explode(',', Arr::get($record, $this->getName())));
     }
 
     public function getProps(Model $record): array

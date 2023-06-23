@@ -26,7 +26,6 @@ class PageController extends Controller
 
         if (!$page) return response()->throw(PageNotFoundException::class);
 
-
         return $page->processToResponse($request, fn () => response()->resource(PageResource::class, $page));
     }
 }

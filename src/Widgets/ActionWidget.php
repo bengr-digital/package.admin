@@ -2,14 +2,13 @@
 
 namespace Bengr\Admin\Widgets;
 
-use Bengr\Admin\Concerns\EvaluatesClosures;
 use Illuminate\Http\Request;
 use Bengr\Admin\Actions\Concerns;
+use Bengr\Admin\Facades\Admin as BengrAdmin;
 use Illuminate\Support\Str;
 
 class ActionWidget extends Widget
 {
-    use EvaluatesClosures;
     use Concerns\HasName;
     use Concerns\HasLabel;
     use Concerns\HasIcon;
@@ -48,8 +47,23 @@ class ActionWidget extends Widget
         return $this->widgets;
     }
 
+    public function transformAction(): void
+    {
+        $page = BengrADmin::getCurrentPage();
+
+        if ($this->getModalCodeId() && !$this->getModalId()) {
+            $modal = collect($page->getTransformedModals())->first(fn ($modal) => $modal->getCodeId() == $this->getModalCodeId());
+
+            if ($modal) {
+                $this->modal($modal->getId(), $this->getModalEvent());
+            }
+        }
+    }
+
     public function getData(Request $request): array
     {
+        $this->transformAction();
+
         return [
             'label' => $this->getLabel(),
             'icon' => $this->hasIcon() ? [

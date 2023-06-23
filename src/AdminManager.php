@@ -29,6 +29,8 @@ class AdminManager
 
     protected array $globalActions = [];
 
+    protected ?Page $currentPage = null;
+
     public function auth(): Guard
     {
         return auth()->guard($this->getGuardName());
@@ -234,12 +236,14 @@ class AdminManager
             })) return null;
 
             $page = app($page)->slug($url)->params($params->toArray());
+            $this->currentPage = $page;
 
             return $page;
         }
+        $page = app($page);
+        $this->currentPage = $page;
 
-
-        return app($page);
+        return $page;
     }
 
     public function getGlobalActionByName(string $name)
@@ -247,7 +251,6 @@ class AdminManager
         $globalAction = collect($this->getGlobalActions())->first(function ($globalAction) use ($name) {
             return app($globalAction)->getName() === $name;
         });
-
         if (!$globalAction) return null;
 
         return app($globalAction);
@@ -259,9 +262,13 @@ class AdminManager
             ->sort(fn (UserMenuItem $item): int => $item->getSort());
     }
 
-
     public function getGlobalSearchProvider(): GlobalSearchProvider
     {
         return app($this->globalSearchProvider);
+    }
+
+    public function getCurrentPage(): ?Page
+    {
+        return $this->currentPage;
     }
 }

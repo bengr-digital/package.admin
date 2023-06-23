@@ -3,11 +3,13 @@
 namespace Bengr\Admin\Pages;
 
 use App\Http\Kernel;
+use App\Models\Post;
 use Bengr\Admin\Actions\Action;
 use Bengr\Admin\Actions\ActionGroup;
 use Bengr\Admin\Exceptions\ActionNotFoundException;
 use Bengr\Admin\Facades\Admin as BengrAdmin;
 use Bengr\Admin\GlobalSearch\GlobalSearchResult;
+use Bengr\Admin\Modals\Modal;
 use Bengr\Admin\Navigation\NavigationItem;
 use Bengr\Admin\Widgets\FormWidget;
 use Bengr\Admin\Widgets\Widget;
@@ -18,6 +20,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 use function Bengr\Support\response;
 
@@ -321,10 +324,26 @@ class Page
         return $this->getWidget($id) ? true : false;
     }
 
+    public function getFlatWidgets(?array $widgets = null): array
+    {
+        $flatten = [];
+        $widgets = $widgets ?? $this->getTransformedWidgets();
+
+        foreach ($widgets as $widget) {
+            $flatten[] = $widget;
+
+            if ($widget->hasWidgets()) {
+                $flatten = array_merge($flatten, $this->getFlatWidgets($widget->getWidgets()));
+            }
+        }
+
+        return $flatten;
+    }
+
     public function getWidget(?int $id): ?Widget
     {
         $this->transformed_widgets = collect([]);
-        $widgets_to_transform = $this->getWidgets();
+        $widgets_to_transform = $this->getTransformedWidgets();
 
         foreach ($this->getModals() as $modal) {
             array_push($widgets_to_transform, ...$modal->getWidgets());
@@ -340,11 +359,16 @@ class Page
         return array_shift($widget);
     }
 
+    public function getModal(?int $id): ?Modal
+    {
+        return collect($this->getTransformedModals())->first(fn (Modal $modal) => $modal->getId() == $id);
+    }
+
     public function getLargeForm(): ?FormWidget
     {
-        if (collect($this->getWidgets())->first() instanceof FormWidget && $this->hasLargeForm()) {
-            collect($this->getWidgets())->first()->showOnlyChildren(true);
-            return collect($this->getWidgets())->first()->withoutProps();
+        if (collect($this->getTransformedWidgets())->first() instanceof FormWidget && $this->hasLargeForm()) {
+            collect($this->getTransformedWidgets())->first()->showOnlyChildren(true);
+            return collect($this->getTransformedWidgets())->first()->withoutProps();
         }
 
         return null;
@@ -362,7 +386,11 @@ class Page
 
     public function hasLargeForm(): bool
     {
-        return $this->hasLargeForm;
+        return $this->hasLargeForm == true ? $this->hasLargeForm : collect($this->getTransformedActions())->contains(function ($action) {
+            if ($action->getName() == 'submit' && $action->hasHandle()) {
+                return collect($this->getFlatWidgets($this->getTransformedWidgets()))->contains(fn ($widget) => $widget->getWidgetId() == $action->getHandleWidgetId() && $widget instanceof FormWidget);
+            }
+        });
     }
 
     protected function loopActions(array $actions)
@@ -398,7 +426,7 @@ class Page
 
     public function canGloballySearch(): bool
     {
-        return $this->isGloballySearchable;
+        return count($this->getGlobalSearchAttributes());
     }
 
     public function getGlobalSearchResultsLimit(): int
@@ -406,18 +434,20 @@ class Page
         return $this->globalSearchResultsLimit;
     }
 
-    public function getGloballySearchableAttributes(): array
+    public function getGlobalSearchAttributes(): array
     {
         return [];
     }
 
-    public function getGlobalSearchResult(Model $record): array
+    public function getGlobalSearchResult(Model $record): ?GlobalSearchResult
     {
-        return [];
+        return null;
     }
 
     public function getGlobalSearchResults(string $searchQuery): Collection
     {
+        if (!$this->getModel()) return collect([]);
+
         $query = $this->getModel()->query();
 
         $this->getGlobalSearchEloquentQuery($query);
@@ -426,12 +456,11 @@ class Page
             $query->where(function (Builder $query) use ($searchQueryWord) {
                 $isFirst = true;
 
-                foreach ($this->getGloballySearchableAttributes() as $attributes) {
+                foreach ($this->getGlobalSearchAttributes() as $attributes) {
                     $this->applyGlobalSearchAttributeConstraint($query, Arr::wrap($attributes), $searchQueryWord, $isFirst);
                 }
             });
         }
-
 
         return $query
             ->limit($this->getGlobalSearchResultsLimit())
@@ -439,13 +468,9 @@ class Page
             ->map(function (Model $record): ?GlobalSearchResult {
                 $result = $this->getGlobalSearchResult($record);
 
-                return new GlobalSearchResult(
-                    title: $result['title'],
-                    description: $result['description'] ?? null,
-                    redirect: $result['redirect'],
-                    icon: $result['icon'] ?? null,
-                    image: $result['image'] ?? null
-                );
+                if (!$result) return null;
+
+                return $result;
             })
             ->filter();
     }
@@ -484,5 +509,71 @@ class Page
     protected function response($content = ''): PageResponse
     {
         return PageResponse::make($content);
+    }
+
+    public function getWidgetsWithAutomaticIds(array $widgets, int $index): array
+    {
+        foreach ($widgets as $widget) {
+            if (!$widget->getWidgetId()) {
+                $widget->widgetId($index);
+            }
+
+            $index += 1;
+
+            if ($widget->hasWidgets()) {
+                $this->getWidgetsWithAutomaticIds($widget->getWidgets(), $index);
+            }
+
+            $index = $index + count($this->getFlatWidgets($widget->getWidgets()));
+        }
+
+        return $widgets;
+    }
+
+    public function getModalsWithAutomaticIds(array $modals): array
+    {
+        $id = count($this->getFlatWidgets()) + 1;
+
+        foreach ($modals as $index => $modal) {
+            if ($index > 0) {
+                $id += count($modals[$index - 1]->getFlatWidgets()) + 1;
+            }
+
+            $modal->id($id);
+        }
+
+        return $modals;
+    }
+
+    public function getTransformedModals(): array
+    {
+        return $this->getModalsWithAutomaticIds($this->getModals());
+    }
+
+    public function getTransformedWidgets(): array
+    {
+        return $this->getWidgetsWithAutomaticIds($this->getWidgets(), 1);
+    }
+
+    public function getTransformedActions(): array
+    {
+        $actions = $this->getActions();
+
+        foreach ($actions as $action) {
+            if ($action->getName() == 'submit' && !$action->hasHandle()) {
+                $action->handle(null, collect($this->getFlatWidgets($this->getTransformedWidgets()))->first(fn ($widget) => $widget instanceof FormWidget)->getWidgetId());
+                break;
+            }
+
+            if ($action->getModalCodeId() && !$action->getModalId()) {
+                $modal = collect($this->getTransformedModals())->first(fn ($modal) => $modal->getCodeId() == $action->getModalCodeId());
+
+                if ($modal) {
+                    $action->modal($modal->getId(), $action->getModalEvent());
+                }
+            }
+        }
+
+        return $actions;
     }
 }

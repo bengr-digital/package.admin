@@ -48,11 +48,10 @@ trait HasSchema
         $flat = [];
 
         foreach ($widgets as $widget) {
+            $flat[] = $widget;
+
             if ($widget->hasWidgets()) {
-                $flat[] = $widget;
                 $flat = array_merge($flat, $this->getFlatFormSchema($widget->getWidgets()));
-            } else {
-                $flat[] = $widget;
             }
         }
 

@@ -47,9 +47,9 @@ class FileInput extends Input
 
             foreach ($value as $index => $file) {
                 if ($file['temporary']) {
-                    $mediaItem = $record->addMediaFromDisk($file['path'], 'local')->toMediaCollection($this->getName());
+                    $mediaItem = $record->addMediaFromDisk($file['path'], 'local');
                     $mediaItem->order_column = $index;
-                    $mediaItem->save();
+                    $mediaItem->toMediaCollection($this->getName());
                 } else {
                     $mediaItem = Media::findByUuid($file['uuid'] ?? "");
                     $mediaItem->order_column = $index;

@@ -6,7 +6,9 @@ use Bengr\Admin\Commands\AdminPageListCommand;
 use Bengr\Admin\Commands\MakeAdminPageCommand;
 use Bengr\Admin\Commands\MakeAdminUserCommand;
 use Bengr\Admin\Facades;
+use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\GlobalActions\GlobalAction;
+use Bengr\Admin\Navigation\UserMenuItem;
 use Bengr\Admin\Pages\Page;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
@@ -24,6 +26,7 @@ class AdminServiceProvider extends PackageServiceProvider
         $package
             ->name('admin')
             ->hasConfigFile()
+            ->hasTranslations()
             ->hasCommands([
                 MakeAdminUserCommand::class,
                 MakeAdminPageCommand::class,
@@ -60,11 +63,21 @@ class AdminServiceProvider extends PackageServiceProvider
         $this->publishes([
             __DIR__ . '/../storage/responses/bengr_admin' => storage_path('responses/bengr_admin'),
         ], 'admin-response-files');
+
+        Admin::serving(function () {
+            Admin::registerUserMenuItems([
+                UserMenuItem::make()
+                    ->label(__('admin::pages.me.title'))
+                    ->icon('settings')
+                    ->route(app(config('admin.pages.me'))->getRouteName(), app(config('admin.pages.me'))->getRouteUrl()),
+            ]);
+        });
     }
 
     public function registerComponents()
     {
         $this->pages = config('admin.pages.register') ?? [];
+        $this->globalActions = config('admin.global_actions.register') ?? [];
 
         $this->registerComponentsFromDirectory(
             Page::class,
@@ -87,16 +100,17 @@ class AdminServiceProvider extends PackageServiceProvider
         }
 
         $filesystem = app(Filesystem::class);
+        $files = [];
 
-        if ((!$filesystem->exists($directory)) && (!Str::of($directory)->contains('*'))) {
-            return;
+        if ($filesystem->exists($directory)) {
+            $files = $filesystem->allFiles($directory);
         }
 
         $namespace = Str::of($namespace);
 
         $register = array_merge(
             $register,
-            collect($filesystem->allFiles($directory))
+            collect($files)
                 ->map(function (SplFileInfo $file) use ($namespace): string {
                     $variableNamespace = $namespace->contains('*') ? str_ireplace(
                         ['\\' . $namespace->before('*'), $namespace->after('*')],

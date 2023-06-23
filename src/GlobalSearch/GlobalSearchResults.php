@@ -23,10 +23,23 @@ class GlobalSearchResults
     {
         $this->categories[] = [
             'label' => $name,
-            'results' => $results
+            'results' => $this->getResults($results)
         ];
 
         return $this;
+    }
+
+    public function getResults(array | Arrayable $results): array
+    {
+        return collect($results)->map(function (GlobalSearchResult $result) {
+            return [
+                'title' => $result->getTitle(),
+                'description' => $result->getDescription(),
+                'redirect' => $result->getRedirect(),
+                'icon' => $result->getIcon(),
+                'image' => $result->getImage(),
+            ];
+        })->toArray();
     }
 
     public function getCategories(): Collection

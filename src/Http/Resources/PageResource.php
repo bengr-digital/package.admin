@@ -32,8 +32,8 @@ class PageResource extends JsonResource
                 'form' => $this->hasLargeForm() ? WidgetResource::make($this->getLargeForm(), false) : null
             ],
             'content' => [
-                'modals' => ModalResource::collection($this->getModals()),
-                'widgets' => WidgetResource::collection($this->getWidgets()),
+                'modals' => collect(ModalResource::collection($this->getTransformedModals())->toArray($request))->filter()->values(),
+                'widgets' => WidgetResource::collection($this->getTransformedWidgets()),
             ]
         ];
     }

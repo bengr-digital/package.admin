@@ -14,15 +14,21 @@ class ModalResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            'id' => $this->getId(),
-            'type' => $this->getType(),
-            'direction' => $this->getDirection(),
-            'heading' => $this->getHeading(),
-            'subheading' => $this->getSubheading(),
-            'hasCross' => $this->hasCross(),
-            'widgets' => WidgetResource::collection($this->getWidgets()),
-            'actions' => ActionGroupResource::collection($this->getActions()),
-        ];
+        $atBuilderModalsPath = $request->getPathInfo() == (config('admin.routes.url') . config('admin.routes.routes.builder.url') . config('admin.routes.routes.builder.routes.modals.url'));
+
+        if ($atBuilderModalsPath || !$this->getLazyload()) {
+            return [
+                'id' => $this->getId(),
+                'type' => $this->getType(),
+                'direction' => $this->getDirection(),
+                'heading' => $this->getHeading(),
+                'subheading' => $this->getSubheading(),
+                'hasCross' => $this->hasCross(),
+                'widgets' => WidgetResource::collection($this->getTransformedWidgets()),
+                'actions' => ActionGroupResource::collection($this->getActions()),
+            ];
+        } else {
+            return null;
+        }
     }
 }

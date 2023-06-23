@@ -4,6 +4,7 @@ namespace Bengr\Admin\Widgets;
 
 use Bengr\Admin\Actions\Action;
 use Bengr\Admin\Actions\ActionGroup;
+use Bengr\Admin\Concerns\EvaluatesClosures;
 use Bengr\Admin\Exceptions\ActionNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -12,6 +13,8 @@ use function Bengr\Support\response;
 
 class Widget
 {
+    use EvaluatesClosures;
+
     protected ?int $widgetSort = null;
 
     protected ?int $widgetId = null;

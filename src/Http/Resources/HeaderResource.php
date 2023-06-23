@@ -17,7 +17,7 @@ class HeaderResource extends JsonResource
         return [
             'heading' => $this->getTitle(),
             'subheading' => $this->getDescription(),
-            'actions' => ActionGroupResource::collection($this->getActions())
+            'actions' => ActionGroupResource::collection($this->getTransformedActions())
         ];
     }
 }

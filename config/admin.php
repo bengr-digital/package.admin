@@ -16,14 +16,24 @@ return [
     'pages' => [
         'namespace' => 'App\\Admin\\Pages',
         'path' => app_path('Admin/Pages'),
-        'dashboard' => null,
-        'login' => null,
-        'register' => []
+        'dashboard' => Bengr\Admin\Pages\Builtin\Dashboard::class,
+        'login' => Bengr\Admin\Pages\Builtin\Auth\Login::class,
+        'settings' => Bengr\Admin\Pages\Builtin\Settings\Settings::class,
+        'me' => Bengr\Admin\Pages\Builtin\Auth\Me::class,
+        'register' => [
+            Bengr\Admin\Pages\Builtin\Settings\Settings::class,
+            Bengr\Admin\Pages\Builtin\Auth\Login::class,
+            Bengr\Admin\Pages\Builtin\Auth\Me::class,
+            Bengr\Admin\Pages\Builtin\Dashboard::class,
+        ]
     ],
 
     'global_actions' => [
         'namespace' => 'App\\Admin\\GlobalActions',
-        'path' => app_path('Admin/GlobalActions')
+        'path' => app_path('Admin/GlobalActions'),
+        'register' => [
+            Bengr\Admin\GlobalActions\Builtin\GlobalSearch::class,
+        ]
     ],
 
     'tables' => [
