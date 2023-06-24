@@ -13,7 +13,7 @@ class WidgetResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
-    public function toArray(Request $request)
+    public function toArray($request)
     {
         $atBuilderWidgetsPath = $request->getPathInfo() == (config('admin.routes.url') . config('admin.routes.routes.builder.url') . config('admin.routes.routes.builder.routes.widgets.url'));
 

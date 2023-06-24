@@ -98,6 +98,8 @@ class GlobalSearchResult
 
     public function getIcon(): ?array
     {
+        if (!$this->iconName) return null;
+
         return [
             'name' => $this->iconName,
             'type' => $this->iconType,

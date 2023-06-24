@@ -6,7 +6,7 @@ use Bengr\Admin\Actions\Action;
 use Bengr\Admin\Facades\Admin as BengrAdmin;
 use Bengr\Admin\Pages\Concerns\Translatable;
 use Bengr\Admin\Pages\Page;
-use Bengr\Admin\Widgets\ActionCardWidget;
+use Bengr\Admin\Widgets;
 
 class Dashboard extends Page
 {
@@ -27,11 +27,11 @@ class Dashboard extends Page
         $loggedInUser = BengrAdmin::auth()->user();
 
         return [
-            ActionCardWidget::make(__('admin::texts.welcome') . ', ' . $loggedInUser->first_name . ' ' . $loggedInUser->last_name, $loggedInUser->email)
+            Widgets\ActionCardWidget::make(__('admin::texts.welcome') . ', ' . $loggedInUser->first_name . ' ' . $loggedInUser->last_name, $loggedInUser->email)
                 ->image($loggedInUser->getFirstMediaUrl('avatar'))
                 ->actionOnClick(Action::make()->redirect(config('admin.pages.me')))
                 ->columnSpan(4),
-            ActionCardWidget::make('Přizpůsobení administrace na míru', 'V případě potřeby vám celou administraci i nástěnku přizpůsobíme vaším potřebám.')
+            Widgets\ActionCardWidget::make('Přizpůsobení administrace na míru', 'V případě potřeby vám celou administraci i nástěnku přizpůsobíme vaším potřebám.')
                 ->icon('info')
                 ->columnSpan(8),
         ];

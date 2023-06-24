@@ -2,22 +2,14 @@
 
 namespace Bengr\Admin\Pages\Builtin\Auth;
 
-use App\Models\Post;
 use Bengr\Admin\Actions\Action;
 use Bengr\Admin\Facades\Admin as BengrAdmin;
 use Bengr\Admin\Forms\Form;
 use Bengr\Admin\Pages\Page;
-use Bengr\Admin\Widgets\BoxWidget;
-use Bengr\Admin\Widgets\CardWidget;
-use Bengr\Admin\Widgets\FormWidget;
+use Bengr\Admin\Widgets;
 use Bengr\Admin\Forms\Widgets\Inputs;
-use Bengr\Admin\Forms\Widgets\Inputs\Input;
-use Bengr\Admin\GlobalSearch\GlobalSearchResult;
 use Bengr\Admin\Modals\Modal;
-use Bengr\Admin\Models\AdminUser;
 use Bengr\Admin\Pages\Concerns\Translatable;
-use Bengr\Admin\Widgets\ActionWidget;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 
 class Me extends Page
@@ -39,11 +31,11 @@ class Me extends Page
     public function getWidgets(): array
     {
         return [
-            FormWidget::make(AdminUser::class, $this)
+            Widgets\FormWidget::make(BengrAdmin::authUserModel(), $this)
                 ->record(BengrAdmin::auth()->user())
                 ->schema([
-                    BoxWidget::make([
-                        CardWidget::make([
+                    Widgets\BoxWidget::make([
+                        Widgets\CardWidget::make([
                             Inputs\Input::make('first_name')
                                 ->label(__('admin::forms.first_name'))
                                 ->rules(['required'])
@@ -60,7 +52,7 @@ class Me extends Page
                                 ->placeholder(__('admin::forms.placeholders.email'))
                                 ->rules(['required', Rule::unique('admin_users')->ignore(BengrAdmin::auth()->id())]),
                         ])->heading(__('admin::texts.general_settings')),
-                        CardWidget::make([
+                        Widgets\CardWidget::make([
                             Inputs\Input::make('password')
                                 ->label(__('admin::forms.password'))
                                 ->placeholder(__('admin::forms.placeholders.password'))
@@ -78,8 +70,8 @@ class Me extends Page
                                 ->rules(['required_with:password', 'same:password_new']),
                         ])->heading(__('admin::texts.password'))
                     ])->columnSpan(8),
-                    BoxWidget::make([
-                        CardWidget::make([
+                    Widgets\BoxWidget::make([
+                        Widgets\CardWidget::make([
                             Inputs\AvatarInput::make('avatar')
                                 ->rules(['nullable', Rule::bengrFile(), Rule::bengrFileMax(1024), Rule::bengrFileMime(['jpg', 'png', 'svg', 'jpeg'])])
                         ])

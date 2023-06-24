@@ -13,7 +13,8 @@ trait CanSortRecords
         $sortColumn = $this->getTableSortColumn($params);
 
         if (!$sortColumn) {
-            $query->orderBy('created_at', 'desc');
+            $query->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc');
 
             return $query;
         }

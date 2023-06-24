@@ -5,11 +5,9 @@ namespace Bengr\Admin\Pages\Builtin\Auth;
 use Bengr\Admin\Facades\Admin as BengrAdmin;
 use Bengr\Admin\Forms\Form;
 use Bengr\Admin\Forms\Widgets\Inputs;
-use Bengr\Admin\Models\AdminUser;
 use Bengr\Admin\Pages\Concerns\Translatable;
 use Bengr\Admin\Pages\Page;
-use Bengr\Admin\Widgets\ActionWidget;
-use Bengr\Admin\Widgets\FormWidget;
+use Bengr\Admin\Widgets;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -37,7 +35,7 @@ class Login extends Page
     public function getWidgets(): array
     {
         return [
-            FormWidget::make(AdminUser::class, $this)
+            Widgets\FormWidget::make(BengrAdmin::authUserModel(), $this)
                 ->schema([
                     Inputs\Input::make('username')
                         ->label(__('admin::forms.username'))
@@ -47,12 +45,11 @@ class Login extends Page
                         ->label(__('admin::forms.password'))
                         ->placeholder(__('admin::forms.placeholders.password'))
                         ->type('password')->rules(['required']),
-                    ActionWidget::make('submit')
+                    Widgets\ActionWidget::make('submit')
                         ->label(__('admin::actions.login'))
                         ->color('primary')
                 ])
                 ->submit(function (Form $form) {
-                    /** @var AdminUser $admin */
                     $admin = $this->authenticate($form->getValue('username'), $form->getValue('password'));
                     $token = $admin->createToken('bengr-admin-token');
 

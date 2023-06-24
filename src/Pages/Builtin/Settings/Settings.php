@@ -6,9 +6,7 @@ use Bengr\Admin\Actions\Action;
 use Bengr\Admin\Forms\Form;
 use Bengr\Admin\Models\AdminSettings;
 use Bengr\Admin\Pages\Page;
-use Bengr\Admin\Widgets\BoxWidget;
-use Bengr\Admin\Widgets\CardWidget;
-use Bengr\Admin\Widgets\FormWidget;
+use Bengr\Admin\Widgets;
 use Bengr\Admin\Forms\Widgets\Inputs;
 use Bengr\Admin\Pages\Concerns\Translatable;
 use Bengr\Localization\Facades\Localization;
@@ -36,11 +34,11 @@ class Settings extends Page
     public function getWidgets(): array
     {
         return [
-            FormWidget::make(AdminSettings::class, $this)
+            Widgets\FormWidget::make(AdminSettings::class, $this)
                 ->record(AdminSettings::first() ?? AdminSettings::create())
                 ->schema([
-                    BoxWidget::make([
-                        CardWidget::make([
+                    Widgets\BoxWidget::make([
+                        Widgets\CardWidget::make([
                             Inputs\Input::make('billing.name')
                                 ->label(__('admin::forms.company_name'))
                                 ->placeholder(__('admin::forms.placeholders.company_name'))
@@ -67,7 +65,7 @@ class Settings extends Page
                                 ->options(Localization::countries()->all())->rules([])
                                 ->columnSpan(6),
                         ])->heading(__('admin::texts.billing_information')),
-                        CardWidget::make([
+                        Widgets\CardWidget::make([
                             Inputs\Input::make('phone')
                                 ->label(__('admin::forms.phone'))
                                 ->placeholder(__('admin::forms.placeholders.phone')),
