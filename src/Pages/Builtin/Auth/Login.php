@@ -40,7 +40,7 @@ class Login extends Page
                     Inputs\Input::make('username')
                         ->label(__('admin::forms.username'))
                         ->placeholder(__('admin::forms.placeholders.email'))
-                        ->rules(['required', 'exists:admin_users']),
+                        ->rules(['required']),
                     Inputs\Input::make('password')
                         ->label(__('admin::forms.password'))
                         ->placeholder(__('admin::forms.placeholders.password'))
