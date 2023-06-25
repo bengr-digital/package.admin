@@ -17,7 +17,7 @@ class ChartWidget extends Widget
 
     protected ?string $type = null;
 
-    protected array $labels = [];
+    protected array | \Closure | null $labels = [];
 
     protected array $datasets = [];
 
@@ -46,14 +46,14 @@ class ChartWidget extends Widget
         return $this;
     }
 
-    public function labels(array $labels): self
+    public function labels(array | \Closure | null $labels): self
     {
         $this->labels = $labels;
 
         return $this;
     }
 
-    public function dataset(string $label, array $data): self
+    public function dataset(string $label, array | \Closure | null $data): self
     {
         $this->datasets[] = [
             'label' => $label,
@@ -75,12 +75,12 @@ class ChartWidget extends Widget
 
     public function getLabels(): array
     {
-        return $this->labels;
+        return $this->evaluate($this->labels);
     }
 
     public function getDatasets(): array
     {
-        return $this->datasets;
+        return collect($this->datasets)->map(fn ($dataset) => ['label' => $dataset['label'], 'data' => $this->evaluate($dataset['data'])])->toArray();
     }
 
     public function getType(): ?string

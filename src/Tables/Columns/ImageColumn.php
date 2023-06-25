@@ -52,10 +52,10 @@ class ImageColumn extends Column
 
     public function getValue(Model $record)
     {
-        $record = Str::of('avatar')->contains('.') ? Arr::get($record, Str::of('causer.avatar')->beforeLast('.')->toString()) : $record;
+        $record = Str::of($this->getName())->contains('.') ? Arr::get($record, Str::of($this->getName())->beforeLast('.')->toString()) : $record;
 
         if (array_key_exists('Spatie\MediaLibrary\HasMedia', class_implements($record)) && array_key_exists('Spatie\MediaLibrary\InteractsWithMedia', class_uses($record))) {
-            return $record->getFirstMediaUrl(Str::of('avatar')->contains('.') ? Str::of($this->getName())->afterLast('avatar')->toString() : $this->getName());
+            return $record->getFirstMediaUrl(Str::of($this->getName())->contains('.') ? Str::of($this->getName())->afterLast('.')->toString() : $this->getName());
         }
 
         return null;

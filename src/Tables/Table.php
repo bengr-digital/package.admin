@@ -3,6 +3,7 @@
 namespace Bengr\Admin\Tables;
 
 use Bengr\Admin\Actions\Action;
+use Bengr\Admin\Facades\Admin as BengrAdmin;
 use Bengr\Admin\Http\Resources\ActionGroupResource;
 use Bengr\Admin\Http\Resources\ActionResource;
 use Bengr\Admin\Tables\Columns\Column;
@@ -99,16 +100,32 @@ class Table
 
             if ($this->getActionOnClick()) {
                 $actionOnClick = (clone $this->getActionOnClick())->record($record);
+
+                if ($actionOnClick->getModalCodeId() && !$actionOnClick->getModalId()) {
+                    $modal = collect(BengrAdmin::getCurrentPage()->getTransformedModals())->first(fn ($modal) => $modal->getCodeId() == $actionOnClick->getModalCodeId());
+
+                    if ($modal) {
+                        $actionOnClick->modal($modal->getId(), $actionOnClick->getModalEvent());
+                    }
+                }
+
                 $record_in_column->put('actionOnClick', ActionResource::make($actionOnClick));
             } else {
                 $record_in_column->put('actionOnClick', null);
             }
 
-
-
             $actions = collect($this->getActions())->map(function ($action) {
                 return clone $action;
             })->each(function ($action) use ($record) {
+
+                if ($action->getModalCodeId() && !$action->getModalId()) {
+                    $modal = collect(BengrAdmin::getCurrentPage()->getTransformedModals())->first(fn ($modal) => $modal->getCodeId() == $action->getModalCodeId());
+
+                    if ($modal) {
+                        $action->modal($modal->getId(), $action->getModalEvent());
+                    }
+                }
+
                 $action->record($record);
             });
 
