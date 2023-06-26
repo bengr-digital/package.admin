@@ -8,13 +8,13 @@ trait HasParams
 
     public function params(array | \Closure $params = []): static
     {
-        $this->modalParams = $params;
+        $this->params = $params;
 
         return $this;
     }
 
     public function getParams(): array
     {
-        return $this->evaluate($this->modalParams, ['record' => $this->getRecord()]);
+        return $this->evaluate($this->params, ['record' => $this->getRecord()]);
     }
 }
