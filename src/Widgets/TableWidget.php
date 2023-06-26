@@ -232,7 +232,7 @@ class TableWidget extends Widget implements HasTable
         $this->setColumnWidths($table->getColumns());
 
         return [
-            'bulkActions' => ActionGroupResource::collection($table->getBulkActions()),
+            'bulkActions' => ActionGroupResource::collection($table->getTransformedBulkActions()),
             'columns' => ColumnResource::collection($table->getColumns()),
             'records' => $table->getRecordsInColumns(),
             'filters' => WidgetResource::collection($table->getWidgetsInFilters()),

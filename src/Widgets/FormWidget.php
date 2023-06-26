@@ -106,6 +106,10 @@ class FormWidget extends Widget implements HasForm
                 $widget->handle(null, $this->getWidgetId());
             }
 
+            if ($widget instanceof ActionWidget && !$widget->getRecord() && $this->getRecord()) {
+                $widget->record($this->getRecord());
+            }
+
             if ($widget->hasWidgets()) {
                 $this->getAutomatedFormSchema($widget->getWidgets());
             }

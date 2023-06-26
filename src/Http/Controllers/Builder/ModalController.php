@@ -30,6 +30,8 @@ class ModalController extends Controller
 
         if (!$modal) return response()->throw(ModalNotFoundException::class);
 
+        $modal->params($request->get('params') ?? []);
+
         return $page->processToResponse($request, fn () => response()->resource(ModalResource::class, $modal));
     }
 }

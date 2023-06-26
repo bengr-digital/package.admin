@@ -17,6 +17,7 @@ class Action
     use Concerns\HasRoute;
     use Concerns\HasRedirect;
     use Concerns\HasTooltip;
+    use Concerns\HasParams;
     use Concerns\CanBeDisabled;
     use Concerns\CanBeHidden;
     use Concerns\CanBeDownload;

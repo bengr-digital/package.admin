@@ -345,12 +345,12 @@ class Page
         $this->transformed_widgets = collect([]);
         $widgets_to_transform = $this->getTransformedWidgets();
 
-        foreach ($this->getModals() as $modal) {
-            array_push($widgets_to_transform, ...$modal->getWidgets());
+        foreach ($this->getTransformedModals() as $modal) {
+            $modal->params(request()->get('params') ?? null);
+            array_push($widgets_to_transform, ...$modal->getTransformedWidgets());
         }
 
         $this->loopWidgets($widgets_to_transform);
-
 
         $widget = $this->transformed_widgets->where(function (Widget $widget) use ($id) {
             return $widget->getWidgetId() === $id;

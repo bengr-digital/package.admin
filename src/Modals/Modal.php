@@ -2,8 +2,12 @@
 
 namespace Bengr\Admin\Modals;
 
+use Bengr\Admin\Concerns\EvaluatesClosures;
+
 class Modal
 {
+    use EvaluatesClosures;
+
     protected ?int $id = null;
 
     protected ?string $codeId = null;
@@ -16,13 +20,15 @@ class Modal
 
     protected ?string $direction = null;
 
-    protected array $widgets = [];
+    protected array | \Closure $widgets = [];
 
     protected array $actions = [];
 
     protected bool $hasCross = false;
 
     protected bool $lazyload = false;
+
+    protected array $params = [];
 
     final public function __construct(string $codeId)
     {
@@ -70,7 +76,7 @@ class Modal
         return $this;
     }
 
-    public function widgets(array $widgets): self
+    public function widgets(array | \Closure $widgets): self
     {
         $this->widgets = $widgets;
 
@@ -98,6 +104,13 @@ class Modal
         return $this;
     }
 
+    public function params(array $params = []): self
+    {
+        $this->params = $params;
+
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -115,7 +128,7 @@ class Modal
 
     public function getWidgets(): array
     {
-        return $this->widgets;
+        return $this->evaluate($this->widgets, ['params' => $this->getParams()]);
     }
 
     public function getHeading(): ?string
@@ -151,6 +164,11 @@ class Modal
     public function getLazyload(): bool
     {
         return $this->lazyload;
+    }
+
+    public function getParams(): array
+    {
+        return $this->params;
     }
 
     public function getFlatWidgets(?array $widgets = null): array

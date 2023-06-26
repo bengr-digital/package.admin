@@ -101,6 +101,10 @@ class Table
             if ($this->getActionOnClick()) {
                 $actionOnClick = (clone $this->getActionOnClick())->record($record);
 
+                if ($actionOnClick->hasHandle() && !$actionOnClick->getHandleWidgetId()) {
+                    $actionOnClick->handle($actionOnClick->getHandleMethod(), $this->tableResource->getWidgetId() ?? null);
+                }
+
                 if ($actionOnClick->getModalCodeId() && !$actionOnClick->getModalId()) {
                     $modal = collect(BengrAdmin::getCurrentPage()->getTransformedModals())->first(fn ($modal) => $modal->getCodeId() == $actionOnClick->getModalCodeId());
 
@@ -117,6 +121,9 @@ class Table
             $actions = collect($this->getActions())->map(function ($action) {
                 return clone $action;
             })->each(function ($action) use ($record) {
+                if ($action->hasHandle() && !$action->getHandleWidgetId()) {
+                    $action->handle($action->getHandleMethod(), $this->tableResource->getWidgetId() ?? null);
+                }
 
                 if ($action->getModalCodeId() && !$action->getModalId()) {
                     $modal = collect(BengrAdmin::getCurrentPage()->getTransformedModals())->first(fn ($modal) => $modal->getCodeId() == $action->getModalCodeId());
@@ -137,6 +144,17 @@ class Table
 
 
         return $records_in_columns;
+    }
+
+    public function getTransformedBulkActions(): array
+    {
+        return collect($this->getBulkActions())->map(function ($bulkAction) {
+            if ($bulkAction->hasHandle() && !$bulkAction->getHandleWidgetId()) {
+                $bulkAction->handle($bulkAction->getHandleMethod(), $this->tableResource->getWidgetId() ?? null);
+            }
+
+            return $bulkAction;
+        })->toArray();
     }
 
     public function getPagination(): SupportCollection

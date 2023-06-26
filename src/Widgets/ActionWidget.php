@@ -17,12 +17,14 @@ class ActionWidget extends Widget
     use Concerns\HasRoute;
     use Concerns\HasRedirect;
     use Concerns\HasTooltip;
+    use Concerns\HasParams;
     use Concerns\CanBeDisabled;
     use Concerns\CanBeHidden;
     use Concerns\CanHandleModal;
     use Concerns\CanBeDownload;
     use Concerns\CanHandleAction;
     use Concerns\HasConfirm;
+    use Concerns\InteractsWithRecord;
 
     protected ?string $widgetName = 'action';
 
@@ -91,12 +93,14 @@ class ActionWidget extends Widget
             ] : null,
             'modal' => $this->getModalId() && $this->getModalEvent() ? [
                 'id' => $this->getModalId(),
-                'event' => $this->getModalEvent()
+                'event' => $this->getModalEvent(),
+                'params' => $this->getParams()
             ] : null,
             'call' => $this->hasHandle() ? [
                 'name' => $this->getName(),
                 'widget_id' => $this->getHandleWidgetId(),
-                'download' => $this->isDownload()
+                'download' => $this->isDownload(),
+                'params' => $this->getParams()
             ] : null
         ];
     }

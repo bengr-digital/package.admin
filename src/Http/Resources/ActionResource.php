@@ -49,12 +49,14 @@ class ActionResource extends JsonResource
             ] : null,
             'modal' => $this->getModalId() && $this->getModalEvent() ? [
                 'id' => $this->getModalId(),
-                'event' => $this->getModalEvent()
+                'event' => $this->getModalEvent(),
+                'params' => $this->getParams()
             ] : null,
             'call' => $this->hasHandle() ? [
                 'name' => $this->getName(),
                 'widget_id' => $this->getHandleWidgetId(),
-                'download' => $this->isDownload()
+                'download' => $this->isDownload(),
+                'params' => $this->getParams()
             ] : null
 
         ];
