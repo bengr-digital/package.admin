@@ -34,5 +34,8 @@
     "require": {
         "spatie/laravel-package-tools": "^1.13",
         "spatie/laravel-medialibrary": "^10.7"
+    },
+    "scripts": {
+        "test": "phpunit"
     }
 }

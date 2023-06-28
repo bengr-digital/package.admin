@@ -7,6 +7,7 @@ use Bengr\Admin\Exceptions\ActionNotFoundException;
 use Bengr\Admin\Forms\Contracts\HasForm;
 use Bengr\Admin\Forms\Concerns\InteractsWithForm;
 use Bengr\Admin\Forms\Form;
+use Bengr\Admin\Http\Resources\ActionResource;
 use Bengr\Admin\Http\Resources\WidgetResource;
 use Bengr\Admin\Pages\Page;
 use Bengr\Admin\Widgets\Widget;
@@ -28,8 +29,9 @@ class FormWidget extends Widget implements HasForm
 
     protected array $schema = [];
 
-    protected ?\Closure $submit_method = null;
+    protected ?bool $detectUnsavedChanges = null;
 
+    protected ?\Closure $submit_method = null;
 
     final public function __construct($model, $page)
     {
@@ -57,6 +59,13 @@ class FormWidget extends Widget implements HasForm
         return $this;
     }
 
+    public function detectUnsavedChanges(bool | \Closure $condition = true): self
+    {
+        $this->detectUnsavedChanges = $condition;
+
+        return $this;
+    }
+
     protected function getSubmitMethod(): ?\Closure
     {
         return $this->submit_method;
@@ -70,6 +79,15 @@ class FormWidget extends Widget implements HasForm
     protected function getFormSchema(): array
     {
         return $this->getAutomatedFormSchema();
+    }
+
+    protected function getDetectUnsavedChanges(): bool
+    {
+        if (is_null($this->detectUnsavedChanges)) {
+            return !!$this->getRecord();
+        }
+
+        return $this->evaluate($this->detectUnsavedChanges);
     }
 
     public function callAction(string $name, array $payload = [])
@@ -103,7 +121,8 @@ class FormWidget extends Widget implements HasForm
             if ($widget instanceof FormWidget) break;
 
             if ($widget instanceof ActionWidget && !$widget->hasHandle() && $widget->getName() == 'submit') {
-                $widget->handle(null, $this->getWidgetId());
+                $widget->handle(null, null);
+                $widget->type('submit');
             }
 
             if ($widget instanceof ActionWidget && !$widget->getRecord() && $this->getRecord()) {
@@ -124,6 +143,8 @@ class FormWidget extends Widget implements HasForm
         $this->fill($this->getRecord());
 
         return [
+            'actionOnSubmit' => ActionResource::make(Action::make('submit')->handle(null, $this->getWidgetId())),
+            'detectUnsavedChanges' => $this->getDetectUnsavedChanges(),
             'children' => WidgetResource::collection($this->form->getSchema())
         ];
     }

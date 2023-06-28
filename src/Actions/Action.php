@@ -18,6 +18,7 @@ class Action
     use Concerns\HasRedirect;
     use Concerns\HasTooltip;
     use Concerns\HasParams;
+    use Concerns\HasType;
     use Concerns\CanBeDisabled;
     use Concerns\CanBeHidden;
     use Concerns\CanBeDownload;

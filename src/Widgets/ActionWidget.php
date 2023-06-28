@@ -18,6 +18,7 @@ class ActionWidget extends Widget
     use Concerns\HasRedirect;
     use Concerns\HasTooltip;
     use Concerns\HasParams;
+    use Concerns\HasType;
     use Concerns\CanBeDisabled;
     use Concerns\CanBeHidden;
     use Concerns\CanHandleModal;
@@ -67,6 +68,7 @@ class ActionWidget extends Widget
         $this->transformAction();
 
         return [
+            'type' => $this->getType(),
             'label' => $this->getLabel(),
             'icon' => $this->hasIcon() ? [
                 'name' => $this->getIconName(),

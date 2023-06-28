@@ -15,6 +15,7 @@ class ActionResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'type' => $this->getType(),
             'label' => $this->getLabel(),
             'icon' => $this->hasIcon() ? [
                 'name' => $this->getIconName(),

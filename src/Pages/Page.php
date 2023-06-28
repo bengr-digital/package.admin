@@ -561,7 +561,8 @@ class Page
 
         foreach ($actions as $action) {
             if ($action->getName() == 'submit' && !$action->hasHandle()) {
-                $action->handle(null, collect($this->getFlatWidgets($this->getTransformedWidgets()))->first(fn ($widget) => $widget instanceof FormWidget)->getWidgetId());
+                $action->handle(null, null);
+                $action->type('submit');
                 break;
             }
 
