@@ -8,10 +8,12 @@ use Bengr\Admin\Navigation;
 use Bengr\Admin\Navigation\UserMenuItem;
 use Bengr\Admin\Pages\Page;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use Symfony\Component\Finder\SplFileInfo;
 
 class AdminManager
 {
@@ -270,5 +272,65 @@ class AdminManager
     public function getCurrentPage(): ?Page
     {
         return $this->currentPage;
+    }
+
+    public function registerComponents(): void
+    {
+        $this->pages = config('admin.pages.register') ?? [];
+        $this->globalActions = config('admin.global_actions.register') ?? [];
+
+        $this->registerComponentsFromDirectory(
+            Page::class,
+            $this->pages,
+            config('admin.pages.path'),
+            config('admin.pages.namespace'),
+        );
+        $this->registerComponentsFromDirectory(
+            GlobalAction::class,
+            $this->globalActions,
+            config('admin.global_actions.path'),
+            config('admin.global_actions.namespace'),
+        );
+    }
+
+    protected function registerComponentsFromDirectory(string $baseClass, array &$register, ?string $directory, ?string $namespace): void
+    {
+        if (blank($directory) || blank($namespace)) {
+            return;
+        }
+
+        $filesystem = app(Filesystem::class);
+        $files = [];
+
+        if ($filesystem->exists($directory)) {
+            $files = $filesystem->allFiles($directory);
+        }
+
+        $namespace = Str::of($namespace);
+
+        $register = array_merge(
+            $register,
+            collect($files)
+                ->map(function (SplFileInfo $file) use ($namespace): string {
+                    $variableNamespace = $namespace->contains('*') ? str_ireplace(
+                        ['\\' . $namespace->before('*'), $namespace->after('*')],
+                        ['', ''],
+                        Str::of($file->getPath())
+                            ->after(base_path())
+                            ->replace(['/'], ['\\']),
+                    ) : null;
+
+                    if (is_string($variableNamespace)) {
+                        $variableNamespace = (string) Str::of($variableNamespace)->before('\\');
+                    }
+
+                    return (string) $namespace
+                        ->append('\\', $file->getRelativePathname())
+                        ->replace('*', $variableNamespace)
+                        ->replace(['/', '.php'], ['\\', '']);
+                })
+                ->filter(fn (string $class): bool => is_subclass_of($class, $baseClass) && (!(new \ReflectionClass($class))->isAbstract()))
+                ->all(),
+        );
     }
 }

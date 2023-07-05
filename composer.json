@@ -28,12 +28,15 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require-dev": {
-        "orchestra/testbench": "^7.13",
-        "phpunit/phpunit": "^9.5"
+        "orchestra/testbench": "^7.13"
     },
     "require": {
         "spatie/laravel-package-tools": "^1.13",
-        "spatie/laravel-medialibrary": "^10.7"
+        "spatie/laravel-medialibrary": "^10.7",
+        "bengr/support": "^1.0",
+        "bengr/auth": "^1.0",
+        "bengr/localization": "^1.0",
+        "spatie/laravel-activitylog": "^4.7"
     },
     "scripts": {
         "test": "phpunit"
