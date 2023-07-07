@@ -3,6 +3,7 @@
 namespace Bengr\Admin;
 
 use Bengr\Admin\Events\ServingAdmin;
+use Bengr\Admin\GlobalActions\GlobalAction;
 use Bengr\Admin\GlobalSearch\GlobalSearchProvider;
 use Bengr\Admin\Navigation;
 use Bengr\Admin\Navigation\UserMenuItem;
@@ -17,133 +18,30 @@ use Symfony\Component\Finder\SplFileInfo;
 
 class AdminManager
 {
-    protected bool $isNavigationMounted = false;
+    protected array $pages = [];
 
-    protected string $globalSearchProvider = GlobalSearchProvider::class;
+    protected ?Page $currentPage = null;
+
+    protected array $globalActions = [];
 
     protected array $navigationGroups = [];
 
     protected array $navigationItems = [];
 
+    protected bool $isNavigationMounted = false;
+
     protected array $userMenuItems = [];
 
-    protected array $pages = [];
-
-    protected array $globalActions = [];
-
-    protected ?Page $currentPage = null;
+    protected string $globalSearchProvider = GlobalSearchProvider::class;
 
     public function auth(): Guard
     {
         return auth()->guard($this->getGuardName());
     }
 
-    public function getGuardName(): string
-    {
-        return config('admin.auth.guard');
-    }
-
-    public function authUserModel(): string
-    {
-        return $this->auth()->getProvider()->getModel();
-    }
-
-    public function prefix(): string
-    {
-        return Str::of(config('admin.routes.url'))->ltrim('/')->value();
-    }
-
-    public function loginPage(): ?Page
-    {
-        return config('admin.pages.login') ? app(config('admin.pages.login')) : null;
-    }
-
-    public function dashboardPage(): ?Page
-    {
-        return config('admin.pages.dashboard') ? app(config('admin.pages.dashboard')) : null;
-    }
-
-    public function authTokenModel(): string
-    {
-        return config('auth.tokens')[config('auth.guards')[config('admin.auth.guard')]['provider']]['model'];
-    }
-
-    public function mountNavigation(): void
-    {
-        foreach ($this->getPages() as $page) {
-            app($page)->registerNavigationItems();
-        }
-    }
-
-    public function registerNavigationItems(array $items): void
-    {
-        $this->navigationItems = array_merge($this->navigationItems, $items);
-    }
-
-    public function registerPages(array $pages): void
-    {
-        $this->pages = array_merge($this->pages, $pages);
-    }
-
-    public function registerGlobalActions(array $globalActions): void
-    {
-        $this->globalActions = array_merge($this->globalActions, $globalActions);
-    }
-
-    public function registerUserMenuItems(array $items): void
-    {
-        $this->userMenuItems = array_merge($this->userMenuItems, $items);
-    }
-
     public function serving(\Closure $callback): void
     {
         Event::listen(ServingAdmin::class, $callback);
-    }
-
-    public function getNavigation(): Collection
-    {
-        if (!$this->isNavigationMounted) {
-            $this->mountNavigation();
-        }
-
-        return collect($this->getNavigationItems())
-            ->sortBy(fn (Navigation\NavigationItem $item): int => $item->getSort())
-            ->groupBy(fn (Navigation\NavigationItem $item): ?string => $item->getGroup())
-            ->map(function (Collection $items, ?string $groupIndex): Navigation\NavigationGroup {
-
-                if (blank($groupIndex)) {
-                    return Navigation\NavigationGroup::make()->items($items);
-                }
-
-                return Navigation\NavigationGroup::make($groupIndex)->items($items);
-            })->values();
-    }
-
-    public function getNavigationGroups(): array
-    {
-        return $this->navigationGroups;
-    }
-
-    public function getNavigationItems(): array
-    {
-        return $this->navigationItems;
-    }
-
-    public function getPages(): array
-    {
-        return array_unique($this->pages);
-    }
-
-    public function getGlobalActions(): array
-    {
-        return array_unique($this->globalActions);
-    }
-
-    public function getPagesUrls(): Collection
-    {
-        return collect($this->getPages())->map(function ($page) {
-            return app($page)->getRouteUrl();
-        });
     }
 
     public function isParam($value): bool
@@ -160,6 +58,72 @@ class AdminManager
                 return $this->isParam($part);
             })
             ->contains(true);
+    }
+
+    public function loginPage(): ?Page
+    {
+        return config('admin.pages.login') ? app(config('admin.pages.login')) : null;
+    }
+
+    public function dashboardPage(): ?Page
+    {
+        return config('admin.pages.dashboard') ? app(config('admin.pages.dashboard')) : null;
+    }
+
+    public function getGuardName(): string
+    {
+        return config('admin.auth.guard');
+    }
+
+    public function getAuthUserModel(): string
+    {
+        return $this->auth()->getProvider()->getModel();
+    }
+
+    public function getAuthTokenModel(): string
+    {
+        return config('auth.tokens')[config('auth.guards')[config('admin.auth.guard')]['provider']]['model'];
+    }
+
+    public function registerPages(array $pages): void
+    {
+        $this->pages = array_merge($this->pages, $pages);
+    }
+
+    public function registerGlobalActions(array $globalActions): void
+    {
+        $this->globalActions = array_merge($this->globalActions, $globalActions);
+    }
+
+    public function registerNavigationItems(array $items): void
+    {
+        $this->navigationItems = array_merge($this->navigationItems, $items);
+    }
+
+    public function mountNavigation(): void
+    {
+        foreach ($this->getPages() as $page) {
+            app($page)->registerNavigationItems();
+        }
+
+        $this->isNavigationMounted = true;
+    }
+
+    public function registerUserMenuItems(array $items): void
+    {
+        $this->userMenuItems = array_merge($this->userMenuItems, $items);
+    }
+
+    public function getPages(): array
+    {
+        return array_unique($this->pages);
+    }
+
+    public function getPagesUrls(): Collection
+    {
+        return collect($this->getPages())->map(function ($page) {
+            return app($page)->getRouteUrl();
+        });
     }
 
     public function getPageByUrl($url)
@@ -248,6 +212,16 @@ class AdminManager
         return $page;
     }
 
+    public function getCurrentPage(): ?Page
+    {
+        return $this->currentPage;
+    }
+
+    public function getGlobalActions(): array
+    {
+        return array_unique($this->globalActions);
+    }
+
     public function getGlobalActionByName(string $name)
     {
         $globalAction = collect($this->getGlobalActions())->first(function ($globalAction) use ($name) {
@@ -258,10 +232,40 @@ class AdminManager
         return app($globalAction);
     }
 
+    public function getNavigation(): Collection
+    {
+        if (!$this->isNavigationMounted) {
+            $this->mountNavigation();
+        }
+
+        return collect($this->getNavigationItems())
+            ->sortBy(fn (Navigation\NavigationItem $item): int => $item->getSort())
+            ->groupBy(fn (Navigation\NavigationItem $item): ?string => $item->getGroup())
+            ->map(function (Collection $items, ?string $groupIndex): Navigation\NavigationGroup {
+
+                if (blank($groupIndex)) {
+                    return Navigation\NavigationGroup::make()->items($items);
+                }
+
+                return Navigation\NavigationGroup::make($groupIndex)->items($items);
+            })->values();
+    }
+
+    public function getNavigationGroups(): array
+    {
+        return $this->navigationGroups;
+    }
+
+    public function getNavigationItems(): array
+    {
+        return $this->navigationItems;
+    }
+
     public function getUserMenuItems(): Collection
     {
         return collect($this->userMenuItems)
-            ->sort(fn (UserMenuItem $item): int => $item->getSort());
+            ->sortBy(fn (UserMenuItem $item): int => $item->getSort())
+            ->values();
     }
 
     public function getGlobalSearchProvider(): GlobalSearchProvider
@@ -269,10 +273,6 @@ class AdminManager
         return app($this->globalSearchProvider);
     }
 
-    public function getCurrentPage(): ?Page
-    {
-        return $this->currentPage;
-    }
 
     public function registerComponents(): void
     {

@@ -25,7 +25,7 @@ class AdminUser extends Authenticatable implements HasMedia
 
     public function tokens()
     {
-        return $this->morphMany(BengrAdmin::authTokenModel(), 'tokenable');
+        return $this->morphMany(BengrAdmin::getAuthTokenModel(), 'tokenable');
     }
 
     public function firstName(): Attribute

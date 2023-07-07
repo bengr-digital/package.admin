@@ -44,7 +44,7 @@ class UserMenuItem
         return $this;
     }
 
-    public function activeIcon(?string $activeIconName, ?string $activeIconType): self
+    public function activeIcon(?string $activeIconName, ?string $activeIconType = 'outlined'): self
     {
         $this->activeIconName = $activeIconName;
         $this->activeIconType = $activeIconType;
@@ -94,7 +94,7 @@ class UserMenuItem
 
     public function getSort(): ?int
     {
-        return $this->sort ?? -1;
+        return $this->sort ?? 0;
     }
 
     public function getRouteName(): string

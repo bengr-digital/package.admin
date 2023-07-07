@@ -9,6 +9,7 @@ use Bengr\Admin\Pages\Page;
 use Bengr\Admin\Widgets;
 use Bengr\Admin\Forms\Widgets\Inputs;
 use Bengr\Admin\Modals\Modal;
+use Bengr\Admin\Pages\Builtin\Dashboard;
 use Bengr\Admin\Pages\Concerns\Translatable;
 use Illuminate\Validation\Rule;
 
@@ -31,7 +32,7 @@ class Me extends Page
     public function getWidgets(): array
     {
         return [
-            Widgets\FormWidget::make(BengrAdmin::authUserModel(), $this)
+            Widgets\FormWidget::make(BengrAdmin::getAuthUserModel(), $this)
                 ->record(BengrAdmin::auth()->user())
                 ->schema([
                     Widgets\BoxWidget::make([

@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\Facade;
 /**
  * @method static Illuminate\Contracts\Auth\Guard auth()
  * @method static string getGuardName()
- * @method static string authUserModel()
+ * @method static string getAuthUserModel()
  * @method static string prefix()
  * @method static Bengr\Admin\Pages\Page loginPage()
  * @method static Bengr\Admin\Pages\Page dashboardPage()
- * @method static string authTokenModel()
+ * @method static string getAuthTokenModel()
  * @method static void registerComponents()
  * @method static void registerComponentsFromDirectory(string $baseClass, array &$register, ?string $directory, ?string $namespace)
  *

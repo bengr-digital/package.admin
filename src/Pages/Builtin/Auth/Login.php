@@ -35,7 +35,7 @@ class Login extends Page
     public function getWidgets(): array
     {
         return [
-            Widgets\FormWidget::make(BengrAdmin::authUserModel(), $this)
+            Widgets\FormWidget::make(BengrAdmin::getAuthUserModel(), $this)
                 ->schema([
                     Inputs\Input::make('username')
                         ->label(__('admin::forms.username'))
@@ -67,7 +67,7 @@ class Login extends Page
 
     public function authenticate(string $username, string $password): Authenticatable
     {
-        $admin = app(BengrAdmin::authUserModel())->where('username', $username)->orWhere('email', $username)->first();
+        $admin = app(BengrAdmin::getAuthUserModel())->where('username', $username)->orWhere('email', $username)->first();
 
         if (!$admin) {
 
