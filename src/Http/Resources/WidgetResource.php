@@ -2,6 +2,7 @@
 
 namespace Bengr\Admin\Http\Resources;
 
+use Bengr\Admin\Facades\Admin;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class WidgetResource extends JsonResource
@@ -14,7 +15,7 @@ class WidgetResource extends JsonResource
      */
     public function toArray($request)
     {
-        $atBuilderWidgetsPath = $request->getPathInfo() == (config('admin.routes.url') . config('admin.routes.routes.builder.url') . config('admin.routes.routes.builder.routes.widgets.url'));
+        $atBuilderWidgetsPath = $request->getPathInfo() == Admin::getApiRouteUrl('widgets');
 
         if ($atBuilderWidgetsPath) {
             return [

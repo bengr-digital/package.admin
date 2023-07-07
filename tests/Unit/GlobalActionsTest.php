@@ -9,9 +9,9 @@ class GlobalActionsTest extends TestCase
     public function test_registering_global_actions_from_path_and_from_register_property()
     {
         config([
-            'admin.global_actions.path' => $this->getTestGlobalActionPath('Simple'),
-            'admin.global_actions.namespace' => $this->getTestGlobalActionNamespace('Simple'),
-            'admin.global_actions.register' => [
+            'admin.components.global_actions.path' => $this->getTestGlobalActionPath('Simple'),
+            'admin.components.global_actions.namespace' => $this->getTestGlobalActionNamespace('Simple'),
+            'admin.components.global_actions.register' => [
                 \Bengr\Admin\GlobalActions\Builtin\GlobalSearch::class
             ]
         ]);
@@ -27,9 +27,9 @@ class GlobalActionsTest extends TestCase
     public function test_registering_global_actions_from_unknown_path()
     {
         config([
-            'admin.global_actions.path' => $this->getTestGlobalActionPath('UnknownPath'),
-            'admin.global_actions.namespace' => $this->getTestGlobalActionNamespace('UnknownPath'),
-            'admin.global_actions.register' => []
+            'admin.components.global_actions.path' => $this->getTestGlobalActionPath('UnknownPath'),
+            'admin.components.global_actions.namespace' => $this->getTestGlobalActionNamespace('UnknownPath'),
+            'admin.components.global_actions.register' => []
         ]);
 
         $this->adminManager->registerComponents();
@@ -40,9 +40,9 @@ class GlobalActionsTest extends TestCase
     public function test_registering_nested_global_actions()
     {
         config([
-            'admin.global_actions.path' => $this->getTestGlobalActionPath('Nested'),
-            'admin.global_actions.namespace' => $this->getTestGlobalActionNamespace('Nested'),
-            'admin.global_actions.register' => []
+            'admin.components.global_actions.path' => $this->getTestGlobalActionPath('Nested'),
+            'admin.components.global_actions.namespace' => $this->getTestGlobalActionNamespace('Nested'),
+            'admin.components.global_actions.register' => []
         ]);
 
         $this->adminManager->registerComponents();

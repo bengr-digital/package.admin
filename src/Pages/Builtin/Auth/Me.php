@@ -3,13 +3,12 @@
 namespace Bengr\Admin\Pages\Builtin\Auth;
 
 use Bengr\Admin\Actions\Action;
-use Bengr\Admin\Facades\Admin as BengrAdmin;
+use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\Forms\Form;
 use Bengr\Admin\Pages\Page;
 use Bengr\Admin\Widgets;
 use Bengr\Admin\Forms\Widgets\Inputs;
 use Bengr\Admin\Modals\Modal;
-use Bengr\Admin\Pages\Builtin\Dashboard;
 use Bengr\Admin\Pages\Concerns\Translatable;
 use Illuminate\Validation\Rule;
 
@@ -32,8 +31,8 @@ class Me extends Page
     public function getWidgets(): array
     {
         return [
-            Widgets\FormWidget::make(BengrAdmin::getAuthUserModel(), $this)
-                ->record(BengrAdmin::auth()->user())
+            Widgets\FormWidget::make(Admin::getAuthUserModel(), $this)
+                ->record(Admin::auth()->user())
                 ->schema([
                     Widgets\BoxWidget::make([
                         Widgets\CardWidget::make([
@@ -47,11 +46,11 @@ class Me extends Page
                                 ->columnSpan(6),
                             Inputs\Input::make('username')
                                 ->label(__('admin::forms.username'))
-                                ->rules(['required', Rule::unique('admin_users')->ignore(BengrAdmin::auth()->id())]),
+                                ->rules(['required', Rule::unique('admin_users')->ignore(Admin::auth()->id())]),
                             Inputs\Input::make('email')
                                 ->label(__('admin::forms.email'))
                                 ->placeholder(__('admin::forms.placeholders.email'))
-                                ->rules(['required', Rule::unique('admin_users')->ignore(BengrAdmin::auth()->id())]),
+                                ->rules(['required', Rule::unique('admin_users')->ignore(Admin::auth()->id())]),
                         ])->heading(__('admin::texts.general_settings')),
                         Widgets\CardWidget::make([
                             Inputs\Input::make('password')
@@ -81,7 +80,7 @@ class Me extends Page
                 ->submit(function (Form $form) {
                     $form->save(['password', 'password_new_confirmation', !$form->getValue('password_new') ? 'password_new' : ''], ['password_new' => 'password']);
 
-                    return $this->response(__('admin::states.saved'))->redirect(config('admin.pages.me'));
+                    return $this->response(__('admin::states.saved'))->redirect(Admin::getPageByKey('me'));
                 })
 
         ];

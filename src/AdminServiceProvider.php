@@ -59,7 +59,7 @@ class AdminServiceProvider extends PackageServiceProvider
                 UserMenuItem::make()
                     ->label(__('admin::pages.me.title'))
                     ->icon('settings')
-                    ->route(app(config('admin.pages.me'))->getRouteName(), app(config('admin.pages.me'))->getRouteUrl()),
+                    ->route(Admin::getPageByKey('me')->getRouteName(), Admin::getPageByKey('me')->getRouteUrl()),
             ]);
         });
     }

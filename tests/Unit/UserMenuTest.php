@@ -96,13 +96,13 @@ class UserMenuTest extends TestCase
     {
         $this->adminManager->registerUserMenuItems([
             UserMenuItem::make()
-                ->route('admin.pages.ahoj', '/ahoj')
+                ->route('admin.components.pages.ahoj', '/ahoj')
         ]);
 
         $this->assertUserMenuItemRegisteredCount(1);
 
         $this->assertUserMenuItemregistered(
-            routeName: 'admin.pages.ahoj',
+            routeName: 'admin.components.pages.ahoj',
             routeUrl: '/ahoj',
         );
     }

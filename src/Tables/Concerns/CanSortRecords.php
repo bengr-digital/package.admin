@@ -51,11 +51,11 @@ trait CanSortRecords
 
     protected function getTableSortingSortColumnParam(): string
     {
-        return config('admin.tables.sorting.params.sort_column') ?? 'sort_column';
+        return config('admin.widgets.tables.sorting.params.sort_column') ?? 'sort_column';
     }
 
     protected function getTableSortingSortOrderParam(): string
     {
-        return config('admin.tables.sorting.params.sort_order') ?? 'sort_order';
+        return config('admin.widgets.tables.sorting.params.sort_order') ?? 'sort_order';
     }
 }

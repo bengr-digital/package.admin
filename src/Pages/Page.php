@@ -2,11 +2,10 @@
 
 namespace Bengr\Admin\Pages;
 
-use App\Http\Kernel;
 use Bengr\Admin\Actions\Action;
 use Bengr\Admin\Actions\ActionGroup;
 use Bengr\Admin\Exceptions\ActionNotFoundException;
-use Bengr\Admin\Facades\Admin as BengrAdmin;
+use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\GlobalSearch\GlobalSearchResult;
 use Bengr\Admin\Modals\Modal;
 use Bengr\Admin\Navigation\NavigationItem;
@@ -92,7 +91,7 @@ class Page
             return;
         }
 
-        BengrAdmin::registerNavigationItems($this->getParent() ? [] : $this->getNavigationItems());
+        Admin::registerNavigationItems($this->getParent() ? [] : $this->getNavigationItems());
     }
 
     public function getNavigationItems(): array
@@ -116,7 +115,7 @@ class Page
 
     public function getChildren(): array
     {
-        return collect(BengrAdmin::getPages())->reject(function ($item) {
+        return collect(Admin::getPages())->reject(function ($item) {
             return app($item)->getParent() !== $this::class;
         })->toArray();
     }
@@ -177,7 +176,7 @@ class Page
 
         $slug = str_replace('/', '.', $slug);
 
-        return "admin.pages.{$slug}";
+        return "admin.components.pages.{$slug}";
     }
 
     public function getRouteUrl(): string
@@ -276,10 +275,9 @@ class Page
 
         if (!class_exists($this->middlewares[$index])) {
             $parsed = explode(':', $middleware);
-            $middleware = array_key_exists($parsed[0], app(Kernel::class)->getRouteMiddleware()) ? app(Kernel::class)->getRouteMiddleware()[$parsed[0]] : null;
+            $middleware = array_key_exists($parsed[0], Admin::getHttpKernel()->getRouteMiddleware()) ? Admin::getHttpKernel()->getRouteMiddleware()[$parsed[0]] : null;
             $data = array_splice($parsed, 1);
         }
-
         if (!$middleware) return $response();
 
         if ($index === count($this->middlewares) - 1) {

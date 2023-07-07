@@ -25,7 +25,7 @@ trait HasFilters
 
     protected function getTableFilterParam(): string
     {
-        return config('admin.tables.filter.params.filter') ?? 'filter';
+        return config('admin.widgets.tables.filter.params.filter') ?? 'filter';
     }
 
     public function getCachedTableFilters(): array

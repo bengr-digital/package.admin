@@ -35,6 +35,6 @@ trait CanSearchRecords
 
     protected function getTableSearchQueryParam(): string
     {
-        return config('admin.tables.search.params.query') ?? 'q';
+        return config('admin.widgets.tables.search.params.query') ?? 'q';
     }
 }

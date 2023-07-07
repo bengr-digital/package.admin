@@ -5,11 +5,9 @@ namespace Bengr\Admin\Http\Controllers\Builder;
 use Bengr\Admin\Exceptions\PageNotFoundException;
 use Bengr\Admin\Exceptions\ModalNotFoundException;
 use Bengr\Admin\Http\Controllers\Controller;
-use Bengr\Admin\Facades\Admin as BengrAdmin;
+use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\Http\Requests\Builder\BuildModalRequest;
 use Bengr\Admin\Http\Resources\ModalResource;
-
-use function Bengr\Support\response;
 
 /**
  * @group Bengr Administration
@@ -22,16 +20,16 @@ class ModalController extends Controller
      */
     public function build(BuildModalRequest $request)
     {
-        $page = BengrAdmin::getPageByUrl($request->get('url'));
+        $page = Admin::getPageByUrl($request->get('url'));
 
-        if (!$page) return response()->throw(PageNotFoundException::class);
+        if (!$page) throw new PageNotFoundException();
 
         $modal = $page->getModal($request->get('modal_id'));
 
-        if (!$modal) return response()->throw(ModalNotFoundException::class);
+        if (!$modal) throw new ModalNotFoundException();
 
         $modal->params($request->get('params') ?? []);
 
-        return $page->processToResponse($request, fn () => response()->resource(ModalResource::class, $modal));
+        return $page->processToResponse($request, fn () => ModalResource::make($modal));
     }
 }

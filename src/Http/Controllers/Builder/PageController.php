@@ -4,11 +4,9 @@ namespace Bengr\Admin\Http\Controllers\Builder;
 
 use Bengr\Admin\Http\Controllers\Controller;
 use Bengr\Admin\Exceptions\PageNotFoundException;
-use Bengr\Admin\Facades\Admin as BengrAdmin;
+use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\Http\Requests\Builder\BuildPageRequest;
 use Bengr\Admin\Http\Resources\PageResource;
-
-use function Bengr\Support\response;
 
 /**
  * @group Bengr Administration
@@ -21,11 +19,10 @@ class PageController extends Controller
      */
     public function build(BuildPageRequest $request)
     {
+        $page = Admin::getPageByUrl($request->get('url'));
 
-        $page = BengrAdmin::getPageByUrl($request->get('url'));
+        if (!$page) throw new PageNotFoundException();
 
-        if (!$page) return response()->throw(PageNotFoundException::class);
-
-        return $page->processToResponse($request, fn () => response()->resource(PageResource::class, $page));
+        return $page->processToResponse($request, fn () => PageResource::make($page));
     }
 }

@@ -3,6 +3,7 @@
 namespace Bengr\Admin\Pages\Builtin\Settings;
 
 use Bengr\Admin\Actions\Action;
+use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\Forms\Form;
 use Bengr\Admin\Models\AdminSettings;
 use Bengr\Admin\Pages\Page;
@@ -79,7 +80,7 @@ class Settings extends Page
                 ->submit(function (Form $form) {
                     $form->save();
 
-                    return $this->response(__('admin::states.saved'))->redirect(config('admin.pages.settings'));
+                    return $this->response(__('admin::states.saved'))->redirect(Admin::getPageByKey('settings'));
                 })
         ];
     }

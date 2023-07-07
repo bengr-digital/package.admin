@@ -23,11 +23,11 @@ trait HasPagination
 
     protected function getTablePaginationPerPage(): int
     {
-        return config('admin.tables.pagination.per_page') ?? 15;
+        return config('admin.widgets.tables.pagination.per_page') ?? 15;
     }
 
     protected function getTablePaginationPageName(): string
     {
-        return config('admin.tables.pagination.page_name') ?? 'page';
+        return config('admin.widgets.tables.pagination.page_name') ?? 'page';
     }
 }

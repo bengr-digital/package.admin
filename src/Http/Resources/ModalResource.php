@@ -2,6 +2,7 @@
 
 namespace Bengr\Admin\Http\Resources;
 
+use Bengr\Admin\Facades\Admin;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ModalResource extends JsonResource
@@ -14,7 +15,7 @@ class ModalResource extends JsonResource
      */
     public function toArray($request)
     {
-        $atBuilderModalsPath = $request->getPathInfo() == (config('admin.routes.url') . config('admin.routes.routes.builder.url') . config('admin.routes.routes.builder.routes.modals.url'));
+        $atBuilderModalsPath = $request->getPathInfo() == Admin::getApiRouteUrl('modals');
 
         if ($atBuilderModalsPath || !$this->getLazyload()) {
             return [

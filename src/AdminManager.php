@@ -8,8 +8,13 @@ use Bengr\Admin\GlobalSearch\GlobalSearchProvider;
 use Bengr\Admin\Navigation;
 use Bengr\Admin\Navigation\UserMenuItem;
 use Bengr\Admin\Pages\Page;
+use Bengr\Auth\Exceptions\AlreadyAuthenticatedException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\Exceptions\Handler;
+use Illuminate\Foundation\Http\Kernel;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -60,14 +65,43 @@ class AdminManager
             ->contains(true);
     }
 
-    public function loginPage(): ?Page
+    public function getLoginPage(): ?Page
     {
-        return config('admin.pages.login') ? app(config('admin.pages.login')) : null;
+        return $this->getPageByKey('login');
     }
 
-    public function dashboardPage(): ?Page
+    public function getDashboardPage(): ?Page
     {
-        return config('admin.pages.dashboard') ? app(config('admin.pages.dashboard')) : null;
+        return $this->getPageByKey('dashboard');
+    }
+
+    public function getApiPrefix(): ?string
+    {
+        return config('admin.api.prefix') ?? null;
+    }
+
+    public function getApiMiddleware(): null | string | array
+    {
+        return config('admin.api.middleware') ?? [];
+    }
+
+    public function getApiRoutes(): ?array
+    {
+        return config('admin.api.routes') ?? [];
+    }
+
+    public function getApiRouteUrl(string $name): ?string
+    {
+        $route = config('admin.api.routes')[$name];
+
+        if (!$route) return null;
+
+        return config('admin.api.prefix') . $route['url'];
+    }
+
+    public function getHttpKernel(): Kernel
+    {
+        return app(config('admin.api.kernel'));
     }
 
     public function getGuardName(): string
@@ -114,9 +148,49 @@ class AdminManager
         $this->userMenuItems = array_merge($this->userMenuItems, $items);
     }
 
+    public function registerHandler(Handler $handler): void
+    {
+        $handler->renderable(function (AuthenticationException $e, Request $request) {
+            if ($request->is($this->getApiPrefix() . '/*')) {
+                $login = $this->getPageByKey('login');
+
+                return response()->json([
+                    'message' => 'Not logged in',
+                    'redirect' => $login ? [
+                        'url' => $login->getRouteUrl(),
+                        'name' => $login->getRouteName()
+                    ] : null
+                ], 401);
+            }
+        });
+
+        $handler->renderable(function (AlreadyAuthenticatedException $e, $request) {
+            if ($request->is($this->getApiPrefix() . '/*')) {
+                $dashboard = $this->getPageByKey('dashboard');
+
+                return response()->json([
+                    'message' => 'already logged in',
+                    'redirect' => $dashboard ? [
+                        'url' => $dashboard->getRouteUrl(),
+                        'name' => $dashboard->getRouteName()
+                    ] : null
+                ], 403);
+            }
+        });
+    }
+
     public function getPages(): array
     {
         return array_unique($this->pages);
+    }
+
+    public function getPageByKey(string $key): ?Page
+    {
+        $pageClassName = config('admin.components.pages.register')[$key];
+
+        if (!$pageClassName) return null;
+
+        return app($pageClassName);
     }
 
     public function getPagesUrls(): Collection
@@ -276,20 +350,20 @@ class AdminManager
 
     public function registerComponents(): void
     {
-        $this->pages = config('admin.pages.register') ?? [];
-        $this->globalActions = config('admin.global_actions.register') ?? [];
+        $this->pages = config('admin.components.pages.register') ?? [];
+        $this->globalActions = config('admin.components.global_actions.register') ?? [];
 
         $this->registerComponentsFromDirectory(
             Page::class,
             $this->pages,
-            config('admin.pages.path'),
-            config('admin.pages.namespace'),
+            config('admin.components.pages.path'),
+            config('admin.components.pages.namespace'),
         );
         $this->registerComponentsFromDirectory(
             GlobalAction::class,
             $this->globalActions,
-            config('admin.global_actions.path'),
-            config('admin.global_actions.namespace'),
+            config('admin.components.global_actions.path'),
+            config('admin.components.global_actions.namespace'),
         );
     }
 

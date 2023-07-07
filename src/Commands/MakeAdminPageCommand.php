@@ -60,7 +60,7 @@ class MakeAdminPageCommand extends Command
     protected function getDirectoryPaths(): array
     {
         $paths = [];
-        $prev_path = config('admin.pages.path');
+        $prev_path = config('admin.components.pages.path');
 
         foreach (array_slice(explode('/', $this->getNameArgument()), 0, -1) as $directory) {
             $prev_path = $prev_path . '/' . $directory;
@@ -79,7 +79,7 @@ class MakeAdminPageCommand extends Command
 
     protected function getNamespace(): string
     {
-        $namespace = config('admin.pages.namespace') . '\\' . implode('\\', array_slice(explode('/', $this->getNameArgument()), 0, -1));
+        $namespace = config('admin.components.pages.namespace') . '\\' . implode('\\', array_slice(explode('/', $this->getNameArgument()), 0, -1));
 
         return rtrim($namespace, '\\');
     }
@@ -123,6 +123,6 @@ class MakeAdminPageCommand extends Command
 
     protected function getPath(): string
     {
-        return config('admin.pages.path') . '/' . $this->getNameArgument() . '.php';
+        return config('admin.components.pages.path') . '/' . $this->getNameArgument() . '.php';
     }
 }

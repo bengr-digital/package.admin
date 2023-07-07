@@ -3,7 +3,7 @@
 namespace Bengr\Admin\Pages\Builtin;
 
 use Bengr\Admin\Actions\Action;
-use Bengr\Admin\Facades\Admin as BengrAdmin;
+use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\Pages\Concerns\Translatable;
 use Bengr\Admin\Pages\Page;
 use Bengr\Admin\Widgets;
@@ -24,12 +24,12 @@ class Dashboard extends Page
 
     public function getWidgets(): array
     {
-        $loggedInUser = BengrAdmin::auth()->user();
+        $loggedInUser = Admin::auth()->user();
 
         return [
             Widgets\ActionCardWidget::make(__('admin::texts.welcome') . ', ' . $loggedInUser->first_name . ' ' . $loggedInUser->last_name, $loggedInUser->email)
                 ->image($loggedInUser->getFirstMediaUrl('avatar'))
-                ->actionOnClick(Action::make()->redirect(config('admin.pages.me')))
+                ->actionOnClick(Action::make()->redirect(Admin::getPageByKey('me')))
                 ->columnSpan(4),
             Widgets\ActionCardWidget::make('Přizpůsobení administrace na míru', 'V případě potřeby vám celou administraci i nástěnku přizpůsobíme vaším potřebám.')
                 ->icon('info')

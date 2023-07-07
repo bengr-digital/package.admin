@@ -7,10 +7,8 @@ use Bengr\Admin\Http\Controllers\Controller;
 use Bengr\Admin\Exceptions\PageNotFoundException;
 use Bengr\Admin\Exceptions\WidgetNotFoundException;
 use Bengr\Admin\Exceptions\GlobalActionNotFoundException;
-use Bengr\Admin\Facades\Admin as BengrAdmin;
+use Bengr\Admin\Facades\Admin;
 use Illuminate\Http\Request;
-
-use function Bengr\Support\response;
 
 /**
  * @group Bengr Administration
@@ -23,25 +21,25 @@ class ActionController extends Controller
      */
     public function call(Request $request)
     {
-        if (!$request->get('name')) return response()->throw(ActionNotFoundException::class);
+        if (!$request->get('name')) throw new ActionNotFoundException();
 
         if (!$request->has('url') && !$request->has('widget_id')) {
-            $globalAction = BengrAdmin::getGlobalActionByName($request->get('name'));
+            $globalAction = Admin::getGlobalActionByName($request->get('name'));
 
-            if (!$globalAction) return response()->throw(GlobalActionNotFoundException::class);
+            if (!$globalAction) throw new GlobalActionNotFoundException();
 
             return $globalAction->processToResponse($request, fn () => $globalAction->call($request->get('payload') ?? []));
         }
 
-        $page = BengrAdmin::getPageByUrl($request->get('url'));
+        $page = Admin::getPageByUrl($request->get('url'));
 
-        if (!$page) return response()->throw(PageNotFoundException::class);
+        if (!$page) throw new PageNotFoundException();
 
         if ($request->get('widget_id')) {
             $widget = $page->getWidget($request->get('widget_id'));
 
 
-            if (!$widget) return response()->throw(WidgetNotFoundException::class);
+            if (!$widget) throw new WidgetNotFoundException();
 
             return $page->processToResponse($request, fn () => $widget->callAction($request->get('name'), $request->payload ?? []));
         }

@@ -25,7 +25,7 @@ use Illuminate\Support\Collection;
 | - [x] test modifing various properties
 | - [x] test excluding pages
 | - [x] testing nested navigation items
-| - [] test groups
+| - [x] test groups
 | - [] test sorting
 | --------------
 | | User Menu  |
@@ -351,6 +351,52 @@ class TestCase extends \Orchestra\Testbench\TestCase
         });
 
         $this->assertTrue($userMenuItemRegistered);
+
+        return $this;
+    }
+
+    public function assertNavigationGroupRegisteredCount(int $count): self
+    {
+        $navigationGroupRegisteredCount = count($this->adminManager->getNavigation());
+
+        $this->assertEquals($count, $navigationGroupRegisteredCount);
+
+        return $this;
+    }
+
+    public function assertNavigationGroupRegisteredItemsCount(?string $group, int $count): self
+    {
+        $navigationGroup = collect($this->adminManager->getNavigation())->first(fn ($navigationGroup) => $navigationGroup->getLabel() == $group);
+        $navigationGroupItemsCount = count($navigationGroup->getItems());
+
+        $this->assertEquals($count, $navigationGroupItemsCount);
+
+        return $this;
+    }
+
+
+    public function assertNavigationGroupRegistered(
+        string $label = null,
+        array $items = null,
+    ): self {
+        $navigationGroupRegistered = collect($this->adminManager->getNavigation())->contains(function ($navigationGroup) use ($label, $items) {
+            if ($label != $navigationGroup->getLabel()) {
+                return false;
+            }
+
+            if ($items != null) {
+                foreach ($items as $item) {
+                    $this->assertNavigationItemRegistered(
+                        ...$item,
+                        navigationItems: $navigationGroup->getItems()->toArray()
+                    );
+                }
+            }
+
+            return true;
+        });
+
+        $this->assertTrue($navigationGroupRegistered);
 
         return $this;
     }

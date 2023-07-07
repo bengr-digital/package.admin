@@ -100,29 +100,6 @@ return [
         ],
     ],
 
-    'pages' => [
-        'namespace' => 'App\\Admin\\Pages',
-        'path' => app_path('Admin/Pages'),
-        'dashboard' => Bengr\Admin\Pages\Builtin\Dashboard::class,
-        'login' => Bengr\Admin\Pages\Builtin\Auth\Login::class,
-        'settings' => Bengr\Admin\Pages\Builtin\Settings\Settings::class,
-        'me' => Bengr\Admin\Pages\Builtin\Auth\Me::class,
-        'register' => [
-            Bengr\Admin\Pages\Builtin\Settings\Settings::class,
-            Bengr\Admin\Pages\Builtin\Auth\Login::class,
-            Bengr\Admin\Pages\Builtin\Auth\Me::class,
-            Bengr\Admin\Pages\Builtin\Dashboard::class,
-        ]
-    ],
-
-    'global_actions' => [
-        'namespace' => 'App\\Admin\\GlobalActions',
-        'path' => app_path('Admin/GlobalActions'),
-        'register' => [
-            Bengr\Admin\GlobalActions\Builtin\GlobalSearch::class,
-        ]
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | Widgets
@@ -154,105 +131,6 @@ return [
         ]
     ],
 
-    'tables' => [
-        'pagination' => [
-            'per_page' => 5,
-            'page_name' => 'page'
-        ],
-        'sorting' => [
-            'params' => [
-                'sort_column' => 'sort_by',
-                'sort_order' => 'sort_direction'
-            ]
-        ]
-    ],
-
-    'routes' => [
-        'url' => '/admin',
-        'name' => 'admin',
-        'middleware' => ['api'],
-        'routes' => [
-            'auth' => [
-                'url' => '/auth',
-                'name' => 'auth',
-                'middleware' => [],
-                'routes' => [
-                    'login' => [
-                        'url' => '/login',
-                        'name' => 'login',
-                        'middleware' => ['guest:admin']
-                    ],
-                    'logout' => [
-                        'url' => '/logout',
-                        'name' => 'logout',
-                        'middleware' => ['auth:admin']
-                    ],
-                    'me' => [
-                        'url' => '/me',
-                        'name' => 'me',
-                        'middleware' => ['auth:admin']
-                    ],
-                    'me-avatar' => [
-                        'url' => '/me/avatar',
-                        'name' => 'me.avatar',
-                        'middleware' => ['auth:admin']
-                    ],
-                    'token' => [
-                        'url' => '/token',
-                        'name' => 'token',
-                        'middleware' => []
-                    ]
-                ]
-            ],
-            'settings' => [
-                'url' => '/settings',
-                'name' => 'settings',
-                'middleware' => ['auth:admin'],
-                'routes' => [
-                    'settings' => [
-                        'url' => '/',
-                        'name' => 'index',
-                        'middleware' => []
-                    ],
-                    'socials-delete' => [
-                        'url' => '/socials/{id}',
-                        'name' => 'socials.delete',
-                        'middleware' => []
-                    ],
-                    'languages-delete' => [
-                        'url' => '/languages/{id}',
-                        'name' => 'languages.delete',
-                        'middleware' => []
-                    ]
-                ]
-            ],
-            'builder' => [
-                'url' => '/builder',
-                'name' => 'builder',
-                'middleware' => [
-                    Bengr\Admin\Http\Middleware\DispatchServingAdminEvent::class,
-                ],
-                'routes' => [
-                    'pages' => [
-                        'url' => '/pages',
-                        'name' => 'pages',
-                        'middleware' => []
-                    ],
-                    'widgets' => [
-                        'url' => '/widgets',
-                        'name' => 'widgets',
-                        'middleware' => []
-                    ],
-                    'actions' => [
-                        'url' => '/actions',
-                        'name' => 'actions',
-                        'middleware' => []
-                    ]
-                ]
-            ],
-        ]
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | Administration API 
@@ -269,8 +147,9 @@ return [
     */
 
     'api' => [
-        'prefix' => '/admin/builder',
+        'prefix' => 'admin/builder',
         'middleware' => ['api'],
+        'kernel' => App\Http\Kernel::class,
         'routes' => [
             'pages' => [
                 'url' => '/pages',

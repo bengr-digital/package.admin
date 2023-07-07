@@ -9,9 +9,9 @@ class PagesTest extends TestCase
     public function test_registering_pages_from_path_and_from_register_property()
     {
         config([
-            'admin.pages.path' => $this->getTestPagePath('Simple'),
-            'admin.pages.namespace' => $this->getTestPageNamespace('Simple'),
-            'admin.pages.register' => [
+            'admin.components.pages.path' => $this->getTestPagePath('Simple'),
+            'admin.components.pages.namespace' => $this->getTestPageNamespace('Simple'),
+            'admin.components.pages.register' => [
                 \Bengr\Admin\Pages\Builtin\Settings\Settings::class,
                 \Bengr\Admin\Pages\Builtin\Auth\Login::class,
                 \Bengr\Admin\Pages\Builtin\Auth\Me::class,
@@ -33,9 +33,9 @@ class PagesTest extends TestCase
     public function test_registering_pages_from_unknown_path()
     {
         config([
-            'admin.pages.path' => $this->getTestPagePath('UnknownPath'),
-            'admin.pages.namespace' => $this->getTestPageNamespace('UnknownPath'),
-            'admin.pages.register' => []
+            'admin.components.pages.path' => $this->getTestPagePath('UnknownPath'),
+            'admin.components.pages.namespace' => $this->getTestPageNamespace('UnknownPath'),
+            'admin.components.pages.register' => []
         ]);
 
         $this->adminManager->registerComponents();
@@ -46,9 +46,9 @@ class PagesTest extends TestCase
     public function test_registering_nested_pages()
     {
         config([
-            'admin.pages.path' => $this->getTestPagePath('Nested'),
-            'admin.pages.namespace' => $this->getTestPageNamespace('Nested'),
-            'admin.pages.register' => []
+            'admin.components.pages.path' => $this->getTestPagePath('Nested'),
+            'admin.components.pages.namespace' => $this->getTestPageNamespace('Nested'),
+            'admin.components.pages.register' => []
         ]);
 
         $this->adminManager->registerComponents();
@@ -64,9 +64,9 @@ class PagesTest extends TestCase
     public function test_registering_pages_without_extended_page_class()
     {
         config([
-            'admin.pages.path' => $this->getTestPagePath('WithoutExtendedPageClass'),
-            'admin.pages.namespace' => $this->getTestPageNamespace('WithoutExtendedPageClass'),
-            'admin.pages.register' => []
+            'admin.components.pages.path' => $this->getTestPagePath('WithoutExtendedPageClass'),
+            'admin.components.pages.namespace' => $this->getTestPageNamespace('WithoutExtendedPageClass'),
+            'admin.components.pages.register' => []
         ]);
 
         $this->adminManager->registerComponents();
@@ -77,9 +77,9 @@ class PagesTest extends TestCase
     public function test_registering_pages_with_different_file_and_class_name()
     {
         config([
-            'admin.pages.path' => $this->getTestPagePath('FileNameAndClassNameDiffers'),
-            'admin.pages.namespace' => $this->getTestPageNamespace('FileNameAndClassNameDiffers'),
-            'admin.pages.register' => []
+            'admin.components.pages.path' => $this->getTestPagePath('FileNameAndClassNameDiffers'),
+            'admin.components.pages.namespace' => $this->getTestPageNamespace('FileNameAndClassNameDiffers'),
+            'admin.components.pages.register' => []
         ]);
 
         $this->adminManager->registerComponents();

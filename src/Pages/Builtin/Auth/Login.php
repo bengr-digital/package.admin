@@ -2,7 +2,7 @@
 
 namespace Bengr\Admin\Pages\Builtin\Auth;
 
-use Bengr\Admin\Facades\Admin as BengrAdmin;
+use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\Forms\Form;
 use Bengr\Admin\Forms\Widgets\Inputs;
 use Bengr\Admin\Pages\Concerns\Translatable;
@@ -35,7 +35,7 @@ class Login extends Page
     public function getWidgets(): array
     {
         return [
-            Widgets\FormWidget::make(BengrAdmin::getAuthUserModel(), $this)
+            Widgets\FormWidget::make(Admin::getAuthUserModel(), $this)
                 ->schema([
                     Inputs\Input::make('username')
                         ->label(__('admin::forms.username'))
@@ -60,14 +60,14 @@ class Login extends Page
                             'access_token' => $token->getAccessToken(),
                             'refresh_token' => $token->getRefreshToken(),
                         ]
-                    ])->redirect(config('admin.pages.dashboard'));
+                    ])->redirect(Admin::getPageByKey('dashboard'));
                 })
         ];
     }
 
     public function authenticate(string $username, string $password): Authenticatable
     {
-        $admin = app(BengrAdmin::getAuthUserModel())->where('username', $username)->orWhere('email', $username)->first();
+        $admin = app(Admin::getAuthUserModel())->where('username', $username)->orWhere('email', $username)->first();
 
         if (!$admin) {
 
