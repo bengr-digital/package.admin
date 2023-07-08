@@ -22,7 +22,7 @@ class Login extends Page
 
     protected ?string $description = 'admin::pages.login.description';
 
-    protected ?string $slug = 'auth/login';
+    protected ?string $slug = '/auth/login/';
 
     protected bool $inNavigation = false;
 

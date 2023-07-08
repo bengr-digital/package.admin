@@ -33,16 +33,15 @@ class FormWidget extends Widget implements HasForm
 
     protected ?\Closure $submit_method = null;
 
-    final public function __construct($model, $page)
+    final public function __construct($model)
     {
-        $this->page = $page;
         $this->model($model);
         $this->form = $this->getForm(collect());
     }
 
     public static function make(string $model, Page $page = null): static
     {
-        return app(static::class, ['model' => $model, 'page' => $page]);
+        return app(static::class, ['model' => $model]);
     }
 
     public function schema(array $schema): self
@@ -92,7 +91,6 @@ class FormWidget extends Widget implements HasForm
 
     public function callAction(string $name, array $payload = [])
     {
-        $this->record($this->page);
         $this->fill($payload);
 
 
@@ -139,7 +137,6 @@ class FormWidget extends Widget implements HasForm
 
     public function getData(Request $request): array
     {
-        $this->record($this->page);
         $this->fill($this->getRecord());
 
         return [

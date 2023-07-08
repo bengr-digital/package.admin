@@ -149,7 +149,6 @@ return [
     'api' => [
         'prefix' => 'admin/builder',
         'middleware' => ['api'],
-        'kernel' => App\Http\Kernel::class,
         'routes' => [
             'pages' => [
                 'url' => '/pages',

@@ -11,6 +11,8 @@ use Bengr\Admin\Modals\Modal;
 use Bengr\Admin\Navigation\NavigationItem;
 use Bengr\Admin\Widgets\FormWidget;
 use Bengr\Admin\Widgets\Widget;
+use Bengr\Support\Url\UrlHolder;
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -160,9 +162,11 @@ class Page
 
     public function getSlug(): string
     {
-        return $this->slug ?? Str::of($this->title ?? class_basename(static::class))
+        $slug = $this->slug ?? Str::of($this->title ?? class_basename(static::class))
             ->kebab()
             ->slug();
+
+        return trim($slug, '/');
     }
 
     public function getMiddlewares(): string | array
@@ -245,7 +249,7 @@ class Page
 
     protected function getNavigationActiveIconType(): ?string
     {
-        return $this->navigationActiveIconType ?? $this->getNavigationIconType();
+        return $this->navigationActiveIconType ?? 'filled';
     }
 
     protected function getNavigationGroup(): ?string
@@ -275,7 +279,7 @@ class Page
 
         if (!class_exists($this->middlewares[$index])) {
             $parsed = explode(':', $middleware);
-            $middleware = array_key_exists($parsed[0], Admin::getHttpKernel()->getRouteMiddleware()) ? Admin::getHttpKernel()->getRouteMiddleware()[$parsed[0]] : null;
+            $middleware = array_key_exists($parsed[0], app(Kernel::class)->getRouteMiddleware()) ? app(Kernel::class)->getRouteMiddleware()[$parsed[0]] : null;
             $data = array_splice($parsed, 1);
         }
         if (!$middleware) return $response();
@@ -572,5 +576,9 @@ class Page
         }
 
         return $actions;
+    }
+
+    public function bindParameters(UrlHolder $holder)
+    {
     }
 }

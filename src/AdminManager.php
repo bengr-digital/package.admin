@@ -9,14 +9,14 @@ use Bengr\Admin\Navigation;
 use Bengr\Admin\Navigation\UserMenuItem;
 use Bengr\Admin\Pages\Page;
 use Bengr\Auth\Exceptions\AlreadyAuthenticatedException;
+use Bengr\Support\Url\UrlResolver;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Exceptions\Handler;
-use Illuminate\Foundation\Http\Kernel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Symfony\Component\Finder\SplFileInfo;
@@ -47,22 +47,6 @@ class AdminManager
     public function serving(\Closure $callback): void
     {
         Event::listen(ServingAdmin::class, $callback);
-    }
-
-    public function isParam($value): bool
-    {
-        return Str::of($value)->startsWith('{') && Str::of($value)->endsWith('}');
-    }
-
-    public function urlHasParams($url)
-    {
-        return Str::of($url)
-            ->explode("/")
-            ->filter()
-            ->map(function ($part) {
-                return $this->isParam($part);
-            })
-            ->contains(true);
     }
 
     public function getLoginPage(): ?Page
@@ -97,11 +81,6 @@ class AdminManager
         if (!$route) return null;
 
         return config('admin.api.prefix') . $route['url'];
-    }
-
-    public function getHttpKernel(): Kernel
-    {
-        return app(config('admin.api.kernel'));
     }
 
     public function getGuardName(): string
@@ -193,95 +172,26 @@ class AdminManager
         return app($pageClassName);
     }
 
-    public function getPagesUrls(): Collection
+    public function getPageByUrl($url): ?Page
     {
-        return collect($this->getPages())->map(function ($page) {
-            return app($page)->getRouteUrl();
-        });
-    }
+        $resolver = new UrlResolver($url, collect($this->getPages())->map(fn ($page) => app($page)->getRouteUrl())->values()->toArray());
+        $resolvedUrl = $resolver->resolve();
 
-    public function getPageByUrl($url)
-    {
-        $page = collect($this->getPages())->first(function ($page) use ($url) {
-            if (!$this->urlHasParams(app($page)->getRouteUrl())) {
-                return app($page)->getRouteUrl() === $url;
-            }
+        if (!$resolvedUrl) return null;
 
-            $page_url = $this->getPagesUrls()
-                ->filter(function ($pageUrl) use ($url) {
-                    return Str::of($pageUrl)->explode("/")->filter()->count() === Str::of($url)->explode("/")->filter()->count() && $this->urlHasParams($pageUrl);
-                })
-                ->filter(function ($pageUrl) use ($url) {
-                    $url_parts = Str::of($url)->explode("/")->filter()->values();
-
-                    if (Str::of($pageUrl)->explode("/")->filter()->values()->map(function ($part, $index) use ($url_parts) {
-                        if ($part === $url_parts->get($index) && !$this->isParam($part)) {
-                            return true;
-                        }
-
-                        if ($part !== $url_parts->get($index) && !$this->isParam($part)) {
-                            return false;
-                        }
-
-                        return true;
-                    })->contains(false)) return false;
-
-                    return true;
-                })->first();
-
-            return $page_url === app($page)->getRouteUrl() ? true : false;
+        $pageClassName = collect($this->getPages())->first(function ($page) use ($resolvedUrl) {
+            return $resolvedUrl->getOriginalUrl() === app($page)->getSlug();
         });
 
-        if (!$page) return null;
+        if (!$pageClassName) return null;
 
-        if ($this->urlHasParams(app($page)->getRouteUrl())) {
-            $page_url_parts = Str::of(app($page)->getRouteUrl())->explode("/")->filter()->values();
-            $url_parts = Str::of($url)->explode("/")->filter()->values();
-
-            $params = $page_url_parts->map(function ($part, $index) use ($url_parts, $page) {
-                if ($this->isParam($part)) {
-                    $table = null;
-                    $column = null;
-                    $value = $url_parts->get($index);
-
-                    $parsed_param = Str::of($part)->replace('{', '')->replace('}', '')->explode(':');
-                    if ($parsed_param->count() == 2) {
-                        $table = $parsed_param[0];
-                        $column = $parsed_param[1];
-                    } else {
-                        $table = app($page)->getModel() ? app($page)->getModel()->getTable() : null;
-                        $column = $parsed_param[0];
-                    }
-
-                    return [
-                        'table' => $table,
-                        'column' => $column,
-                        'value' => $value
-                    ];;
-                }
-            })->filter()->values();
-
-            $params = $params->map(function ($param, $index) use ($params) {
-
-                $param['record'] = !$param['table'] ? null : DB::table($param['table'])->where($param['column'], $param['value']);
-
-
-                return $param;
-            });
-
-            if ($params->first(function ($param) {
-                $column = $param['column'];
-
-                return $param['record'] === null || !$param['record']->exists() || $param['record']->first()->$column != $param['value'];
-            })) return null;
-
-            $page = app($page)->slug($url)->params($params->toArray());
-            $this->currentPage = $page;
-
-            return $page;
+        try {
+            $page = $resolvedUrl->substituteImplicitBindings(app($pageClassName));
+        } catch (ModelNotFoundException $e) {
+            $page = null;
         }
-        $page = app($page);
-        $this->currentPage = $page;
+
+        $page->bindParameters($resolvedUrl);
 
         return $page;
     }

@@ -12,32 +12,11 @@ trait HasRecord
 
     protected ?string $model = null;
 
-    public function record(Model | Page | null $entity): self
+    public function record(Model | null $entity): self
     {
         if ($this->getRecord() || !$entity) return $this;
 
-        if ($entity instanceof Model) {
-            $this->record = $entity;
-        }
-
-        if ($entity instanceof Page) {
-            $param = collect($entity->getParams())->first(function ($param) {
-                return $param['table'] === app($this->getModel())->getTable();
-            });
-
-            if (!$param) {
-                $this->record = null;
-            } else {
-                $query = in_array(SoftDeletes::class, class_uses($this->getModel()), true) ? app($this->getModel())->query()->withTrashed() : app($this->getModel())->query();
-                $query->where($param['column'], $param['value']);
-
-                foreach ($this->getFormInputs() as $input) {
-                    $input->applyEagerLoading($query);
-                }
-
-                $this->record = $query->first();
-            }
-        }
+        $this->record = $entity;
 
         return $this;
     }
