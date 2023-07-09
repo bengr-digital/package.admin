@@ -1,11 +1,11 @@
 <?php
 
-namespace Bengr\Admin\Tests\Unit;
+namespace Bengr\Admin\Tests\Unit\AdminManager;
 
 use Bengr\Admin\Navigation\UserMenuItem;
 use Bengr\Admin\Tests\TestCase;
 
-class UserMenuTest extends TestCase
+class BuildingUserMenuTest extends TestCase
 {
     public function test_registering_simple_user_menu_item()
     {

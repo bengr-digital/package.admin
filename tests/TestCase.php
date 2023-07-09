@@ -6,52 +6,9 @@ use Bengr\Admin\AdminManager;
 use Bengr\Admin\AdminServiceProvider;
 use Bengr\Admin\Navigation\NavigationGroup;
 use Bengr\Admin\Navigation\NavigationItem;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;
-
-/*
-|--------------------------------------------------------------------------
-| What I need to test in this package
-|--------------------------------------------------------------------------
-| ---------
-| | Pages |
-| ---------
-| - [x] test registering pages
-| - [] test obtaining page by url, name, and others
-| - [] test obtaining page via API, and test that it gives desired response
-| --------------
-| | Navigation |
-| --------------
-| - [x] test building navigation tree
-| - [x] test modifing various properties
-| - [x] test excluding pages
-| - [x] testing nested navigation items
-| - [x] test groups
-| - [] test sorting
-| --------------
-| | User Menu  |
-| --------------
-| - [x] test building user menu
-| - [x] test adding items to user menu
-| - [x] test modifing various types of properties
-| - [x] test sorting the user items
-| -----------
-| | Widgets |
-| -----------
-| -----------
-| | Actions |
-| -----------
-| ------------------
-| | Global Actions |
-| ------------------
-| - [x] test registering global actions
-| - [] test performing global actions
-| - [] test performing global actions via API
-| ----------
-| | API    |
-| ----------
-| - [] test that all api routes are registered correctly
-| - [] test making various requests to these routes and test that they give desired response
-*/
+use Illuminate\Support\Facades\Schema;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -60,6 +17,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
     public function setUp(): void
     {
         parent::setUp();
+        $this->setUpDatabase();
 
         $this->adminManager = $this->app->make(AdminManager::class);
     }
@@ -96,10 +54,33 @@ class TestCase extends \Orchestra\Testbench\TestCase
         return $this->getTestNamespace() . 'Support\\TestResources\\GlobalActions\\' . $directory;
     }
 
-
     public function getTestNamespace(): string
     {
         return 'Bengr\\Admin\\Tests\\';
+    }
+
+    protected function setUpDatabase()
+    {
+        Schema::create('subpages', function (Blueprint $table) {
+            $table->id();
+            $table->json('title');
+            $table->json('description');
+            $table->json('keywords');
+            $table->json('path');
+            $table->string('name_code');
+            $table->boolean('is_active')->default(true);
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('subpage_contents', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('subpage_id')->constrained('subpages', 'id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->json('code');
+            $table->json('text');
+            $table->softDeletes();
+            $table->timestamps();
+        });
     }
 
     public function assertPageRegistered(string $page): self

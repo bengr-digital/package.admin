@@ -73,6 +73,20 @@ class Page
 
     protected int $globalSearchResultsLimit = 5;
 
+    public function title(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function description(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
     public function slug(string $slug): self
     {
         $this->slug = Str::of($slug)->explode('/')->filter()->join('/');
@@ -298,6 +312,13 @@ class Page
         return $this->processMiddleware(0, $request, $response);
     }
 
+    public function processMiddlewares()
+    {
+        if (!count($this->middlewares)) return null;
+
+        return $this->processMiddleware(0, request(), fn () => null);
+    }
+
     public function inNavigation(): bool
     {
         return $this->inNavigation;
@@ -346,7 +367,7 @@ class Page
         $widgets_to_transform = $this->getTransformedWidgets();
 
         foreach ($this->getTransformedModals() as $modal) {
-            $modal->params(request()->get('params') ?? null);
+            $modal->params(request()->get('params') ?? []);
             array_push($widgets_to_transform, ...$modal->getTransformedWidgets());
         }
 
@@ -578,7 +599,37 @@ class Page
         return $actions;
     }
 
+    public function getProperty(string $property)
+    {
+        if (isset($this->$property)) {
+            return $this->$property;
+        }
+
+        return null;
+    }
+
+    public function replaceParameters(UrlHolder $holder, ?string $value = ''): string
+    {
+        $replaced = preg_replace_callback('/\{([^}]+)\}/', function ($matches) use ($holder) {
+            [$parameter, $column] = count(explode(':', $matches[1])) == 2 ? explode(':', $matches[1]) : [$matches[1], 'id'];
+
+            if (array_key_exists($parameter, $holder->getParameters())) {
+                if (isset($holder->getParameters()[$parameter]->$column)) {
+                    return $holder->getParameters()[$parameter]->$column;
+                } else {
+                    return 'null';
+                }
+            }
+        }, $value);;
+
+        return $replaced;
+    }
+
     public function bindParameters(UrlHolder $holder)
     {
+        $this
+            ->title($this->replaceParameters($holder, $this->getTitle()))
+            ->description($this->replaceParameters($holder, $this->getDescription()))
+            ->slug($this->replaceParameters($holder, $this->getSlug()));
     }
 }

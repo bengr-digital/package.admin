@@ -2,12 +2,11 @@
 
 namespace Bengr\Admin\Http\Controllers\Builder;
 
-use Bengr\Admin\Exceptions\PageNotFoundException;
-use Bengr\Admin\Exceptions\WidgetNotFoundException;
 use Bengr\Admin\Http\Controllers\Controller;
 use Bengr\Admin\Facades\Admin;
-use Bengr\Admin\Http\Requests\Builder\BuildWidgetRequest;
 use Bengr\Admin\Http\Resources\WidgetResource;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * @group Bengr Administration
@@ -18,15 +17,15 @@ class WidgetController extends Controller
     /**
      * Build a widget
      */
-    public function build(BuildWidgetRequest $request)
+    public function build(Request $request)
     {
-        $page = Admin::getPageByUrl($request->get('url'));
+        $validator = Validator::make($request->all(), [
+            'url' => ['required', new \Bengr\Admin\Rules\ValidPageUrl()],
+            'widget_id' => ['required', 'int', new \Bengr\Admin\Rules\ValidWidgetId()]
+        ])->validate();
 
-        if (!$page) throw new PageNotFoundException();
-
-        $widget = $page->getWidget($request->get('widget_id'));
-
-        if (!$widget) throw new WidgetNotFoundException();
+        $page = Admin::getPageByUrl($validator['url']);
+        $widget = $page->getWidget($validator['widget_id']);
 
         return $page->processToResponse($request, fn () => WidgetResource::make($widget));
     }

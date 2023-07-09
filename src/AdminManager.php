@@ -98,6 +98,13 @@ class AdminManager
         return config('auth.tokens')[config('auth.guards')[config('admin.auth.guard')]['provider']]['model'];
     }
 
+    public function setCurrentPage(?Page $page): self
+    {
+        $this->currentPage = $page;
+
+        return $this;
+    }
+
     public function registerPages(array $pages): void
     {
         $this->pages = array_merge($this->pages, $pages);
@@ -165,11 +172,11 @@ class AdminManager
 
     public function getPageByKey(string $key): ?Page
     {
-        $pageClassName = config('admin.components.pages.register')[$key];
-
-        if (!$pageClassName) return null;
-
-        return app($pageClassName);
+        if (array_key_exists($key, config('admin.components.pages.register'))) {
+            return app(config('admin.components.pages.register')[$key]);
+        } else {
+            return null;
+        }
     }
 
     public function getPageByUrl($url): ?Page
@@ -188,10 +195,11 @@ class AdminManager
         try {
             $page = $resolvedUrl->substituteImplicitBindings(app($pageClassName));
         } catch (ModelNotFoundException $e) {
-            $page = null;
+            return null;
         }
 
         $page->bindParameters($resolvedUrl);
+        $this->setCurrentPage($page);
 
         return $page;
     }

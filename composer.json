@@ -33,10 +33,10 @@
     "require": {
         "spatie/laravel-package-tools": "^1.13",
         "spatie/laravel-medialibrary": "^10.7",
-        "bengr/support": "^1.0",
         "bengr/auth": "^1.0",
         "bengr/localization": "^1.0",
-        "spatie/laravel-activitylog": "^4.7"
+        "spatie/laravel-activitylog": "^4.7",
+        "bengr/support": "^1.0"
     },
     "scripts": {
         "test": "phpunit"

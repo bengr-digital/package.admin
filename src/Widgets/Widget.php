@@ -154,6 +154,7 @@ class Widget
             return $action->getName() === $name && $action->hasHandle();
         })->first();
 
+
         if (!$action) return response()->throw(ActionNotFoundException::class);
 
         return $action->getHandleMethod()($payload);

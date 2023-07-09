@@ -1,14 +1,10 @@
 <?php
 
-namespace Bengr\Admin\Tests\Unit;
+namespace Bengr\Admin\Tests\Unit\AdminManager;
 
 use Bengr\Admin\Tests\TestCase;
 
-/**
- * What I have to test here
- * [] sorting of groups and other navigation items
- */
-class NavigationTest extends TestCase
+class BuildingNavigationTest extends TestCase
 {
     public function test_building_simple_navigation()
     {

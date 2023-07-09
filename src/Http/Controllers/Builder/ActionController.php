@@ -9,6 +9,7 @@ use Bengr\Admin\Exceptions\WidgetNotFoundException;
 use Bengr\Admin\Exceptions\GlobalActionNotFoundException;
 use Bengr\Admin\Facades\Admin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * @group Bengr Administration

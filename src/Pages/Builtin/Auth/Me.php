@@ -26,7 +26,7 @@ class Me extends Page
 
     protected bool $hasNavigation = false;
 
-    protected string | array $middlewares = ['auth:admin'];
+    protected string | array $middlewares = ['guest:admin'];
 
     public function getWidgets(): array
     {

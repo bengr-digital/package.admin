@@ -1,10 +1,10 @@
 <?php
 
-namespace Bengr\Admin\Tests\Unit;
+namespace Bengr\Admin\Tests\Unit\AdminManager;
 
 use Bengr\Admin\Tests\TestCase;
 
-class GlobalActionsTest extends TestCase
+class RegisteringGlobalActionsTest extends TestCase
 {
     public function test_registering_global_actions_from_path_and_from_register_property()
     {

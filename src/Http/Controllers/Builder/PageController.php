@@ -5,8 +5,9 @@ namespace Bengr\Admin\Http\Controllers\Builder;
 use Bengr\Admin\Http\Controllers\Controller;
 use Bengr\Admin\Exceptions\PageNotFoundException;
 use Bengr\Admin\Facades\Admin;
-use Bengr\Admin\Http\Requests\Builder\BuildPageRequest;
 use Bengr\Admin\Http\Resources\PageResource;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * @group Bengr Administration
@@ -17,11 +18,13 @@ class PageController extends Controller
     /**
      * Build a page
      */
-    public function build(BuildPageRequest $request)
+    public function build(Request $request)
     {
-        $page = Admin::getPageByUrl($request->get('url'));
+        $validator = Validator::make($request->all(), [
+            'url' => ['required', new \Bengr\Admin\Rules\ValidPageUrl()],
+        ])->validate();
 
-        if (!$page) throw new PageNotFoundException();
+        $page = Admin::getPageByUrl($validator['url']);
 
         return $page->processToResponse($request, fn () => PageResource::make($page));
     }
