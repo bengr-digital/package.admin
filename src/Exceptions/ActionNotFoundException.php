@@ -4,8 +4,6 @@ namespace Bengr\Admin\Exceptions;
 
 use Bengr\Admin\Facades\Admin;
 
-use function Bengr\Support\response;
-
 class ActionNotFoundException extends \Exception
 {
     public function render($request)
@@ -18,6 +16,6 @@ class ActionNotFoundException extends \Exception
                 'url' => $dashboard->getRouteUrl(),
                 'name' => $dashboard->getRouteName()
             ] : null
-        ])->status(404);
+        ], 404);
     }
 }

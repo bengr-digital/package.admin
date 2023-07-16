@@ -5,11 +5,10 @@ namespace Bengr\Admin\Rules;
 use Bengr\Admin\Exceptions\ModalNotFoundException;
 use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\Modals\Modal;
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\DataAwareRule;
-use Closure;
+use Illuminate\Contracts\Validation\InvokableRule;
 
-class ValidModalId implements DataAwareRule, ValidationRule
+class ValidModalId implements DataAwareRule, InvokableRule
 {
     protected $data = [];
 
@@ -20,7 +19,7 @@ class ValidModalId implements DataAwareRule, ValidationRule
         return $this;
     }
 
-    public function validate(string $attribute, mixed $value, Closure $fail): void
+    public function __invoke($attribute, $value, $fail)
     {
         $page = Admin::getPageByUrl($this->data['url']);
 

@@ -30,8 +30,6 @@ class Settings extends Page
 
     protected string | array $middlewares = ['auth:admin'];
 
-    protected bool $hasLargeForm = true;
-
     public function getWidgets(): array
     {
         return [

@@ -2,6 +2,7 @@
 
 namespace Bengr\Admin\Actions\Concerns;
 
+use Bengr\Support\Url\UrlHolder;
 use Illuminate\Support\Str;
 
 trait HasRedirect
@@ -31,45 +32,27 @@ trait HasRedirect
         return $this;
     }
 
-
-    public function isParam($value): bool
-    {
-        return Str::of($value)->startsWith('{') && Str::of($value)->endsWith('}');
-    }
-
-    public function evaluateRedirect(...$parameters)
-    {
-        return;
-    }
-
     public function getRedirectUrl($parameters = []): ?string
     {
         if (!class_exists($this->redirectPage)) return $this->redirectPage;
+
 
         $page = $this->evaluate($this->redirectPage, $parameters);
         $params = $this->evaluate($this->redirectParams, $parameters);
 
         if ($page) {
-            $url = collect(Str::of(app($page)->getRouteUrl())->explode("/")->filter()->values())->map(function ($part) use ($params) {
-                if ($this->isParam($part)) {
-                    $param = null;
+            $page = app($page);
+            $url = new UrlHolder($page->getSlug());
 
-                    $parsed_param = Str::of($part)->replace('{', '')->replace('}', '')->explode(':');
-
-                    if ($parsed_param->count() == 2) {
-                        $param = $parsed_param[1];
-                    } else {
-                        $param = $parsed_param[0];
-                    }
-
-                    return array_key_exists($param, $params) ? $params[$param] : $part;
+            collect($url->compileRoute()->getVariables())->each(function ($variable) use ($url, $params) {
+                if (key_exists($variable, $params) && $params[$variable] != null) {
+                    $url->setUrl(
+                        Str::of($url->getUrl())->replace("{{$variable}}", (string) $params[$variable])
+                    );
                 }
-                return $part;
-            })->prepend('')->join('/');
+            });
 
-            $page = app($page)->slug($url)->params($params);
-
-            return $page->getRouteUrl();
+            return '/' . $url->getUrl();
         }
 
         return $this->redirectUrl ?? null;
@@ -83,24 +66,7 @@ trait HasRedirect
         $params = $this->evaluate($this->redirectParams, $parameters);
 
         if ($page) {
-            $url = collect(Str::of(app($page)->getRouteUrl())->explode("/")->filter()->values())->map(function ($part) use ($params) {
-                if ($this->isParam($part)) {
-                    $param = null;
-
-                    $parsed_param = Str::of($part)->replace('{', '')->replace('}', '')->explode(':');
-
-                    if ($parsed_param->count() == 2) {
-                        $param = $parsed_param[1];
-                    } else {
-                        $param = $parsed_param[0];
-                    }
-
-                    return array_key_exists($param, $params) ? $params[$param] : $part;
-                }
-                return $part;
-            })->prepend('')->join('/');
-
-            $page = app($page)->slug($url)->params($params);
+            $page = app($page);
 
             return $page->getRouteName();
         }

@@ -96,6 +96,7 @@ return [
             'path' => app_path('Admin/GlobalActions'),
             'register' => [
                 Bengr\Admin\GlobalActions\Builtin\GlobalSearch::class,
+                Bengr\Admin\GlobalActions\Builtin\Logout::class,
             ]
         ],
     ],
@@ -148,7 +149,7 @@ return [
 
     'api' => [
         'prefix' => 'admin/builder',
-        'middleware' => ['api'],
+        'middleware' => ['api', Bengr\Admin\Http\Middleware\DispatchServingAdminEvent::class],
         'routes' => [
             'pages' => [
                 'url' => '/pages',

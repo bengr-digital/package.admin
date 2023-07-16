@@ -5,16 +5,13 @@ namespace Bengr\Admin\Rules;
 use Bengr\Admin\Exceptions\PageNotFoundException;
 use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\Pages\Page;
-use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\InvokableRule;
 
-use Closure;
-
-class ValidPageUrl implements ValidationRule
+class ValidPageUrl implements InvokableRule
 {
-    public function validate(string $attribute, mixed $value, Closure $fail): void
+    public function __invoke($attribute, $value, $fail)
     {
         $page = Admin::getPageByUrl($value);
-
 
         if (!$page || !$page instanceof Page) {
             throw new PageNotFoundException;

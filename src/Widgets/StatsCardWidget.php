@@ -9,7 +9,7 @@ class StatsCardWidget extends Widget
 {
     protected ?string $widgetName = 'stats-card';
 
-    protected ?int $widgetColumnSpan = 4;
+    protected ?int $columnSpan = 4;
 
     protected string $heading;
 

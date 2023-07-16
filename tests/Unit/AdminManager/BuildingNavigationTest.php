@@ -239,4 +239,178 @@ class BuildingNavigationTest extends TestCase
                 ]
             );
     }
+
+    public function test_that_default_navigation_sorting_of_items_works()
+    {
+        config([
+            'admin.components.pages.path' => $this->getTestPagePath('NavigationSort/Default'),
+            'admin.components.pages.namespace' => $this->getTestPageNamespace('NavigationSort\\Default'),
+            'admin.components.pages.register' => []
+        ]);
+
+        $this->adminManager->registerComponents();
+
+        $this
+            ->assertNavigationItemRegisteredCount(3)
+            ->assertNavigationItemRegistered(
+                label: 'First Page',
+                routeUrl: '/first-page',
+                sort: null,
+                order: 0
+            )
+            ->assertNavigationItemRegistered(
+                label: 'Second Page',
+                routeUrl: '/second-page',
+                sort: null,
+                order: 1
+            )
+            ->assertNavigationItemRegistered(
+                label: 'Third Page',
+                routeUrl: '/third-page',
+                sort: null,
+                order: 2
+            );
+    }
+
+    public function test_that_modified_navigation_sorting_of_items_works()
+    {
+        config([
+            'admin.components.pages.path' => $this->getTestPagePath('NavigationSort/Modified'),
+            'admin.components.pages.namespace' => $this->getTestPageNamespace('NavigationSort\\Modified'),
+            'admin.components.pages.register' => []
+        ]);
+
+        $this->adminManager->registerComponents();
+
+        $this
+            ->assertNavigationItemRegisteredCount(3)
+            ->assertNavigationItemRegistered(
+                label: 'First Page',
+                routeUrl: '/first-page',
+                sort: 2,
+                order: 2
+            )
+            ->assertNavigationItemRegistered(
+                label: 'Second Page',
+                routeUrl: '/second-page',
+                sort: 1,
+                order: 1
+            )
+            ->assertNavigationItemRegistered(
+                label: 'Third Page',
+                routeUrl: '/third-page',
+                sort: 0,
+                order: 0
+            );
+    }
+
+    public function test_that_default_navigation_sorting_of_groups_works()
+    {
+        config([
+            'admin.components.pages.path' => $this->getTestPagePath('NavigationSort/DefaultGroup'),
+            'admin.components.pages.namespace' => $this->getTestPageNamespace('NavigationSort\\DefaultGroup'),
+            'admin.components.pages.register' => []
+        ]);
+
+        $this->adminManager->registerComponents();
+
+        $this
+            ->assertNavigationGroupRegisteredItemsCount('first-group', 3)
+            ->assertNavigationGroupRegisteredItemsCount('second-group', 2)
+            ->assertNavigationGroupRegisteredItemsCount(null, 0)
+            ->assertNavigationGroupRegistered(
+                label: 'first-group',
+                sort: null,
+                order: 0,
+                items: [
+                    [
+                        'label' => 'First Group First Page',
+                        'sort' => null,
+                        'order' => 0
+                    ],
+                    [
+                        'label' => 'First Group Second Page',
+                        'sort' => null,
+                        'order' => 1
+                    ],
+                    [
+                        'label' => 'First Group Third Page',
+                        'sort' => null,
+                        'order' => 2
+                    ],
+                ]
+            )
+            ->assertNavigationGroupRegistered(
+                label: 'second-group',
+                sort: null,
+                order: 1,
+                items: [
+                    [
+                        'label' => 'Second Group First Page',
+                        'sort' => null,
+                        'order' => 0
+                    ],
+                    [
+                        'label' => 'Second Group Second Page',
+                        'sort' => null,
+                        'order' => 1
+                    ]
+                ]
+            );
+    }
+
+    public function test_that_modified_navigation_sorting_of_groups_works()
+    {
+        config([
+            'admin.components.pages.path' => $this->getTestPagePath('NavigationSort/ModifiedGroup'),
+            'admin.components.pages.namespace' => $this->getTestPageNamespace('NavigationSort\\ModifiedGroup'),
+            'admin.components.pages.register' => []
+        ]);
+
+        $this->adminManager->registerComponents();
+
+        $this
+            ->assertNavigationGroupRegisteredItemsCount('first-group', 3)
+            ->assertNavigationGroupRegisteredItemsCount('second-group', 2)
+            ->assertNavigationGroupRegisteredItemsCount(null, 0)
+            ->assertNavigationGroupRegistered(
+                label: 'first-group',
+                sort: null,
+                order: 0,
+                items: [
+                    [
+                        'label' => 'First Group First Page',
+                        'sort' => null,
+                        'order' => 1
+                    ],
+                    [
+                        'label' => 'First Group Second Page',
+                        'sort' => null,
+                        'order' => 2
+                    ],
+                    [
+                        'label' => 'First Group Third Page',
+                        'sort' => null,
+                        'order' => 0
+                    ],
+                ]
+            )
+            ->assertNavigationGroupRegistered(
+                label: 'second-group',
+                sort: null,
+                order: 1,
+                items: [
+                    [
+                        'label' => 'Second Group First Page',
+                        'sort' => null,
+                        'order' => 1
+                    ],
+                    [
+                        'label' => 'Second Group Second Page',
+                        'sort' => null,
+                        'order' => 0
+                    ]
+                ]
+            );
+    }
 }

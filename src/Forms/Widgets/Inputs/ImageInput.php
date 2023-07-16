@@ -10,7 +10,7 @@ class ImageInput extends FileInput
 
     protected ?string $widgetName = 'input-image';
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
     public function getData(Request $request): array
     {

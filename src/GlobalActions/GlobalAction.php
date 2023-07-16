@@ -2,8 +2,9 @@
 
 namespace Bengr\Admin\GlobalActions;
 
-use App\Http\Kernel;
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class GlobalAction
 {
@@ -11,9 +12,11 @@ class GlobalAction
 
     protected array $middlewares = [];
 
-    public function getName(): ?string
+    public function getName(): string
     {
-        return $this->name;
+        return $this->name ?? (string) Str::of(class_basename(static::class))
+            ->kebab()
+            ->lower();
     }
 
     public function processMiddleware(int $index, Request $request, \Closure $response)

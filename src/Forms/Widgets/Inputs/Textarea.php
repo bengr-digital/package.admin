@@ -8,7 +8,7 @@ class Textarea extends Input
 {
     protected ?string $widgetName = 'input-textarea';
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
     public function getData(Request $request): array
     {

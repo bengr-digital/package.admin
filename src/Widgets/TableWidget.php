@@ -16,15 +16,13 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-use function Bengr\Support\response;
-
 class TableWidget extends Widget implements HasTable
 {
     use InteractsWithTable;
 
     protected ?string $widgetName = 'table';
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
     protected string $model;
 
@@ -172,7 +170,7 @@ class TableWidget extends Widget implements HasTable
             return $bulkAction->getName() === $name && $bulkAction->hasHandle();
         })->first();
 
-        if (!$action && !$bulkAction || $action && $bulkAction) return response()->throw(ActionNotFoundException::class);
+        if (!$action && !$bulkAction || $action && $bulkAction) throw new ActionNotFoundException();
 
         if ($action) {
             Validator::make($payload, [

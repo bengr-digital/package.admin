@@ -29,8 +29,7 @@ class PageResource extends JsonResource
                 'name' => $this->getLayout(),
                 'navigation' => $this->hasNavigation() ? NavigationResource::collection(BengrAdmin::getNavigation()) : null,
                 'topbar' => $this->hasTopbar() ? TopbarResource::make($this) : null,
-                'header' => HeaderResource::make($this),
-                'form' => $this->hasLargeForm() ? WidgetResource::make($this->getLargeForm(), false) : null
+                'header' => HeaderResource::make($this)
             ],
             'content' => [
                 'modals' => collect(ModalResource::collection($this->getTransformedModals())->toArray($request))->filter()->values(),

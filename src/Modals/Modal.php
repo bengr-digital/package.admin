@@ -14,21 +14,21 @@ class Modal
 
     protected ?string $type = null;
 
+    protected ?string $direction = null;
+
     protected ?string $heading = null;
 
     protected ?string $subheading = null;
-
-    protected ?string $direction = null;
 
     protected array | \Closure $widgets = [];
 
     protected array $actions = [];
 
+    protected array $params = [];
+
     protected bool $hasCross = false;
 
     protected bool $lazyload = false;
-
-    protected array $params = [];
 
     final public function __construct(string $codeId)
     {
@@ -39,7 +39,6 @@ class Modal
     {
         return app(static::class, ['codeId' => $codeId]);
     }
-
 
     public function id(int $id): self
     {
@@ -83,9 +82,9 @@ class Modal
         return $this;
     }
 
-    public function cross(?bool $condition): self
+    public function cross(bool $condition = true): self
     {
-        $this->hasCross = $condition ?? true;
+        $this->hasCross = $condition;
 
         return $this;
     }
@@ -116,14 +115,14 @@ class Modal
         return $this->id;
     }
 
-    public function getType(): ?string
+    public function getType(): string
     {
         return $this->type ?? 'card';
     }
 
-    public function getDirection(): ?string
+    public function getDirection(): string
     {
-        return $this->direction ?? $this->getType() === 'drawer' ? 'right' : 'center';
+        return $this->direction ?? ($this->getType() == 'drawer' ? 'right' : 'center');
     }
 
     public function getWidgets(): array

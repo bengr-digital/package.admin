@@ -4,11 +4,15 @@ namespace Bengr\Admin\Tests;
 
 use Bengr\Admin\AdminManager;
 use Bengr\Admin\AdminServiceProvider;
+use Bengr\Admin\GlobalSearch\GlobalSearchResults;
+use Bengr\Admin\Modals\Modal;
 use Bengr\Admin\Navigation\NavigationGroup;
 use Bengr\Admin\Navigation\NavigationItem;
+use Bengr\Admin\Widgets\Widget;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -18,7 +22,11 @@ class TestCase extends \Orchestra\Testbench\TestCase
     {
         parent::setUp();
         $this->setUpDatabase();
-
+        Factory::guessFactoryNamesUsing(
+            function (string $modelName) {
+                return 'Bengr\\Admin\\Database\\Factories\\' . class_basename($modelName) . 'Factory';
+            }
+        );
         $this->adminManager = $this->app->make(AdminManager::class);
     }
 
@@ -171,11 +179,13 @@ class TestCase extends \Orchestra\Testbench\TestCase
         string $routeName = null,
         string $routeUrl = null,
         array $children = null,
+        int $sort = null,
+        int $order = null,
         array $navigationItems = null
     ): self {
         $navigationItems = !$navigationItems ? $this->getFlatNavigation() : collect($navigationItems);
 
-        $naviagtionItemRegistered = collect($navigationItems)->contains(function (NavigationItem $navigationItem) use ($label, $iconName, $iconType, $activeIconName, $activeIconType, $group, $badge, $badgeColor, $routeName, $routeUrl, $children) {
+        $naviagtionItemRegistered = collect($navigationItems)->contains(function (NavigationItem $navigationItem) use ($label, $iconName, $iconType, $activeIconName, $activeIconType, $group, $badge, $badgeColor, $routeName, $routeUrl, $children, $sort, $order) {
             if ($label != null) {
                 if ($label != $navigationItem->getLabel()) {
                     return false;
@@ -242,6 +252,18 @@ class TestCase extends \Orchestra\Testbench\TestCase
                         ...$child,
                         navigationItems: $navigationItem->getChildren()
                     );
+                }
+            }
+
+            if ($sort != null) {
+                if ($sort != $navigationItem->getSort()) {
+                    return false;
+                }
+            }
+
+            if ($order != null) {
+                if ($order != collect($this->adminManager->getNavigation()->first(fn ($group) => $group->getLabel() == $navigationItem->getGroup())->getItems())->search($navigationItem)) {
+                    return false;
                 }
             }
 
@@ -347,8 +369,13 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
     public function assertNavigationGroupRegisteredItemsCount(?string $group, int $count): self
     {
+
         $navigationGroup = collect($this->adminManager->getNavigation())->first(fn ($navigationGroup) => $navigationGroup->getLabel() == $group);
-        $navigationGroupItemsCount = count($navigationGroup->getItems());
+        if ($navigationGroup) {
+            $navigationGroupItemsCount = count($navigationGroup->getItems());
+        } else {
+            $navigationGroupItemsCount = 0;
+        }
 
         $this->assertEquals($count, $navigationGroupItemsCount);
 
@@ -358,9 +385,12 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
     public function assertNavigationGroupRegistered(
         string $label = null,
+        int $sort = null,
+        int $order = null,
         array $items = null,
     ): self {
-        $navigationGroupRegistered = collect($this->adminManager->getNavigation())->contains(function ($navigationGroup) use ($label, $items) {
+
+        $navigationGroupRegistered = collect($this->adminManager->getNavigation())->contains(function ($navigationGroup) use ($label, $items, $sort, $order) {
             if ($label != $navigationGroup->getLabel()) {
                 return false;
             }
@@ -374,10 +404,399 @@ class TestCase extends \Orchestra\Testbench\TestCase
                 }
             }
 
+            if ($sort != null) {
+                if ($sort != $navigationGroup->getSort()) {
+                    return false;
+                }
+            }
+
+            if ($order != null) {
+                if ($order != collect($this->adminManager->getNavigation())->search($navigationGroup)) {
+                    return false;
+                }
+            }
+
             return true;
         });
 
         $this->assertTrue($navigationGroupRegistered);
+
+        return $this;
+    }
+
+    public function getFlatGlobalSearchResults($results)
+    {
+        $flatten = [];
+
+        if ($results && $results instanceof GlobalSearchResults) {
+            foreach ($results->getCategories()->toArray() as $category) {
+                $flatten = array_merge($flatten, $category['results']);
+            }
+        }
+
+        return $flatten;
+    }
+
+    public function assertGlobalSearchResultsCount(?GlobalSearchResults $results = null, int $count = 0): self
+    {
+        $actualCount = 0;
+
+        if ($results instanceof GlobalSearchResults) {
+            foreach ($results->getCategories() as $category) {
+                $actualCount += count($category['results']);
+            }
+        }
+
+        $this->assertEquals($count, $actualCount);
+
+        return $this;
+    }
+
+    public function assertGlobalSearchResultExists(
+        string $title = null,
+        string $description = null,
+        string $redirectName = null,
+        string $redirectUrl = null,
+        string $iconName = null,
+        string $iconType = null,
+        string $activeIconName = null,
+        string $activeIconType = null,
+        string $image = null,
+        ?GlobalSearchResults $results = null
+    ): self {
+
+        $globalSearchResultExists = collect($this->getFlatGlobalSearchResults($results))->contains(function ($result) use ($title, $description, $redirectName, $redirectUrl, $iconName, $iconType, $activeIconName, $activeIconType, $image) {
+            if ($title) {
+                if ($title != $result['title']) {
+                    return false;
+                }
+            }
+
+            if ($description) {
+                if ($description != $result['description']) {
+                    return false;
+                }
+            }
+
+            if ($redirectName) {
+                if (is_array($result['redirect']) && array_key_exists('name', $result['redirect']) && $redirectName != $result['redirect']['name']) {
+                    return false;
+                } else if (!is_array($result['redirect'])) {
+                    return false;
+                } else if (is_array($result['redirect']) && !array_key_exists('name', $result['redirect'])) {
+                    return false;
+                }
+            }
+
+            if ($redirectUrl) {
+                if (is_array($result['redirect']) && array_key_exists('url', $result['redirect']) && $redirectUrl != $result['redirect']['url']) {
+                    return false;
+                } else if (!is_array($result['redirect'])) {
+                    return false;
+                } else if (is_array($result['redirect']) && !array_key_exists('url', $result['redirect'])) {
+                    return false;
+                }
+            }
+
+            if ($iconName) {
+                if (is_array($result['icon']) && array_key_exists('name', $result['icon']) && $iconName != $result['icon']['name']) {
+                    return false;
+                } else if (!is_array($result['icon'])) {
+                    return false;
+                } else if (is_array($result['icon']) && !array_key_exists('name', $result['icon'])) {
+                    return false;
+                }
+            }
+
+            if ($iconType) {
+                if (is_array($result['icon']) && array_key_exists('type', $result['icon']) && $iconType != $result['icon']['type']) {
+                    return false;
+                } else if (!is_array($result['icon'])) {
+                    return false;
+                } else if (is_array($result['icon']) && !array_key_exists('type', $result['icon'])) {
+                    return false;
+                }
+            }
+
+            if ($activeIconName) {
+                if (is_array($result['icon']) && array_key_exists('activeName', $result['icon']) && $iconName != $result['icon']['activeName']) {
+                    return false;
+                } else if (!is_array($result['icon'])) {
+                    return false;
+                } else if (is_array($result['icon']) && !array_key_exists('activeName', $result['icon'])) {
+                    return false;
+                }
+            }
+
+            if ($activeIconType) {
+                if (is_array($result['icon']) && array_key_exists('type', $result['icon']) && $activeIconType != $result['icon']['type']) {
+                    return false;
+                } else if (!is_array($result['icon'])) {
+                    return false;
+                } else if (is_array($result['icon']) && !array_key_exists('type', $result['icon'])) {
+                    return false;
+                }
+            }
+
+            if ($image) {
+                if ($image != $result['image']) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        $this->assertTrue($globalSearchResultExists);
+
+        return $this;
+    }
+
+    public function assertModalEquals(
+        Modal $modal,
+        ?int $id,
+        ?string $codeId,
+        string $type,
+        string $direction,
+        ?string $heading,
+        ?string $subheading,
+        array $widgets,
+        array $actions,
+        array $params,
+        bool $hasCross,
+        bool $lazyload
+    ): self {
+        $modalEquals = true;
+
+        if ($modal->getId() != $id) {
+            $modalEquals = false;
+        }
+
+        if ($modal->getCodeId() != $codeId) {
+            $modalEquals = false;
+        }
+
+        if ($modal->getType() != $type) {
+            $modalEquals = false;
+        }
+
+        if ($modal->getDirection() != $direction) {
+            $modalEquals = false;
+        }
+
+        if ($modal->getHeading() != $heading) {
+            $modalEquals = false;
+        }
+
+        if ($modal->getSubheading() != $subheading) {
+            $modalEquals = false;
+        }
+
+        if ($modal->getWidgets() != $widgets) {
+            $modalEquals = false;
+        }
+
+        if ($modal->getActions() != $actions) {
+            $modalEquals = false;
+        }
+
+        if ($modal->getParams() != $params) {
+            $modalEquals = false;
+        }
+
+        if ($modal->hasCross() != $hasCross) {
+            $modalEquals = false;
+        }
+
+        if ($modal->getLazyload() != $lazyload) {
+            $modalEquals = false;
+        }
+
+        $this->assertTrue($modalEquals);
+
+        return $this;
+    }
+
+    public function getFlatWidgets(array $widgets): array
+    {
+        $flatten = [];
+        $widgets = $widgets;
+
+        foreach ($widgets as $widget) {
+            $flatten[] = $widget;
+
+            if ($widget->hasWidgets()) {
+                $flatten = array_merge($flatten, $this->getFlatWidgets($widget->getWidgets()));
+            }
+        }
+
+        return $flatten;
+    }
+
+    public function assertWidgetExists(
+        array $widgets,
+        string $class = null,
+        ?int $widgetId,
+    ): self {
+        $widgetExists = collect($widgets)->contains(function ($widget) use ($class, $widgetId) {
+            if ($class != null) {
+                if ($class != get_class($widget)) {
+                    return false;
+                }
+            }
+
+            if ($widgetId != $widget->getWidgetId()) {
+                return false;
+            }
+
+            return true;
+        });
+
+        $this->assertTrue($widgetExists);
+
+        return $this;
+    }
+
+    public function assertContainsWidgets(array $expectedWidgets, array $actualWidgets): self
+    {
+        foreach ($expectedWidgets as $widget) {
+            $this->assertWidgetExists(
+                ...$widget,
+                widgets: $this->getFlatWidgets($actualWidgets)
+            );
+        }
+
+        return $this;
+    }
+
+    public function assertActionExists(
+        array $actions,
+        string $name,
+        ?int $modalId,
+        ?string $modalCodeId,
+        string $modalEvent,
+        mixed $handleMethodReturn,
+        ?int $handleWidgetId,
+        ?string $type
+    ): self {
+        $actionExists = collect($actions)->contains(function ($action) use ($name, $modalId, $modalCodeId, $modalEvent, $handleMethodReturn, $handleWidgetId, $type) {
+            if ($name != null) {
+                if ($name != $action->getName()) {
+                    return false;
+                }
+            }
+
+            if ($modalId != $action->getModalId()) {
+                return false;
+            }
+
+            if ($modalCodeId != $action->getModalCodeId()) {
+                return false;
+            }
+
+            if ($modalEvent != $action->getModalEvent()) {
+                return false;
+            }
+
+            if ($handleMethodReturn == null && $action->getHandleMethod() != null) {
+                return false;
+            } else if ($handleMethodReturn != null && $handleMethodReturn != $action->getHandleMethod()()) {
+                return false;
+            }
+
+            if ($handleWidgetId != $action->getHandleWidgetId()) {
+                return false;
+            }
+
+            if ($type != $action->getType()) {
+                return false;
+            }
+
+            return true;
+        });
+
+        $this->assertTrue($actionExists);
+
+        return $this;
+    }
+
+    public function assertContainsActions(array $expectedActions, array $actualActions): self
+    {
+        foreach ($expectedActions as $action) {
+            $this->assertActionExists(
+                ...$action,
+                actions: $actualActions
+            );
+        }
+
+        return $this;
+    }
+
+    public function assertModalExists(
+        array $modals,
+        string $codeId,
+        ?int $id
+    ): self {
+        $modalExists = collect($modals)->contains(function ($modal) use ($codeId, $id) {
+            if ($codeId != $modal->getCodeId()) {
+                return false;
+            }
+
+            if ($id != $modal->getId()) {
+                return false;
+            }
+
+            return true;
+        });
+
+        $this->assertTrue($modalExists);
+
+        return $this;
+    }
+
+    public function assertContainsModals(array $expectedModals, array $actualModals): self
+    {
+        foreach ($expectedModals as $modal) {
+            $this->assertModalExists(
+                ...$modal,
+                modals: $actualModals
+            );
+        }
+
+        return $this;
+    }
+
+    public function assertWidgetEquals(
+        Widget $widget,
+        ?int $id,
+        ?string $name,
+        int $columnSpan,
+        int $sort,
+        bool $lazyload
+    ): self {
+        $widgetEquals = true;
+
+        if ($widget->getWidgetId() != $id) {
+            $widgetEquals = false;
+        }
+
+        if ($widget->getWidgetName() != $name) {
+            $widgetEquals = false;
+        }
+
+        if ($widget->getColumnSpan() != $columnSpan) {
+            $widgetEquals = false;
+        }
+
+        if ($widget->getWidgetSort() != $sort) {
+            $widgetEquals = false;
+        }
+
+        if ($widget->getLazyload() != $lazyload) {
+            $widgetEquals = false;
+        }
+
+        $this->assertTrue($widgetEquals);
 
         return $this;
     }

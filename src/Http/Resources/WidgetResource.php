@@ -23,17 +23,17 @@ class WidgetResource extends JsonResource
             return [
                 'id' => $this->getWidgetId(),
                 'type' => $this->getWidgetName(),
-                'columnSpan' => $this->getWidgetColumnSpan(),
+                'columnSpan' => $this->getColumnSpan(),
                 'lazyload' => $this->getLazyload(),
-                'props' => !$this->getWithoutProps() ? $this->getData($request) : [],
+                'props' => $this->getData($request),
             ];
         } else {
             return [
                 'id' => $this->getWidgetId(),
                 'type' => $this->getWidgetName(),
-                'columnSpan' => $this->getWidgetColumnSpan(),
+                'columnSpan' => $this->getColumnSpan(),
                 'lazyload' => $this->getLazyload(),
-                'props' => !$this->getWithoutProps() && !$this->getLazyload() ? $this->getData($request) : [],
+                'props' => !$this->getLazyload() ? $this->getData($request) : [],
             ];
         }
     }

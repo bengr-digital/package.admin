@@ -54,7 +54,7 @@ class AdminServiceProvider extends PackageServiceProvider
             __DIR__ . '/../storage/responses/bengr_admin' => storage_path('responses/bengr_admin'),
         ], 'admin-response-files');
 
-        Admin::serving(function () {
+        Admin::onServing(function () {
             Admin::registerUserMenuItems([
                 UserMenuItem::make()
                     ->label(__('admin::pages.me.title'))

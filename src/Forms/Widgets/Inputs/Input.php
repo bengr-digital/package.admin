@@ -26,7 +26,7 @@ class Input extends Widget
 
     protected ?string $widgetName = 'input';
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
     final public function __construct(string $name)
     {

@@ -8,7 +8,7 @@ class AvatarInput extends FileInput
 {
     protected ?string $widgetName = 'input-avatar';
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
     public function isMultiple(): bool
     {

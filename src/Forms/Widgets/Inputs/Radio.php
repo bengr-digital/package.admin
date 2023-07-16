@@ -10,7 +10,7 @@ class Radio extends Input
 
     protected ?string $widgetName = 'input-radio';
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
     public function getData(Request $request): array
     {

@@ -11,7 +11,7 @@ class ActionCardWidget extends Widget
 {
     protected ?string $widgetName = 'action-card';
 
-    protected ?int $widgetColumnSpan = 4;
+    protected ?int $columnSpan = 4;
 
     protected string $heading;
 

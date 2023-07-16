@@ -9,7 +9,7 @@ class ChartWidget extends Widget
 {
     protected ?string $widgetName = 'chart';
 
-    protected ?int $widgetColumnSpan = 6;
+    protected ?int $columnSpan = 6;
 
     protected string $heading;
 

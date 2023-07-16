@@ -14,7 +14,6 @@ class Action
     use Concerns\HasIcon;
     use Concerns\HasColor;
     use Concerns\HasSize;
-    use Concerns\HasRoute;
     use Concerns\HasRedirect;
     use Concerns\HasTooltip;
     use Concerns\HasParams;

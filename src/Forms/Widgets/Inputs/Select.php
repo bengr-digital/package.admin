@@ -12,7 +12,7 @@ class Select extends Input
 
     protected ?string $widgetName = 'input-select';
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
     public function getType(): ?string
     {

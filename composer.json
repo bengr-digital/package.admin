@@ -12,7 +12,8 @@
     "autoload": {
         "psr-4": {
             "Bengr\\Admin\\": "src/",
-            "Bengr\\Admin\\Tests\\": "tests/"
+            "Bengr\\Admin\\Tests\\": "tests/",
+            "Bengr\\Admin\\Database\\Factories\\": "database/factories"
         }
     },
     "extra": {

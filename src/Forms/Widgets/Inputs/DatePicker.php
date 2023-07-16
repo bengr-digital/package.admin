@@ -11,7 +11,7 @@ class DatePicker extends Input
 
     protected ?string $widgetName = 'input-datepicker';
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
     public function value($value = null): self
     {

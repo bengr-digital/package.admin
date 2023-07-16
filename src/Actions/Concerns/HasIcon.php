@@ -22,7 +22,7 @@ trait HasIcon
         return $this;
     }
 
-    public function activeIcon(string | Closure | null $activeIconName, string | Closure | null $activeIconType): static
+    public function activeIcon(string | Closure | null $activeIconName, string | Closure | null $activeIconType = 'filled'): static
     {
         $this->activeIconName = $activeIconName;
         $this->activeIconType = $activeIconType;

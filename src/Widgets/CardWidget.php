@@ -9,7 +9,7 @@ class CardWidget extends Widget
 {
     protected ?string $widgetName = 'card';
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
     protected array $widgets = [];
 
@@ -57,6 +57,11 @@ class CardWidget extends Widget
         return $this;
     }
 
+    public function getWidgets(): array
+    {
+        return $this->widgets;
+    }
+
     public function getHeading(): ?string
     {
         return $this->heading;
@@ -72,17 +77,7 @@ class CardWidget extends Widget
         return $this->footer ?? [];
     }
 
-    public function getWidgets(): array
-    {
-        return $this->widgets;
-    }
-
-    public function hasWidgets(): bool
-    {
-        return true;
-    }
-
-    public function getData(Request $request): ?array
+    public function getData(Request $request): array
     {
         return [
             'header' => [

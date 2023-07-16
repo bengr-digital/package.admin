@@ -21,8 +21,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
-use function Bengr\Support\response;
-
 class Page
 {
     protected ?string $layout = 'app';
@@ -57,21 +55,11 @@ class Page
 
     protected bool $hasTopbar = true;
 
-    protected bool $hasLargeForm = false;
-
     protected array $breadcrumbs = [];
 
-    protected ?string $model = null;
-
-    protected array $params = [];
-
-    protected $transformed_widgets;
-
-    protected $transformed_actions;
-
-    protected bool $isGloballySearchable = false;
-
     protected int $globalSearchResultsLimit = 5;
+
+    protected ?string $globalSearchModel = null;
 
     public function title(string $title): self
     {
@@ -90,13 +78,6 @@ class Page
     public function slug(string $slug): self
     {
         $this->slug = Str::of($slug)->explode('/')->filter()->join('/');
-
-        return $this;
-    }
-
-    public function params(array $params): self
-    {
-        $this->params = $params;
 
         return $this;
     }
@@ -164,11 +145,6 @@ class Page
             ->title();
     }
 
-    public function getModel(): ?Model
-    {
-        return $this->model ? app($this->model) : null;
-    }
-
     public function getDescription(): ?string
     {
         return $this->description;
@@ -190,9 +166,7 @@ class Page
 
     public function getRouteName(): string
     {
-        $slug = $this->getSlug() === "" ? "index" : $this->getSlug();
-
-        $slug = str_replace('/', '.', $slug);
+        $slug = str_replace('/', '.', $this->getSlug() === "" ? "index" : $this->getSlug());
 
         return "admin.components.pages.{$slug}";
     }
@@ -312,32 +286,9 @@ class Page
         return $this->processMiddleware(0, $request, $response);
     }
 
-    public function processMiddlewares()
-    {
-        if (!count($this->middlewares)) return null;
-
-        return $this->processMiddleware(0, request(), fn () => null);
-    }
-
     public function inNavigation(): bool
     {
         return $this->inNavigation;
-    }
-
-    public function getParams(): array
-    {
-        return $this->params;
-    }
-
-    protected function loopWidgets(array $widgets)
-    {
-        collect($widgets)->map(function ($widget) {
-            $this->transformed_widgets->push($widget);
-
-            if ($widget->hasWidgets()) {
-                $this->loopWidgets($widget->getWidgets());
-            }
-        });
     }
 
     public function hasWidget(?int $id): bool
@@ -363,17 +314,12 @@ class Page
 
     public function getWidget(?int $id): ?Widget
     {
-        $this->transformed_widgets = collect([]);
-        $widgets_to_transform = $this->getTransformedWidgets();
-
         foreach ($this->getTransformedModals() as $modal) {
             $modal->params(request()->get('params') ?? []);
-            array_push($widgets_to_transform, ...$modal->getTransformedWidgets());
+            array_push($this->getTransformedWidgets(), ...$modal->getTransformedWidgets());
         }
 
-        $this->loopWidgets($widgets_to_transform);
-
-        $widget = $this->transformed_widgets->where(function (Widget $widget) use ($id) {
+        $widget = collect($this->getFlatWidgets())->where(function (Widget $widget) use ($id) {
             return $widget->getWidgetId() === $id;
         })->toArray();
 
@@ -383,16 +329,6 @@ class Page
     public function getModal(?int $id): ?Modal
     {
         return collect($this->getTransformedModals())->first(fn (Modal $modal) => $modal->getId() == $id);
-    }
-
-    public function getLargeForm(): ?FormWidget
-    {
-        if (collect($this->getTransformedWidgets())->first() instanceof FormWidget && $this->hasLargeForm()) {
-            collect($this->getTransformedWidgets())->first()->showOnlyChildren(true);
-            return collect($this->getTransformedWidgets())->first()->withoutProps();
-        }
-
-        return null;
     }
 
     public function hasNavigation(): bool
@@ -405,39 +341,38 @@ class Page
         return $this->hasTopbar;
     }
 
-    public function hasLargeForm(): bool
+    public function getFlatActions(?array $actions = null): array
     {
-        return $this->hasLargeForm == true ? $this->hasLargeForm : collect($this->getTransformedActions())->contains(function ($action) {
-            if ($action->getName() == 'submit' && $action->hasHandle()) {
-                return collect($this->getFlatWidgets($this->getTransformedWidgets()))->contains(fn ($widget) => $widget->getWidgetId() == $action->getHandleWidgetId() && $widget instanceof FormWidget);
-            }
-        });
-    }
+        $flatten = [];
+        $actions = $actions ?? $this->getTransformedActions();
 
-    protected function loopActions(array $actions)
-    {
-        collect($actions)->map(function ($action) {
+        foreach ($actions as $action) {
+            $flatten[] = $action;
+
             if ($action instanceof ActionGroup) {
-                $this->loopActions($action->getActions());
+                $flatten = array_merge($flatten, $this->getFlatActions($action->getActions()));
             } else {
-                $this->transformed_actions->push($action);
+                $flatten[] = $action;
             }
-        });
+        }
+
+        return $flatten;
     }
 
     public function callAction(string $name, array $payload = [])
     {
-        $this->transformed_actions = collect([]);
-
-        $this->loopActions($this->getActions());
-
-        $action = $this->transformed_actions->where(function (Action $action) use ($name) {
+        $action = collect($this->getFlatActions())->where(function (Action $action) use ($name) {
             return $action->getName() === $name && $action->hasHandle();
         })->first();
 
-        if (!$action) return response()->throw(ActionNotFoundException::class);
+        if (!$action) throw new ActionNotFoundException($name);
 
         return $action->getHandleMethod()($payload);
+    }
+
+    public function getGlobalSearchModel(): ?Model
+    {
+        return $this->globalSearchModel ? app($this->globalSearchModel) : null;
     }
 
     public function getGlobalSearchCategoryLabel(): ?string
@@ -447,7 +382,7 @@ class Page
 
     public function canGloballySearch(): bool
     {
-        return count($this->getGlobalSearchAttributes());
+        return count($this->getGlobalSearchAttributes()) && $this->getGlobalSearchModel();
     }
 
     public function getGlobalSearchResultsLimit(): int
@@ -467,9 +402,9 @@ class Page
 
     public function getGlobalSearchResults(string $searchQuery): Collection
     {
-        if (!$this->getModel()) return collect([]);
+        if (!$this->getGlobalSearchModel()) return collect([]);
 
-        $query = $this->getModel()->query();
+        $query = $this->getGlobalSearchModel()->query();
 
         $this->getGlobalSearchEloquentQuery($query);
 
@@ -537,9 +472,8 @@ class Page
         foreach ($widgets as $widget) {
             if (!$widget->getWidgetId()) {
                 $widget->widgetId($index);
+                $index += 1;
             }
-
-            $index += 1;
 
             if ($widget->hasWidgets()) {
                 $this->getWidgetsWithAutomaticIds($widget->getWidgets(), $index);
@@ -553,14 +487,16 @@ class Page
 
     public function getModalsWithAutomaticIds(array $modals): array
     {
-        $id = count($this->getFlatWidgets()) + 1;
+        $id = count($this->getFlatWidgets()) + (collect($this->getModals())->max(fn ($modal) => $modal->getId()) + 1 ?? 1);
 
         foreach ($modals as $index => $modal) {
-            if ($index > 0) {
-                $id += count($modals[$index - 1]->getFlatWidgets()) + 1;
-            }
 
-            $modal->id($id);
+            if (!$modal->getId()) {
+                if ($index > 0) {
+                    $id += count($modals[$index - 1]->getFlatWidgets()) + 1;
+                }
+                $modal->id($id);
+            }
         }
 
         return $modals;
@@ -573,7 +509,7 @@ class Page
 
     public function getTransformedWidgets(): array
     {
-        return $this->getWidgetsWithAutomaticIds($this->getWidgets(), 1);
+        return $this->getWidgetsWithAutomaticIds($this->getWidgets(), (collect($this->getWidgets())->max(fn ($widget) => $widget->getWidgetId()) + 1 ?? 1));
     }
 
     public function getTransformedActions(): array
@@ -581,18 +517,19 @@ class Page
         $actions = $this->getActions();
 
         foreach ($actions as $action) {
-            if ($action->getName() == 'submit' && !$action->hasHandle()) {
-                $action->handle(null, null);
-                $action->type('submit');
-                break;
-            }
-
             if ($action->getModalCodeId() && !$action->getModalId()) {
                 $modal = collect($this->getTransformedModals())->first(fn ($modal) => $modal->getCodeId() == $action->getModalCodeId());
 
                 if ($modal) {
                     $action->modal($modal->getId(), $action->getModalEvent());
                 }
+                continue;
+            }
+
+            if ($action->getName() == 'submit' && !$action->hasHandle()) {
+                $action->handle(null, null);
+                $action->type('submit');
+                continue;
             }
         }
 
@@ -608,7 +545,7 @@ class Page
         return null;
     }
 
-    public function replaceParameters(UrlHolder $holder, ?string $value = ''): string
+    protected function replaceParameters(UrlHolder $holder, ?string $value = ''): string
     {
         $replaced = preg_replace_callback('/\{([^}]+)\}/', function ($matches) use ($holder) {
             [$parameter, $column] = count(explode(':', $matches[1])) == 2 ? explode(':', $matches[1]) : [$matches[1], 'id'];

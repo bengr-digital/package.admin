@@ -9,66 +9,30 @@ use Bengr\Admin\Exceptions\ActionNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-use function Bengr\Support\response;
-
 class Widget
 {
     use EvaluatesClosures;
-
-    protected ?int $widgetSort = null;
 
     protected ?int $widgetId = null;
 
     protected ?string $widgetName = null;
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
-    protected bool $showOnlyChildren = false;
-
-    protected bool $withoutProps = false;
+    protected ?int $widgetSort = null;
 
     protected bool $lazyload = false;
-
-    protected $transformed_actions;
-
-    public function widgetColumnSpan(?int $widgetColumnSpan): self
-    {
-        $this->widgetColumnSpan = $widgetColumnSpan;
-
-        return $this;
-    }
-
-    public function widgetColumn(?int $widgetColumnSpan): self
-    {
-        $this->widgetColumnSpan = $widgetColumnSpan;
-
-        return $this;
-    }
-
-    public function columnSpan(?int $widgetColumnSpan): self
-    {
-        $this->widgetColumnSpan = $widgetColumnSpan;
-
-        return $this;
-    }
-
-    public function showOnlyChildren(bool $condition = true): self
-    {
-        $this->showOnlyChildren = $condition;
-
-        return $this;
-    }
-
-    public function withoutProps(bool $condition = true): self
-    {
-        $this->withoutProps = $condition;
-
-        return $this;
-    }
 
     public function widgetId(int $widgetId): self
     {
         $this->widgetId = $widgetId;
+
+        return $this;
+    }
+
+    public function columnSpan(?int $columnSpan): self
+    {
+        $this->columnSpan = $columnSpan;
 
         return $this;
     }
@@ -78,11 +42,6 @@ class Widget
         $this->lazyload = $lazyload;
 
         return $this;
-    }
-
-    public function getWidgetSort(): int
-    {
-        return $this->widgetSort ?? -1;
     }
 
     public function getWidgetId(): ?int
@@ -97,24 +56,14 @@ class Widget
             ->slug();
     }
 
-    public function getWidgetColumnSpan(): ?int
+    public function getColumnSpan(): ?int
     {
-        return $this->widgetColumnSpan;
+        return $this->columnSpan;
     }
 
-    public function getShowOnlyChildren(): bool
+    public function getWidgetSort(): int
     {
-        return $this->showOnlyChildren;
-    }
-
-    public function getWithoutProps(): bool
-    {
-        return $this->withoutProps;
-    }
-
-    public function hasWidgets(): bool
-    {
-        return count($this->getWidgets()) ? true : false;
+        return $this->widgetSort ?? 0;
     }
 
     public function getLazyload(): bool
@@ -122,10 +71,14 @@ class Widget
         return $this->lazyload;
     }
 
-
     public function getWidgets(): array
     {
         return [];
+    }
+
+    public function hasWidgets(): bool
+    {
+        return count($this->getWidgets()) ? true : false;
     }
 
     public function getActions(): array
@@ -133,35 +86,37 @@ class Widget
         return [];
     }
 
-    protected function loopActions(array $actions)
+    public function getFlatActions(?array $actions = null): array
     {
-        collect($actions)->map(function ($action) {
+        $flatten = [];
+        $actions = $actions ?? $this->getActions();
+
+        foreach ($actions as $action) {
+            $flatten[] = $action;
+
             if ($action instanceof ActionGroup) {
-                $this->loopActions($action->getActions());
+                $flatten = array_merge($flatten, $this->getFlatActions($action->getActions()));
             } else {
-                $this->transformed_actions->push($action);
+                $flatten[] = $action;
             }
-        });
+        }
+
+        return $flatten;
     }
 
     public function callAction(string $name, array $payload = [])
     {
-        $this->transformed_actions = collect([]);
-
-        $this->loopActions($this->getActions());
-
-        $action = $this->transformed_actions->where(function (Action $action) use ($name) {
+        $action = collect($this->getFlatActions())->where(function (Action $action) use ($name) {
             return $action->getName() === $name && $action->hasHandle();
         })->first();
 
-
-        if (!$action) return response()->throw(ActionNotFoundException::class);
+        if (!$action) throw new ActionNotFoundException($name);
 
         return $action->getHandleMethod()($payload);
     }
 
-    public function getData(Request $request): ?array
+    public function getData(Request $request): array
     {
-        return null;
+        return [];
     }
 }

@@ -12,7 +12,7 @@ class Checkbox extends Input
 
     protected ?string $widgetName = 'input-checkbox';
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
     public function getType(): ?string
     {

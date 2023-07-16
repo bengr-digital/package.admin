@@ -17,8 +17,6 @@ use Illuminate\Support\Facades\Validator;
 use Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-use function Bengr\Support\response;
-
 class FileInput extends Input
 {
     use Concerns\CanBeMultiple;
@@ -27,7 +25,7 @@ class FileInput extends Input
 
     protected ?string $widgetName = 'input-file';
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
     public function save(Model | array &$record, bool $isNew = true, string $name = null): self
     {

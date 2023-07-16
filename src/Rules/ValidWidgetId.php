@@ -5,11 +5,10 @@ namespace Bengr\Admin\Rules;
 use Bengr\Admin\Exceptions\WidgetNotFoundException;
 use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\Widgets\Widget;
-use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\InvokableRule;
 use Illuminate\Contracts\Validation\DataAwareRule;
-use Closure;
 
-class ValidWidgetId implements DataAwareRule, ValidationRule
+class ValidWidgetId implements DataAwareRule, InvokableRule
 {
     protected $data = [];
 
@@ -20,7 +19,7 @@ class ValidWidgetId implements DataAwareRule, ValidationRule
         return $this;
     }
 
-    public function validate(string $attribute, mixed $value, Closure $fail): void
+    public function __invoke($attribute, $value, $fail)
     {
         $page = Admin::getPageByUrl($this->data['url']);
 

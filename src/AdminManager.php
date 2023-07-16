@@ -44,7 +44,7 @@ class AdminManager
         return auth()->guard($this->getGuardName());
     }
 
-    public function serving(\Closure $callback): void
+    public function onServing(\Closure $callback): void
     {
         Event::listen(ServingAdmin::class, $callback);
     }

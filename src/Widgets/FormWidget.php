@@ -13,15 +13,13 @@ use Bengr\Admin\Pages\Page;
 use Bengr\Admin\Widgets\Widget;
 use Illuminate\Http\Request;
 
-use function Bengr\Support\response;
-
 class FormWidget extends Widget implements HasForm
 {
     use InteractsWithForm;
 
     protected ?string $widgetName = 'form';
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
     protected Form $form;
 
@@ -98,7 +96,7 @@ class FormWidget extends Widget implements HasForm
             return $action->getName() === $name && $action->hasHandle();
         })->first();
 
-        if (!$action && !$this->submit_method && $name !== 'submit') return response()->throw(ActionNotFoundException::class);
+        if (!$action && !$this->submit_method && $name !== 'submit') throw new ActionNotFoundException();
         $this->form->validate();
 
         if ($this->submit_method && $name === 'submit') return $this->getSubmitMethod()($this->form);

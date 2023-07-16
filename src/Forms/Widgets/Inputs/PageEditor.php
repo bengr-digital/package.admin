@@ -12,7 +12,7 @@ class PageEditor extends Input
 {
     protected ?string $widgetName = 'page-editor';
 
-    protected ?int $widgetColumnSpan = 12;
+    protected ?int $columnSpan = 12;
 
     protected array $columns = ['id', 'code', 'text'];
 
