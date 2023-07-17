@@ -267,7 +267,13 @@ class Page
 
         if (!class_exists($this->middlewares[$index])) {
             $parsed = explode(':', $middleware);
-            $middleware = array_key_exists($parsed[0], app(Kernel::class)->getRouteMiddleware()) ? app(Kernel::class)->getRouteMiddleware()[$parsed[0]] : null;
+
+            if (class_exists($parsed[0])) {
+                $middleware = $parsed[0];
+            } else {
+                $middleware = array_key_exists($parsed[0], app(Kernel::class)->getRouteMiddleware()) ? app(Kernel::class)->getRouteMiddleware()[$parsed[0]] : null;
+            }
+
             $data = array_splice($parsed, 1);
         }
         if (!$middleware) return $response();

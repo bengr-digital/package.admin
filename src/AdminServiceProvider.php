@@ -55,12 +55,14 @@ class AdminServiceProvider extends PackageServiceProvider
         ], 'admin-response-files');
 
         Admin::onServing(function () {
-            Admin::registerUserMenuItems([
-                UserMenuItem::make()
-                    ->label(__('admin::pages.me.title'))
-                    ->icon('settings')
-                    ->route(Admin::getPageByKey('me')->getRouteName(), Admin::getPageByKey('me')->getRouteUrl()),
-            ]);
+            if (Admin::getPageByKey('me')) {
+                Admin::registerUserMenuItems([
+                    UserMenuItem::make()
+                        ->label(__('admin::pages.me.title'))
+                        ->icon('settings')
+                        ->route(Admin::getPageByKey('me')->getRouteName(), Admin::getPageByKey('me')->getRouteUrl()),
+                ]);
+            }
         });
     }
 }

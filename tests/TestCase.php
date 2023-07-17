@@ -9,10 +9,13 @@ use Bengr\Admin\Modals\Modal;
 use Bengr\Admin\Navigation\NavigationGroup;
 use Bengr\Admin\Navigation\NavigationItem;
 use Bengr\Admin\Widgets\Widget;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -22,16 +25,20 @@ class TestCase extends \Orchestra\Testbench\TestCase
     {
         parent::setUp();
         $this->setUpDatabase();
+
         Factory::guessFactoryNamesUsing(
             function (string $modelName) {
                 return 'Bengr\\Admin\\Database\\Factories\\' . class_basename($modelName) . 'Factory';
             }
         );
         $this->adminManager = $this->app->make(AdminManager::class);
+        $this->adminManager->registerHandler(app(ExceptionHandler::class));
     }
 
     protected function getPackageProviders($app)
     {
+        $this->setUpConfig();
+
         return [
             AdminServiceProvider::class,
         ];
@@ -89,6 +96,22 @@ class TestCase extends \Orchestra\Testbench\TestCase
             $table->softDeletes();
             $table->timestamps();
         });
+
+        Schema::create('admin_users', function (Blueprint $table) {
+            $table->id();
+            $table->string('username', 100)->unique();
+            $table->string('email', 100)->unique();
+            $table->string('first_name', 100);
+            $table->string('last_name', 100);
+            $table->string('password');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+    }
+
+    protected function setUpConfig()
+    {
+        config();
     }
 
     public function assertPageRegistered(string $page): self
@@ -797,6 +820,57 @@ class TestCase extends \Orchestra\Testbench\TestCase
         }
 
         $this->assertTrue($widgetEquals);
+
+        return $this;
+    }
+
+    // $this->assertRouteRegistered(
+    //     url: 'admin/builder/pages',
+    //     name: 'admin.builder.pages',
+    //     method: 'get',
+    //     controller: [\Bengr\Admin\Http\Controllers\Builder\PageController::class, 'build'],
+    //     middleware: ['api', Bengr\Admin\Http\Middleware\DispatchServingAdminEvent::class],
+    // );
+    public function assertRouteRegistered(
+        string $url,
+        string $name,
+        string $method,
+        array $controller,
+        string | array $middleware,
+    ): self {
+        $method = collect($method);
+        $middleware = collect($middleware);
+
+        $routeRegistered = collect(Route::getRoutes()->getRoutes())->contains(function ($route) use ($url, $name, $method, $controller, $middleware) {
+
+            if ($url != $route->uri()) {
+                return false;
+            }
+
+            if ($name != $route->getName()) {
+                return false;
+            }
+
+            foreach ($method as $method) {
+                if (!collect($route->methods())->contains(Str::of($method)->upper())) {
+                    return false;
+                }
+            }
+
+            foreach ($middleware as $middleware) {
+                if (!collect($route->getAction()['middleware'])->contains($middleware)) {
+                    return false;
+                }
+            }
+
+            if ($controller[0] . '@' . $controller[1] != $route->getActionName()) {
+                return false;
+            }
+
+            return true;
+        });
+
+        $this->assertTrue($routeRegistered);
 
         return $this;
     }
