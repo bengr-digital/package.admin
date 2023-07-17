@@ -4,24 +4,24 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c95f209b58fff7bf2a60afb6fdf867a3",
+    "content-hash": "dc40d254921b15ac38fb9b75ac2c2fe9",
     "packages": [
         {
             "name": "bengr/auth",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bengr-digital/package.auth.git",
-                "reference": "ffb59111b0b77527d02d408caa5c6f76053523ff"
+                "reference": "9eeec45e35996f087bfb7f310fb145da0c9b0b96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bengr-digital/package.auth/zipball/ffb59111b0b77527d02d408caa5c6f76053523ff",
-                "reference": "ffb59111b0b77527d02d408caa5c6f76053523ff",
+                "url": "https://api.github.com/repos/bengr-digital/package.auth/zipball/9eeec45e35996f087bfb7f310fb145da0c9b0b96",
+                "reference": "9eeec45e35996f087bfb7f310fb145da0c9b0b96",
                 "shasum": ""
             },
             "require": {
-                "spatie/laravel-package-tools": "^1.13"
+                "spatie/laravel-package-tools": "^1.15"
             },
             "require-dev": {
                 "orchestra/testbench": "^7.13"
@@ -36,7 +36,8 @@
             },
             "autoload": {
                 "psr-4": {
-                    "Bengr\\Auth\\": "src/"
+                    "Bengr\\Auth\\": "src/",
+                    "Bengr\\Auth\\Tests\\": "tests/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -52,23 +53,26 @@
             "description": "Bengr auth package that can implement multiple authentication and authorization strategies",
             "support": {
                 "issues": "https://github.com/bengr-digital/package.auth/issues",
-                "source": "https://github.com/bengr-digital/package.auth/tree/1.0.3"
+                "source": "https://github.com/bengr-digital/package.auth/tree/1.0.4"
             },
-            "time": "2023-01-05T18:20:00+00:00"
+            "time": "2023-07-17T20:03:17+00:00"
         },
         {
             "name": "bengr/localization",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bengr-digital/package.localization.git",
-                "reference": "855f38c3abb65cd391cbeb9e43777a56e9684155"
+                "reference": "653ce630f614ca3f411cd6589fbd211428399dbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bengr-digital/package.localization/zipball/855f38c3abb65cd391cbeb9e43777a56e9684155",
-                "reference": "855f38c3abb65cd391cbeb9e43777a56e9684155",
+                "url": "https://api.github.com/repos/bengr-digital/package.localization/zipball/653ce630f614ca3f411cd6589fbd211428399dbe",
+                "reference": "653ce630f614ca3f411cd6589fbd211428399dbe",
                 "shasum": ""
+            },
+            "require": {
+                "spatie/laravel-package-tools": "^1.15"
             },
             "require-dev": {
                 "orchestra/testbench": "^7.13",
@@ -104,9 +108,9 @@
             "description": "Package for localizing currencies, countries, languages and more for every nation in a nice Laravel way.",
             "support": {
                 "issues": "https://github.com/bengr-digital/package.localization/issues",
-                "source": "https://github.com/bengr-digital/package.localization/tree/1.0.3"
+                "source": "https://github.com/bengr-digital/package.localization/tree/1.0.4"
             },
-            "time": "2023-01-05T18:20:19+00:00"
+            "time": "2023-07-03T21:05:49+00:00"
         },
         {
             "name": "bengr/support",
