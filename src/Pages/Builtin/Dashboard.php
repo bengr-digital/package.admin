@@ -29,7 +29,7 @@ class Dashboard extends Page
         return [
             Widgets\ActionCardWidget::make(__('admin::texts.welcome') . ', ' . $loggedInUser->first_name . ' ' . $loggedInUser->last_name, $loggedInUser->email)
                 ->image($loggedInUser->getFirstMediaUrl('avatar'))
-                ->actionOnClick(Action::make()->redirect(Admin::getPageByKey('me')))
+                ->actionOnClick(Action::make()->redirect(get_class(Admin::getPageByKey('me'))))
                 ->columnSpan(4),
             Widgets\ActionCardWidget::make('Přizpůsobení administrace na míru', 'V případě potřeby vám celou administraci i nástěnku přizpůsobíme vaším potřebám.')
                 ->icon('info')

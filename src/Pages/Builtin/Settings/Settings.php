@@ -78,7 +78,7 @@ class Settings extends Page
                 ->submit(function (Form $form) {
                     $form->save();
 
-                    return $this->response(__('admin::states.saved'))->redirect(Admin::getPageByKey('settings'));
+                    return $this->response(__('admin::states.saved'))->redirect(get_class(Admin::getPageByKey('settings')));
                 })
         ];
     }

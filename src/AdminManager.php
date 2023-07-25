@@ -98,6 +98,21 @@ class AdminManager
         return config('auth.tokens')[config('auth.guards')[config('admin.auth.guard')]['provider']]['model'];
     }
 
+    public function getLogoUrl(): ?string
+    {
+        return config('admin.logo');
+    }
+
+    public function getSmallLogoUrl(): ?string
+    {
+        return config('admin.logo_small');
+    }
+
+    public function getFaviconUrl(): ?string
+    {
+        return config('admin.favicon');
+    }
+
     public function setCurrentPage(?Page $page): self
     {
         $this->currentPage = $page;
@@ -265,6 +280,10 @@ class AdminManager
         return app($this->globalSearchProvider);
     }
 
+    public function hasGlobalSearch(): bool
+    {
+        return collect($this->getPages())->contains(fn ($page) => app($page)->canGloballySearch());
+    }
 
     public function registerComponents(): void
     {

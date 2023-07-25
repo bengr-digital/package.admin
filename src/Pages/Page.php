@@ -9,7 +9,6 @@ use Bengr\Admin\Facades\Admin;
 use Bengr\Admin\GlobalSearch\GlobalSearchResult;
 use Bengr\Admin\Modals\Modal;
 use Bengr\Admin\Navigation\NavigationItem;
-use Bengr\Admin\Widgets\FormWidget;
 use Bengr\Admin\Widgets\Widget;
 use Bengr\Support\Url\UrlHolder;
 use Illuminate\Contracts\Http\Kernel;

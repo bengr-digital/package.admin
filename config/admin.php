@@ -66,6 +66,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Filesystem Options
+    |--------------------------------------------------------------------------
+    |
+    | This option describes setup of filesystem to be used in administration.
+    | Mandatory property is `disk`. Based on this filesystem all asset paths
+    | defined in this config or in administration will be prefixed with url
+    | of this disk.
+    | 
+    */
+
+    'filesystem' => [
+        'disk' => 'bunnycdn'
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Components
     |--------------------------------------------------------------------------
     |

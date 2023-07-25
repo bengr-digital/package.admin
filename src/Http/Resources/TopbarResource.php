@@ -3,7 +3,7 @@
 namespace Bengr\Admin\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Bengr\Admin\Facades\Admin as BengrAdmin;
+use Bengr\Admin\Facades\Admin;
 
 class TopbarResource extends JsonResource
 {
@@ -16,9 +16,9 @@ class TopbarResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'userMenu' => UserMenuResource::make(BengrAdmin::getUserMenuItems()),
+            'userMenu' => UserMenuResource::make(Admin::getUserMenuItems()),
             'notifications' => null,
-            'globalSearch' => true
+            'globalSearch' => Admin::hasGlobalSearch()
         ];
     }
 }

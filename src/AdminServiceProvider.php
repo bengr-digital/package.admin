@@ -20,7 +20,7 @@ class AdminServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('admin')
-            ->hasConfigFile()
+            ->hasConfigFile(['admin', 'media-library', 'activitylog'])
             ->hasTranslations()
             ->hasCommands([
                 MakeAdminUserCommand::class,
@@ -33,6 +33,9 @@ class AdminServiceProvider extends PackageServiceProvider
                 'create_admin_settings_languages_table',
                 'create_admin_settings_socials_table',
                 'create_admin_settings_billings_table',
+                'create_media_table',
+                'create_activity_log_table',
+                'create_auth_tokens_table',
             ])
             ->hasRoutes(['web']);
     }

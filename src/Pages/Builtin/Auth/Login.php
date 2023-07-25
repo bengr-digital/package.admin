@@ -60,7 +60,7 @@ class Login extends Page
                             'access_token' => $token->getAccessToken(),
                             'refresh_token' => $token->getRefreshToken(),
                         ]
-                    ])->redirect(Admin::getPageByKey('dashboard'));
+                    ])->redirect(get_class(Admin::getPageByKey('dashboard')));
                 })
         ];
     }

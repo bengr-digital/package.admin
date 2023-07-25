@@ -13,7 +13,7 @@ class Logout extends GlobalAction
 
     public function call(array $payload = [])
     {
-        $token = app(Admin::geAuthTokenModel())->where('access_token', hash('sha256', request()->bearerToken()))->whereHasMorph('tokenable', Admin::getAuthUserModel())->first();
+        $token = app(Admin::getAuthTokenModel())->where('access_token', hash('sha256', request()->bearerToken()))->whereHasMorph('tokenable', Admin::getAuthUserModel())->first();
 
         if ($token) {
             $token->delete();

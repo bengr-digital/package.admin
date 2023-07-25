@@ -80,28 +80,9 @@ class Me extends Page
                 ->submit(function (Form $form) {
                     $form->save(['password', 'password_new_confirmation', !$form->getValue('password_new') ? 'password_new' : ''], ['password_new' => 'password']);
 
-                    return $this->response(__('admin::states.saved'))->redirect(Admin::getPageByKey('me'));
+                    return $this->response(__('admin::states.saved'))->redirect(get_class(Admin::getPageByKey('me')));
                 })
 
-        ];
-    }
-
-    public function getModals(): array
-    {
-        return [
-            Modal::make('create')
-                ->heading(__('admin::modals.create.title'))
-                ->widgets([
-                    Inputs\Input::make('name')
-                        ->label('gej')
-                ]),
-            Modal::make('create2')
-                ->heading(__('admin::modals.create.title'))
-                ->lazyload()
-                ->widgets([
-                    Inputs\Input::make('name')
-                        ->label('gej')
-                ])
         ];
     }
 

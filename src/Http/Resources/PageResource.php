@@ -2,7 +2,7 @@
 
 namespace Bengr\Admin\Http\Resources;
 
-use Bengr\Admin\Facades\Admin as BengrAdmin;
+use Bengr\Admin\Facades\Admin;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PageResource extends JsonResource
@@ -23,11 +23,27 @@ class PageResource extends JsonResource
                 'name' => $this->getRouteName(),
                 'url' => $this->getRouteUrl(),
             ],
+            'meta' => [
+                'title' => $this->getTitle(),
+                'description' => $this->getDescription(),
+                'logo' => Admin::getLogoUrl(),
+                'logo_small' => Admin::getSmallLogoUrl(),
+                'favicon' => Admin::getFaviconUrl(),
+                'route' => [
+                    'name' => $this->getRouteName(),
+                    'url' => $this->getRouteUrl(),
+                ],
+                'auth' => MeResource::make($request->user('admin')) ?? null,
+            ],
+            'pages' => [
+                'login' => Admin::getPageByKey('login') ? Admin::getPageByKey('login')->getRouteUrl() : null,
+                'dashboard' => Admin::getPageByKey('dashboard') ? Admin::getPageByKey('dashboard')->getRouteUrl() : null
+            ],
             'auth' => MeResource::make($request->user('admin')) ?? null,
             'breadcrumbs' => $this->getBreadcrumbs(),
             'layout' => [
                 'name' => $this->getLayout(),
-                'navigation' => $this->hasNavigation() ? NavigationResource::collection(BengrAdmin::getNavigation()) : null,
+                'navigation' => $this->hasNavigation() ? NavigationResource::collection(Admin::getNavigation()) : null,
                 'topbar' => $this->hasTopbar() ? TopbarResource::make($this) : null,
                 'header' => HeaderResource::make($this)
             ],
